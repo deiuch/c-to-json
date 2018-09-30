@@ -23,7 +23,7 @@ RBRACE    ("??>"|"}")
 TILDE     ("??-"|"~")
 PR_INS    [ \t]+[^\n\r]*$
 NLE       ({BS}\n|{BS}\r|{BS}\r\n)
-UCN       ({BS}U{H}{8})
+UCN       ({BS}(u{H}{4}|U{H}{8}))
 ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
 ESC       ({BS}['"?\\abfnrtv]|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
 CHAR      [LUu]?'({ESC}|{NLE}|[^'\\\n\r])+'
@@ -109,7 +109,7 @@ char *readstr(char *, size_t);
 "_Static_assert"        { return STATIC_ASSERT; }
 "_Thread_local"         { return THREAD_LOCAL; }
 
-{ID}                    {
+{ID} {
     yylval.text = (char *) malloc(strlen(yytext));
     strcpy(yylval.text, yytext);
     return IDENTIFIER;
@@ -128,14 +128,6 @@ char *readstr(char *, size_t);
     strcpy(yylval.text, yytext);
     return CONSTANT;
     // TODO check bounds, ISO/IEC 9899:2017, p. 387
-}
-
-{WRONGCHR}              { /* TODO error */ }
-{CHAR}                  {
-    yylval.text = (char *) malloc(strlen(yytext));
-    strcpy(yylval.text, yytext);
-    return CONSTANT;
-    // TODO convert escapes and trigraphs
 }
 
 ' { BEGIN CHR; }
@@ -212,9 +204,56 @@ char *readstr(char *, size_t);
 
 /// Replace escapes in string literal. Needs to be freed.
 char *readstr(char *inp, size_t len) {
-    char *res = (char *) malloc(sizeof(char) * len);
-    strcpy(res, inp);
-    res[len - 1] = '\0';
+    char *res = (char *) malloc(sizeof(char) * (len - 1));
+    size_t i = 0, j = 0;
+    char to_put;
+    while (i < len - 1) {
+        if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/') {
+            ++i;
+            if (yytext[i-1] != '\\') i += 2;
+            switch (yytext[i]) {
+                case '\'': to_put = '\''; break;
+                case '\"': to_put = '\"'; break;
+                case '\?': to_put = '?'; break;
+                case '\\': to_put = '\\'; break;
+                case 'a':  to_put = '\a'; break;
+                case 'b':  to_put = '\b'; break;
+                case 'f':  to_put = '\f'; break;
+                case 'n':  to_put = '\n'; break;
+                case 'r':  to_put = '\r'; break;
+                case 't':  to_put = '\t'; break;
+                case 'v':  to_put = '\v'; break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                    // TODO: up to 3 octal
+                    break;
+                case 'x':
+                    // TODO: closest hexes
+                    break;
+                case 'u':
+                    // TODO: 4 hexes
+                    break;
+                case 'U':
+                    // TODO: 8 hexes
+                    break;
+                default:
+                    /* TODO error */;
+            }
+        }
+        else {
+            to_put = yytext[i];
+        }
+        res[j] = to_put;
+        ++i;
+        ++j;
+    }
+    res[j] = '\0';
     return res; // TODO
 }
 
