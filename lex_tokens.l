@@ -125,6 +125,7 @@ short istrigraphsuf(char);
     return INTEGER_CONSTANT;
     // TODO check bounds, ISO/IEC 9899:2017, p. 387
 }
+
 {D}+{DE}{FS}?           |
 {D}*"."{D}+{DE}?{FS}?   |
 {D}+"."{D}*{DE}?{FS}?   |
