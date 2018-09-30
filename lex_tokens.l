@@ -1,5 +1,7 @@
 %x COMMENT
 %x PREP
+%x CHR
+%x STR
 
 O         [0-7]
 D         [0-9]
@@ -24,17 +26,18 @@ NLE       ({BS}\n|{BS}\r|{BS}\r\n)
 UCN       ({BS}U{H}{8})
 ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
 ESC       ({BS}['"?\\abfnrtv]|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
-CHR       [LUu]?'({ESC}|{NLE}|[^'\\\n\r])+'
+CHAR      [LUu]?'({ESC}|{NLE}|[^'\\\n\r])+'
 WRONGCHR  [LUu]?'[^']*(("??/"[^'"?\\abfnrtv])+[^']*|"??/")'
-STR       ([LUu]|u8)?\"({ESC}|{NLE}|[^"\\\n\r])+\"
+STRL      ([LUu]|u8)?\"({ESC}|{NLE}|[^"\\\n\r])+\"
 WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 
 %{
+#include <string.h>
 #include "y.tab.h"
 
 extern YYSTYPE yylval;
 
-int comment_ctr = 0;
+char *readstr(char *, size_t);
 %}
 
 %%
@@ -128,20 +131,32 @@ int comment_ctr = 0;
 }
 
 {WRONGCHR}              { /* TODO error */ }
-{CHR}                   {
+{CHAR}                  {
     yylval.text = (char *) malloc(strlen(yytext));
     strcpy(yylval.text, yytext);
     return CONSTANT;
     // TODO convert escapes and trigraphs
 }
 
-{WRONGSTR}              { /* TODO error */ }
-{STR}                   {
-    yylval.text = (char *) malloc(strlen(yytext));
-    strcpy(yylval.text, yytext);
-    return STRING_LITERAL;
-    // TODO convert escapes and trigraphs
+' { BEGIN CHR; }
+\" { BEGIN STR; }
+<CHR>' {
+    BEGIN INITIAL;
+    char *content = readstr(yytext, yyleng);
+    if (strlen(content) != 1) {
+        /* TODO error */
+    }
+    yylval.text = content;
+    return CONSTANT;
 }
+<STR>\" {
+    BEGIN INITIAL;
+    yylval.text = readstr(yytext, yyleng);
+    return STRING_LITERAL;
+}
+<STR,CHR>{ESC}          { yymore(); }
+<STR,CHR>({BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
+<STR,CHR>.              { yymore(); }
 
 {LBRACKET}|"<:"         { return LBRACKET; }
 {RBRACKET}|":>"         { return RBRACKET; }
@@ -195,8 +210,15 @@ int comment_ctr = 0;
 
 %%
 
+/// Replace escapes in string literal. Needs to be freed.
+char *readstr(char *inp, size_t len) {
+    char *res = (char *) malloc(sizeof(char) * len);
+    strcpy(res, inp);
+    res[len - 1] = '\0';
+    return res; // TODO
+}
+
 /// Change input after EOF was reached.
-int yywrap()
-{
+int yywrap() {
     return 1; // TODO change input on #include
 }
