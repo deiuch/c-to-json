@@ -32,6 +32,8 @@ STRL      ([LUu]|u8)?\"({ESC}|[^"\\\n\r])+\"
 WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 
 %{
+/// Lexer for C language on ISO/IEC 9899:2017 standard revision.
+/// Author: Denis Chernikov
 #include <string.h>
 #include "y.tab.h"
 
@@ -118,16 +120,20 @@ short istrigraphsuf(char);
 
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
-{D}+{IS}?               |
+{D}+{IS}? {
+    yylval.integer = atoi(yytext); // TODO custom translator
+    return INTEGER_CONSTANT;
+    // TODO check bounds, ISO/IEC 9899:2017, p. 387
+}
 {D}+{DE}{FS}?           |
 {D}*"."{D}+{DE}?{FS}?   |
 {D}+"."{D}*{DE}?{FS}?   |
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? {
-    yylval.text = (char *) malloc(strlen(yytext));
-    strcpy(yylval.text, yytext);
-    return CONSTANT;
+    yylval.floating = (char *) malloc(sizeof(char) * yyleng);
+    strcpy(yylval.floating, yytext);
+    return FLOATING_CONSTANT;
     // TODO check bounds, ISO/IEC 9899:2017, p. 387
 }
 
@@ -139,8 +145,8 @@ short istrigraphsuf(char);
     if (strlen(content) != 1) {
         /* TODO error */
     }
-    yylval.text = content;
-    return CONSTANT;
+    yylval.character = content[0];
+    return CHARACTER_CONSTANT;
 }
 <STR>\" {
     BEGIN INITIAL;

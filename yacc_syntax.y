@@ -15,6 +15,9 @@ char const *yyerror(const char *str);
 %union
 {
     char *text;
+    long long int integer;
+    char *floating; // TODO long double
+    char character;
 }
 
 %token AUTO
@@ -63,7 +66,9 @@ char const *yyerror(const char *str);
 %token THREAD_LOCAL
 
 %token <text> IDENTIFIER
-%token <text> CONSTANT
+%token <integer> INTEGER_CONSTANT
+%token <floating> FLOATING_CONSTANT
+%token <character> CHARACTER_CONSTANT
 %token <text> STRING_LITERAL
 
 %token LBRACKET
@@ -165,7 +170,9 @@ TranslationUnit
         | TranslationUnit STATIC_ASSERT { printf("STATIC_ASSERT\n"); }
         | TranslationUnit THREAD_LOCAL { printf("THREAD_LOCAL\n"); }
         | TranslationUnit IDENTIFIER { printf("ID:%s\n", $2); }
-        | TranslationUnit CONSTANT { printf("CONST:%s\n", $2); }
+        | TranslationUnit INTEGER_CONSTANT { printf("INTEGER:%d\n", $2); }
+        | TranslationUnit FLOATING_CONSTANT { printf("FLOATING:%s\n", $2); }
+        | TranslationUnit CHARACTER_CONSTANT { printf("CHARACTER:%c\n", $2); }
         | TranslationUnit STRING_LITERAL { printf("STR:%s\n", $2); }
         | TranslationUnit LBRACKET { printf("LBRACKET\n"); }
         | TranslationUnit RBRACKET { printf("RBRACKET\n"); }
