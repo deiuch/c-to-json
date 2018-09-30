@@ -218,6 +218,7 @@ char *readstr(char *inp, size_t len) {
     size_t i = 0, j = 0;
     char to_put;
     while (i < len - 1) {
+        /* TODO trigraphs #[\]^{|}~ */
         if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/') {
             ++i;
             if (yytext[i-1] != '\\') i += 2;
@@ -244,13 +245,18 @@ char *readstr(char *inp, size_t len) {
                     // TODO: up to 3 octal
                     break;
                 case 'x':
+                    ++i;
                     // TODO: closest hexes
                     break;
                 case 'u':
+                    ++i;
                     // TODO: 4 hexes
+                    i += 4;
                     break;
                 case 'U':
+                    ++i;
                     // TODO: 8 hexes
+                    i += 8;
                     break;
                 default:
                     /* TODO error */;
