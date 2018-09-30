@@ -25,7 +25,7 @@ PR_INS    [ \t]+[^\n\r]*$
 NLE       ({BS}(\n|\r|\r\n))
 UCN       ({BS}(u{H}{4}|U{H}{8}))
 ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
-ESC       ({BS}['"?\\abfnrtv]|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
+ESC       ({BS}['"?\\abfnrtv]|{BS}"??/"|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
 CHAR      [LUu]?'({ESC}|[^'\\\n\r])+'
 WRONGCHR  [LUu]?'[^']*(("??/"[^'"?\\abfnrtv])+[^']*|"??/")'
 STRL      ([LUu]|u8)?\"({ESC}|[^"\\\n\r])+\"
@@ -38,6 +38,7 @@ WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 extern YYSTYPE yylval;
 
 char *readstr(char *, size_t);
+short istrigraphsuf(char);
 %}
 
 %%
@@ -147,7 +148,7 @@ char *readstr(char *, size_t);
     return STRING_LITERAL;
 }
 <STR,CHR>{ESC}          { yymore(); }
-<STR,CHR>({BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
+<STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
 <STR,CHR>.              { yymore(); }
 
 {LBRACKET}|"<:"         { return LBRACKET; }
@@ -218,14 +219,24 @@ char *readstr(char *inp, size_t len) {
     size_t i = 0, j = 0;
     char to_put;
     while (i < len - 1) {
-        /* TODO trigraphs #[\]^{|}~ */
         if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/') {
             ++i;
             if (yytext[i-1] != '\\') i += 2;
             switch (yytext[i]) {
+                case '?':
+                    if (yytext[i+1] == '?' && istrigraphsuf(yytext[i+2])) {
+                        i += 2;
+                        if (yytext[i] == '/') {
+                            to_put = '\\';
+                        } else {
+                            /* TODO error */;
+                        }
+                    } else {
+                        to_put = '?';
+                    }
+                    break;
                 case '\'': to_put = '\''; break;
                 case '\"': to_put = '\"'; break;
-                case '\?': to_put = '?'; break;
                 case '\\': to_put = '\\'; break;
                 case 'a':  to_put = '\a'; break;
                 case 'b':  to_put = '\b'; break;
@@ -251,18 +262,30 @@ char *readstr(char *inp, size_t len) {
                 case 'u':
                     ++i;
                     // TODO: 4 hexes
-                    i += 4;
+                    i += 3;
                     break;
                 case 'U':
                     ++i;
                     // TODO: 8 hexes
-                    i += 8;
+                    i += 7;
                     break;
                 default:
                     /* TODO error */;
             }
-        }
-        else {
+        } else if (yytext[i] == '?' && yytext[i+1] == '?' && istrigraphsuf(yytext[i+2])) {
+            i += 2;
+            switch (yytext[i]) {
+                case '=': to_put = '#'; break;
+                case '(': to_put = '['; break;
+                case ')': to_put = ']'; break;
+                case '\'': to_put = '^'; break;
+                case '<': to_put = '{'; break;
+                case '!': to_put = '|'; break;
+                case '>': to_put = '}'; break;
+                case '-': to_put = '~'; break;
+                default: /* TODO error */;
+            }
+        } else {
             to_put = yytext[i];
         }
         res[j] = to_put;
@@ -271,6 +294,12 @@ char *readstr(char *inp, size_t len) {
     }
     res[j] = '\0';
     return res; // TODO
+}
+
+/// Is given character - trigraph suffix?
+short istrigraphsuf(char c) {
+    return c == '='  || c == '(' || c == '/' || c == ')'
+        || c == '\'' || c == '<' || c == '!' || c == '>' || c == '-';
 }
 
 /// Change input after EOF was reached.
