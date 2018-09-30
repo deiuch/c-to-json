@@ -23,7 +23,8 @@ PR_INS    [ \t]+[^\n\r]*$
 NLE       ({BS}\n|{BS}\r|{BS}\r\n)
 UCN       ({BS}U{H}{8})
 ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
-ES        ({BS}\'|{BS}\"|{BS}\?|{BS}{BS}|{BS}a|{BS}b|{BS}f|{BS}n|{BS}r|{BS}t|{BS}v|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
+ES        '"?\\abfnrtv
+ESC       ({BS}[{ES}]|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
 
 %{
 #include "y.tab.h"
@@ -47,7 +48,7 @@ int comment_ctr = 0;
 <PREP>"undef"{PR_INS}   { BEGIN INITIAL; }
 <PREP>"line"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"error"{PR_INS}   { BEGIN INITIAL; /* TODO error */ }
-<PREP>"warning"{PR_INS} { BEGIN INITIAL; /* TODO warning, removed from the ISO */ }
+<PREP>"warning"{PR_INS} { BEGIN INITIAL; /* TODO warning, no in ISO/IEC 9899:2017 review */ }
 <PREP>"pragma"{PR_INS}  { BEGIN INITIAL; }
 <PREP>""$               { BEGIN INITIAL; /* TODO ISO/IEC 9899:2017, pages 136-146 or 363-364 */ }
 <PREP>[^\n\r]+$         { BEGIN INITIAL; /* TODO error */ }
@@ -114,9 +115,10 @@ int comment_ctr = 0;
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? |
 
-[LUu]?'({ES}|{NLE}|[^'\\\n\r])+' { return CONSTANT; /* TODO check bounds, ISO/IEC 9899:2017, p. 387 */ }
+[LUu]?'({ESC}|{NLE}|[^'\\\n\r])+' { return CONSTANT; /* TODO check bounds, ISO/IEC 9899:2017, p. 387 */ }
 
-([LUu]|u8)?\"({ES}|{NLE}|[^"\\\n\r])+\" { return STRING_LITERAL; /* TODO convert escapes and trigraphs */ }
+([LUu]|u8)?\"[^"]*("??/"[^{ES}])+[^"]*\" { /* TODO error */ }
+([LUu]|u8)?\"({ESC}|{NLE}|[^"\\\n\r])+\" { return STRING_LITERAL; /* TODO convert escapes and trigraphs */ }
 
 {LBRACKET}|"<:"         { return LBRACKET; }
 {RBRACKET}|":>"         { return RBRACKET; }
