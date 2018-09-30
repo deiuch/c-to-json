@@ -106,23 +106,42 @@ int comment_ctr = 0;
 "_Static_assert"        { return STATIC_ASSERT; }
 "_Thread_local"         { return THREAD_LOCAL; }
 
-{ID}                    { return IDENTIFIER; /* TODO check universal char. name, ISO/IEC 9899:2017, p. 386 */ }
+{ID}                    {
+    yylval.text = (char *) malloc(strlen(yytext));
+    strcpy(yylval.text, yytext);
+    return IDENTIFIER;
+}
+
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
 {D}+{IS}?               |
 {D}+{DE}{FS}?           |
 {D}*"."{D}+{DE}?{FS}?   |
 {D}+"."{D}*{DE}?{FS}?   |
-
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
-0[Xx]{H}+"."{H}*{HE}?{FS}? { return CONSTANT; /* TODO check bounds, ISO/IEC 9899:2017, p. 387 */ }
+0[Xx]{H}+"."{H}*{HE}?{FS}? {
+    yylval.text = (char *) malloc(strlen(yytext));
+    strcpy(yylval.text, yytext);
+    return CONSTANT;
+    // TODO check bounds, ISO/IEC 9899:2017, p. 387
+}
 
 {WRONGCHR}              { /* TODO error */ }
-{CHR}                   { return CONSTANT; /* TODO check bounds, ISO/IEC 9899:2017, p. 387 */ }
+{CHR}                   {
+    yylval.text = (char *) malloc(strlen(yytext));
+    strcpy(yylval.text, yytext);
+    return CONSTANT;
+    // TODO convert escapes and trigraphs
+}
 
 {WRONGSTR}              { /* TODO error */ }
-{STR}                   { return STRING_LITERAL; /* TODO convert escapes and trigraphs */ }
+{STR}                   {
+    yylval.text = (char *) malloc(strlen(yytext));
+    strcpy(yylval.text, yytext);
+    return STRING_LITERAL;
+    // TODO convert escapes and trigraphs
+}
 
 {LBRACKET}|"<:"         { return LBRACKET; }
 {RBRACKET}|":>"         { return RBRACKET; }

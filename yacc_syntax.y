@@ -12,7 +12,10 @@ char const *yyerror(const char *str);
 
 %start TranslationUnit
 
-//%union
+%union
+{
+    char *text;
+}
 
 %token AUTO
 %token BREAK
@@ -59,9 +62,9 @@ char const *yyerror(const char *str);
 %token STATIC_ASSERT
 %token THREAD_LOCAL
 
-%token IDENTIFIER
-%token CONSTANT
-%token STRING_LITERAL
+%token <text> IDENTIFIER
+%token <text> CONSTANT
+%token <text> STRING_LITERAL
 
 %token LBRACKET
 %token RBRACKET
@@ -161,9 +164,9 @@ TranslationUnit
         | TranslationUnit NORETURN { printf("NORETURN\n"); }
         | TranslationUnit STATIC_ASSERT { printf("STATIC_ASSERT\n"); }
         | TranslationUnit THREAD_LOCAL { printf("THREAD_LOCAL\n"); }
-        | TranslationUnit IDENTIFIER { printf("IDENTIFIER\n"); }
-        | TranslationUnit CONSTANT { printf("CONSTANT\n"); }
-        | TranslationUnit STRING_LITERAL { printf("STRING_LITERAL\n"); }
+        | TranslationUnit IDENTIFIER { printf("ID:%s\n", $2); }
+        | TranslationUnit CONSTANT { printf("CONST:%s\n", $2); }
+        | TranslationUnit STRING_LITERAL { printf("STR:%s\n", $2); }
         | TranslationUnit LBRACKET { printf("LBRACKET\n"); }
         | TranslationUnit RBRACKET { printf("RBRACKET\n"); }
         | TranslationUnit LPAREN { printf("LPAREN\n"); }
