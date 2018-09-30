@@ -1,5 +1,5 @@
-%s COMMENT
-%s PREP
+%x COMMENT
+%x PREP
 
 O         [0-7]
 D         [0-9]
@@ -23,8 +23,11 @@ PR_INS    [ \t]+[^\n\r]*$
 NLE       ({BS}\n|{BS}\r|{BS}\r\n)
 UCN       ({BS}U{H}{8})
 ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
-ES        '"?\\abfnrtv
-ESC       ({BS}[{ES}]|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
+ESC       ({BS}['"?\\abfnrtv]|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
+CHR       [LUu]?'({ESC}|{NLE}|[^'\\\n\r])+'
+WRONGCHR  [LUu]?'[^']*(("??/"[^'"?\\abfnrtv])+[^']*|"??/")'
+STR       ([LUu]|u8)?\"({ESC}|{NLE}|[^"\\\n\r])+\"
+WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 
 %{
 #include "y.tab.h"
@@ -55,8 +58,8 @@ int comment_ctr = 0;
 
 "/"{NLE}?"/"({NLE}|[^\n\r])*$ { /* ignore inline comment */ }
 "/"{NLE}?"*"            { BEGIN COMMENT; }
-<COMMENT>"*"{NLE}?"/"   { BEGIN INITIAL; }
 <COMMENT>(.|\n)|"*"{NLE}? { /* ignore comment content */ }
+<COMMENT>"*"{NLE}?"/"   { BEGIN INITIAL; }
 
 "auto"                  { return AUTO; }
 "break"                 { return BREAK; }
@@ -113,12 +116,13 @@ int comment_ctr = 0;
 
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
-0[Xx]{H}+"."{H}*{HE}?{FS}? |
+0[Xx]{H}+"."{H}*{HE}?{FS}? { return CONSTANT; /* TODO check bounds, ISO/IEC 9899:2017, p. 387 */ }
 
-[LUu]?'({ESC}|{NLE}|[^'\\\n\r])+' { return CONSTANT; /* TODO check bounds, ISO/IEC 9899:2017, p. 387 */ }
+{WRONGCHR}              { /* TODO error */ }
+{CHR}                   { return CONSTANT; /* TODO check bounds, ISO/IEC 9899:2017, p. 387 */ }
 
-([LUu]|u8)?\"[^"]*("??/"[^{ES}])+[^"]*\" { /* TODO error */ }
-([LUu]|u8)?\"({ESC}|{NLE}|[^"\\\n\r])+\" { return STRING_LITERAL; /* TODO convert escapes and trigraphs */ }
+{WRONGSTR}              { /* TODO error */ }
+{STR}                   { return STRING_LITERAL; /* TODO convert escapes and trigraphs */ }
 
 {LBRACKET}|"<:"         { return LBRACKET; }
 {RBRACKET}|":>"         { return RBRACKET; }
