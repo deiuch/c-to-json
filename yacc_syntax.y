@@ -10,7 +10,7 @@ char const *yyerror(const char *str);
 
 %expect 0  // For expected amount of conflicts
 
-%start TranslationUnit
+%start translation-unit
 
 %union
 {
@@ -120,10 +120,42 @@ char const *yyerror(const char *str);
 
 //%prec TODO ISO/IEC 9899:2017, page 385
 
+// TODO ISO/IEC 9899:2017, pages 75-135 or 357-363
+// http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
+
 %%
 
-TranslationUnit
-        : /* empty */
+// ISO/IEC 9899:2017, 6.9 External definitions, p. 113-116
+
+translation-unit
+        :                  external-declaration
+        | translation-unit external-declaration
+        ;
+
+external-declaration
+        : function-definition
+        | declaration
+        ;
+
+function-definition
+        : declaration-specifiers declarator declaration-listopt compound-statement
+        ;
+
+declaration-list
+        :                  declaration
+        | declaration-list declaration
+        ;
+
+// ISO/IEC 9899:2017, 6.7 Declarations, p. 78-105
+
+// ISO/IEC 9899:2017, 6.8 Statements, p. 106-112
+
+// ISO/IEC 9899:2017, 6.6 Constant expressions, p. 76-77
+
+// ISO/IEC 9899:2017, 6.5 Expressions, p. 55-75
+
+/*TranslationUnit
+        :
         | error
         | TranslationUnit AUTO { printf("AUTO\n"); }
         | TranslationUnit BREAK { printf("BREAK\n"); }
@@ -220,10 +252,7 @@ TranslationUnit
         | TranslationUnit XOR_ASSIGN { printf("XOR_ASSIGN\n"); }
         | TranslationUnit OR_ASSIGN { printf("OR_ASSIGN\n"); }
         | TranslationUnit COMMA { printf("COMMA\n"); }
-        ;
-
-// TODO ISO/IEC 9899:2017, pages 75-135 or 353-363
-// http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
+        ;*/
 
 %%
 
