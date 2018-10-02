@@ -10,7 +10,7 @@ char const *yyerror(const char *str);
 
 %expect 0  // For expected amount of conflicts
 
-%start translation-unit
+%start TranslationUnit
 
 %union
 {
@@ -127,23 +127,24 @@ char const *yyerror(const char *str);
 
 // ISO/IEC 9899:2017, 6.9 External definitions, p. 113-116
 
-translation-unit
-        :                  external-declaration
-        | translation-unit external-declaration
+TranslationUnit
+        :                 ExternalDeclaration
+        | TranslationUnit ExternalDeclaration
         ;
 
-external-declaration
-        : function-definition
-        | declaration
+ExternalDeclaration
+        : FunctionDefinition
+        | Declaration
         ;
 
-function-definition
-        : declaration-specifiers declarator declaration-listopt compound-statement
+FunctionDefinition
+        : DeclarationSpecifiers Declarator                 CompoundStatement
+        | DeclarationSpecifiers Declarator DeclarationList CompoundStatement
         ;
 
-declaration-list
-        :                  declaration
-        | declaration-list declaration
+DeclarationList
+        :                 Declaration
+        | DeclarationList Declaration
         ;
 
 // ISO/IEC 9899:2017, 6.7 Declarations, p. 78-105
@@ -151,6 +152,10 @@ declaration-list
 // ISO/IEC 9899:2017, 6.8 Statements, p. 106-112
 
 // ISO/IEC 9899:2017, 6.6 Constant expressions, p. 76-77
+
+ConstantExpression
+        : ConditionalExpression
+        ;
 
 // ISO/IEC 9899:2017, 6.5 Expressions, p. 55-75
 
