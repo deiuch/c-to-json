@@ -60,7 +60,7 @@ _Bool istrigraphsuf(char);
 <PREP>"error"{PR_INS}   { BEGIN INITIAL; /* TODO error */ }
 <PREP>"warning"{PR_INS} { BEGIN INITIAL; /* TODO warning, not in ISO/IEC 9899:2017 review */ }
 <PREP>"pragma"{PR_INS}  { BEGIN INITIAL; }
-<PREP>""$               { BEGIN INITIAL; /* TODO ISO/IEC 9899:2017, pages 136-146 or 363-364 */ }
+<PREP>""$               { BEGIN INITIAL; /* TODO ISO/IEC 9899:2017, pages 117-127 or 344-345 */ }
 <PREP>[^\n\r]+$         { BEGIN INITIAL; /* TODO error */ }
 
 "/"{NLE}?"/"({NLE}|[^\n\r])*$ { /* ignore inline comment */ }
@@ -142,8 +142,8 @@ _Bool istrigraphsuf(char);
     // TODO value conversion, ISO/IEC 9899:2017, p. 47-48
 }
 
-[LUu]?'                 { BEGIN CHR; /* TODO prefix considering */ }
-(L|U|u|u8)?\"           { BEGIN STR; /* TODO prefix considering */ }
+[LUu]?'                 { BEGIN CHR; /* TODO prefix considering, p. 48-50 */ }
+(L|U|u|u8)?\"           { BEGIN STR; /* TODO prefix considering, p. 50-52 */ }
 <CHR>' {
     BEGIN INITIAL;
     char *content = readstr(yytext, yyleng);
@@ -156,7 +156,7 @@ _Bool istrigraphsuf(char);
 <STR>\" {
     BEGIN INITIAL;
     yylval.string = readstr(yytext, yyleng);
-    return STRING_LITERAL;  // TODO consequent literals, UTF-8
+    return STRING_LITERAL;  // TODO consequent literals, UTF-8, p. 50-52
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }

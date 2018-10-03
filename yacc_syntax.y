@@ -153,7 +153,7 @@ char const *yyerror(const char *str);
 
 // Higher precedence
 
-// TODO ISO/IEC 9899:2017, pages 75-135 or 357-363
+// TODO ISO/IEC 9899:2017, pages 55-116 or 338-344
 // http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
 
 %%
@@ -413,7 +413,7 @@ DirectAbstractDeclarator
 TypedefName
         : TYPEDEF_NAME
     //  | IDENTIFIER  // reduce/reduce with PrimaryExpression, resolved using lexical analyzer
-        ; // TODO reduce/reduce, ISO/IEC 9899:2017, p. 118
+        ; // TODO reduce/reduce, ISO/IEC 9899:2017, p. 99 (in PDF - 118)
 
 Initializer
         : AssignmentExpression
