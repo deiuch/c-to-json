@@ -118,6 +118,7 @@ _Bool istrigraphsuf(char);
     strcpy(yylval.id, yytext);
     if (istypedefname(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
+    // TODO check Universal character name, ISO/IEC 9899:2017, p. 44
 }
 
 0[Xx]{H}+{IS}?          |
@@ -126,7 +127,7 @@ _Bool istrigraphsuf(char);
     yylval.integer = (char *) malloc(sizeof(char) * yyleng);
     strcpy(yylval.integer, yytext);
     return INTEGER_CONSTANT;
-    // TODO check value, ISO/IEC 9899:2017, p. 387
+    // TODO value conversion, ISO/IEC 9899:2017, p. 45-46
 }
 
 {D}+{DE}{FS}?           |
@@ -138,11 +139,11 @@ _Bool istrigraphsuf(char);
     yylval.floating = (char *) malloc(sizeof(char) * yyleng);
     strcpy(yylval.floating, yytext);
     return FLOATING_CONSTANT;
-    // TODO check value, ISO/IEC 9899:2017, p. 387
+    // TODO value conversion, ISO/IEC 9899:2017, p. 47-48
 }
 
-' { BEGIN CHR; }
-\" { BEGIN STR; }
+[LUu]?'                 { BEGIN CHR; /* TODO prefix considering */ }
+(L|U|u|u8)?\"           { BEGIN STR; /* TODO prefix considering */ }
 <CHR>' {
     BEGIN INITIAL;
     char *content = readstr(yytext, yyleng);
@@ -155,7 +156,7 @@ _Bool istrigraphsuf(char);
 <STR>\" {
     BEGIN INITIAL;
     yylval.string = readstr(yytext, yyleng);
-    return STRING_LITERAL;
+    return STRING_LITERAL;  // TODO consequent literals, UTF-8
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
@@ -211,12 +212,9 @@ _Bool istrigraphsuf(char);
 .*{BS}(\n|\r|\r\n) {
     /* remove escaped newline and check again */
     int i;
-    //char *yycopy = strdup(yytext);  // recommended, but here it is unnecessary
     for (i = yyleng - 3; i >= 0; --i) {
-        //unput(yycopy[i]);
         unput(yytext[i]);
     }
-    //free(yycopy);
 }
 [ \f\n\r\t\v]           { /* skip over whitespaces */ }
 .                       { /* TODO error */ }
@@ -225,7 +223,7 @@ _Bool istrigraphsuf(char);
 
 /// Is given identifier - Typedef name?
 _Bool istypedefname(char *id) {
-    return 0;  // TODO
+    return 0;  // TODO Typedef table search
 }
 
 /// Replace escapes in string literal. Needs to be freed.
