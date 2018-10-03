@@ -74,13 +74,13 @@ char const *yyerror(const char *str);
     Lexical analyzer should make distinction
     between this nonterminal and IDENTIFIER.
 */
-%token TYPEDEF_NAME
+%token <id> TYPEDEF_NAME
 
-%token <text>      IDENTIFIER
+%token <id>        IDENTIFIER
 %token <integer>   INTEGER_CONSTANT
 %token <floating>  FLOATING_CONSTANT
 %token <character> CHARACTER_CONSTANT
-%token <text>      STRING_LITERAL
+%token <string>    STRING_LITERAL
 
 %token LBRACKET
 %token RBRACKET
