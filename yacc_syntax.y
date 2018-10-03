@@ -123,6 +123,8 @@ char const *yyerror(const char *str);
 // Lower precedence
 %nonassoc ATOMIC
 %nonassoc LPAREN // TODO change
+%nonassoc NO_ELSE
+%nonassoc ELSE
 // Higher precedence
 
 // TODO ISO/IEC 9899:2017, pages 75-135 or 357-363
@@ -422,6 +424,72 @@ StaticAssertDeclaration
 
 // ISO/IEC 9899:2017, 6.8 Statements, p. 106-112
 
+Statement
+        : LabeledStatement
+        | CompoundStatement
+        | ExpressionStatement
+        | SelectionStatement
+        | IterationStatement
+        | JumpStatement
+        ;
+
+LabeledStatement
+        : IDENTIFIER COLON Statement
+        | CASE ConstantExpression COLON Statement
+        | DEFAULT COLON Statement
+        ;
+
+CompoundStatement
+        : LBRACE               RBRACE
+        | LBRACE BlockItemList RBRACE
+        ;
+
+BlockItemList
+        :               BlockItem
+        | BlockItemList BlockItem
+        ;
+
+BlockItem
+        : Declaration
+        | Statement
+        ;
+
+ExpressionStatement
+        :            SEMICOLON
+        | Expression SEMICOLON
+        ;
+
+SelectionStatement
+        : IF     LPAREN Expression RPAREN Statement %prec NO_ELSE
+        | IF     LPAREN Expression RPAREN Statement ELSE Statement
+        | SWITCH LPAREN Expression RPAREN Statement
+        ;
+
+IterationStatement
+        : WHILE LPAREN Expression RPAREN Statement
+        | DO Statement WHILE LPAREN Expression RPAREN SEMICOLON
+        | FOR LPAREN            SEMICOLON            SEMICOLON            RPAREN Statement
+        | FOR LPAREN            SEMICOLON            SEMICOLON Expression RPAREN Statement
+        | FOR LPAREN            SEMICOLON Expression SEMICOLON            RPAREN Statement
+        | FOR LPAREN            SEMICOLON Expression SEMICOLON Expression RPAREN Statement
+        | FOR LPAREN Expression SEMICOLON            SEMICOLON            RPAREN Statement
+        | FOR LPAREN Expression SEMICOLON            SEMICOLON Expression RPAREN Statement
+        | FOR LPAREN Expression SEMICOLON Expression SEMICOLON            RPAREN Statement
+        | FOR LPAREN Expression SEMICOLON Expression SEMICOLON Expression RPAREN Statement
+        | FOR LPAREN Declaration                     SEMICOLON            RPAREN Statement
+        | FOR LPAREN Declaration                     SEMICOLON Expression RPAREN Statement
+        | FOR LPAREN Declaration Expression          SEMICOLON            RPAREN Statement
+        | FOR LPAREN Declaration Expression          SEMICOLON Expression RPAREN Statement
+        ;
+
+JumpStatement
+        : GOTO IDENTIFIER SEMICOLON
+        | CONTINUE SEMICOLON
+        | BREAK SEMICOLON
+        | RETURN            SEMICOLON
+        | RETURN Expression SEMICOLON
+        ;
+
 // ISO/IEC 9899:2017, 6.6 Constant expressions, p. 76-77
 
 ConstantExpression
@@ -430,7 +498,41 @@ ConstantExpression
 
 // ISO/IEC 9899:2017, 6.5 Expressions, p. 55-75
 
-/*TranslationUnit
+Expression
+        :                  AssignmentExpression
+        | Expression COMMA AssignmentExpression
+        ;
+
+AssignmentExpression
+        : ConditionalExpression
+        | UnaryExpression AssignmentOperator AssignmentExpression
+        ;
+
+AssignmentOperator
+        : ASSIGN
+        | MUL_ASSIGN
+        | DIV_ASSIGN
+        | MOD_ASSIGN
+        | ADD_ASSIGN
+        | SUB_ASSIGN
+        | LEFT_ASSIGN
+        | RIGHT_ASSIGN
+        | AND_ASSIGN
+        | XOR_ASSIGN
+        | OR_ASSIGN
+        ;
+
+ConditionalExpression
+        : TODO
+        ;
+
+// TODO modify standard using precedence assignment
+
+UnaryExpression
+        : TODO
+        ;
+
+/*TranslationUnit // TODO remove
         :
         | error
         | TranslationUnit AUTO { printf("AUTO\n"); }
