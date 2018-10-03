@@ -8,7 +8,7 @@ extern int yylex();
 char const *yyerror(const char *str);
 %}
 
-%expect 13  // For expected amount of conflicts
+%expect 0  // For expected amount of conflicts
 
 %start TranslationUnit
 
@@ -65,6 +65,8 @@ char const *yyerror(const char *str);
 %token STATIC_ASSERT
 %token THREAD_LOCAL
 
+%token TYPEDEF_NAME  // TODO description
+
 %token <text> IDENTIFIER
 %token <integer> INTEGER_CONSTANT
 %token <floating> FLOATING_CONSTANT
@@ -118,7 +120,10 @@ char const *yyerror(const char *str);
 %token OR_ASSIGN
 %token COMMA
 
-//%prec TODO ISO/IEC 9899:2017, page 385
+// Lower precedence
+%nonassoc ATOMIC
+%nonassoc LPAREN // TODO change
+// Higher precedence
 
 // TODO ISO/IEC 9899:2017, pages 75-135 or 357-363
 // http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
@@ -263,7 +268,7 @@ EnumeratorList
 Enumerator
         : EnumerationConstant
         | EnumerationConstant ASSIGN ConstantExpression
-        ; // TODO IDENTIFIER?
+        ;
 
 EnumerationConstant
         : IDENTIFIER
@@ -271,7 +276,7 @@ EnumerationConstant
 
 AtomicTypeSpecifier
         : ATOMIC LPAREN TypeName RPAREN
-        ; // TODO shift/reduce, ISO/IEC 9899:2017, p. 106
+        ;
 
 TypeQualifier
         : CONST
@@ -381,8 +386,8 @@ DirectAbstractDeclarator
         ; // TODO make DirectAbstractDelarator optional
 
 TypedefName
-        : IDENTIFIER
-        ; // TODO reduce/reduce
+        : TYPEDEF_NAME
+        ; // TODO reduce/reduce, ISO/IEC 9899:2017, p. 118
 
 Initializer
         : AssignmentExpression

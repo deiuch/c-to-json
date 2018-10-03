@@ -115,7 +115,7 @@ short istrigraphsuf(char);
 {ID} {
     yylval.text = (char *) malloc(strlen(yytext));
     strcpy(yylval.text, yytext);
-    return IDENTIFIER;
+    return IDENTIFIER;  // TODO TYPEDEF_NAME
 }
 
 0[Xx]{H}+{IS}?          |
