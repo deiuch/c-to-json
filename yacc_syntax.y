@@ -121,10 +121,27 @@ char const *yyerror(const char *str);
 %token COMMA
 
 // Lower precedence
+
+// Atomic type shift/reduce resolution
 %nonassoc ATOMIC
 %nonassoc LPAREN // TODO change
-%nonassoc NO_ELSE
+
+// "Dangling Else" shift/reduce resolution
+%nonassoc NO_ELSE  // Fake token for precedence
 %nonassoc ELSE
+
+// Expression precedence
+%left LOG_OR                  // Logical OR
+%left LOG_AND                 // Logical AND
+%left VERTICAL                // Inclusive OR
+%left CARET                   // Exclusive OR
+%left AMPERSAND               // AND
+%left EQ NE                   // Equality
+%left LS GR LE GE             // Relational
+%left LSHIFT RSHIFT           // Shift
+%left PLUS MINUS              // Additive
+%left ASTERISK SLASH PERCENT  // Multiplicative
+
 // Higher precedence
 
 // TODO ISO/IEC 9899:2017, pages 75-135 or 357-363
@@ -268,13 +285,9 @@ EnumeratorList
         ;
 
 Enumerator
-        : EnumerationConstant
-        | EnumerationConstant ASSIGN ConstantExpression
+        : IDENTIFIER  // EnumerationConstant, reduce/reduce with PrimaryExpression
+        | IDENTIFIER ASSIGN ConstantExpression
         ;
-
-EnumerationConstant
-        : IDENTIFIER
-        ; // TODO put to constants
 
 AtomicTypeSpecifier
         : ATOMIC LPAREN TypeName RPAREN
@@ -385,7 +398,7 @@ DirectAbstractDeclarator
         | DirectAbstractDeclarator LBRACKET ASTERISK RBRACKET
         | DirectAbstractDeclarator LPAREN                   RPAREN
         | DirectAbstractDeclarator LPAREN ParameterTypeList RPAREN
-        ; // TODO make DirectAbstractDelarator optional
+        ; // TODO DirectAbstractDelaratorOpt
 
 TypedefName
         : TYPEDEF_NAME
@@ -480,12 +493,12 @@ IterationStatement
         | FOR LPAREN Declaration                     SEMICOLON Expression RPAREN Statement
         | FOR LPAREN Declaration Expression          SEMICOLON            RPAREN Statement
         | FOR LPAREN Declaration Expression          SEMICOLON Expression RPAREN Statement
-        ;
+        ; // TODO ExpressionOpt
 
 JumpStatement
-        : GOTO IDENTIFIER SEMICOLON
-        | CONTINUE SEMICOLON
-        | BREAK SEMICOLON
+        : GOTO IDENTIFIER   SEMICOLON
+        | CONTINUE          SEMICOLON
+        | BREAK             SEMICOLON
         | RETURN            SEMICOLON
         | RETURN Expression SEMICOLON
         ;
@@ -523,13 +536,101 @@ AssignmentOperator
         ;
 
 ConditionalExpression
-        : TODO
+        : ArithmeticalExpression
+        | ArithmeticalExpression QUESTION Expression COLON ConditionalExpression
         ;
 
-// TODO modify standard using precedence assignment
+ArithmeticalExpression
+        : CastExpression
+        | ArithmeticalExpression LOG_OR    ArithmeticalExpression
+        | ArithmeticalExpression LOG_AND   ArithmeticalExpression
+        | ArithmeticalExpression VERTICAL  ArithmeticalExpression
+        | ArithmeticalExpression CARET     ArithmeticalExpression
+        | ArithmeticalExpression AMPERSAND ArithmeticalExpression
+        | ArithmeticalExpression EQ        ArithmeticalExpression
+        | ArithmeticalExpression NE        ArithmeticalExpression
+        | ArithmeticalExpression LS        ArithmeticalExpression
+        | ArithmeticalExpression GR        ArithmeticalExpression
+        | ArithmeticalExpression LE        ArithmeticalExpression
+        | ArithmeticalExpression GE        ArithmeticalExpression
+        | ArithmeticalExpression LSHIFT    ArithmeticalExpression
+        | ArithmeticalExpression RSHIFT    ArithmeticalExpression
+        | ArithmeticalExpression PLUS      ArithmeticalExpression
+        | ArithmeticalExpression MINUS     ArithmeticalExpression
+        | ArithmeticalExpression ASTERISK  ArithmeticalExpression
+        | ArithmeticalExpression SLASH     ArithmeticalExpression
+        | ArithmeticalExpression PERCENT   ArithmeticalExpression
+        ;
+
+CastExpression
+        : UnaryExpression
+        | LPAREN TypeName RPAREN CastExpression
+        ;
 
 UnaryExpression
-        : TODO
+        : PostfixExpression
+        | DBL_PLUS  UnaryExpression
+        | DBL_MINUS UnaryExpression
+        | UnaryOperator CastExpression
+        | SIZEOF UnaryExpression
+        | SIZEOF LPAREN TypeName RPAREN
+        | ALIGNOF LPAREN TypeName RPAREN
+        ;
+
+UnaryOperator
+        : AMPERSAND
+        | ASTERISK
+        | PLUS
+        | MINUS
+        | TILDE
+        | BANG
+        ;
+
+PostfixExpression
+        : PrimaryExpression
+        | PostfixExpression LBRACKET Expression RBRACKET
+        | PostfixExpression LPAREN                        RPAREN
+        | PostfixExpression LPAREN ArgumentExpressionList RPAREN
+        | PostfixExpression DOT   IDENTIFIER
+        | PostfixExpression ARROW IDENTIFIER
+        | PostfixExpression DBL_PLUS
+        | PostfixExpression DBL_MINUS
+        | LPAREN TypeName RPAREN LBRACE InitializerList       RBRACE
+        | LPAREN TypeName RPAREN LBRACE InitializerList COMMA RBRACE
+        ;
+
+ArgumentExpressionList
+        :                              AssignmentExpression
+        | ArgumentExpressionList COMMA AssignmentExpression
+        ;
+
+PrimaryExpression
+        : IDENTIFIER
+        | Constant
+        | STRING_LITERAL
+        | LPAREN Expression RPAREN
+        | GenericSelection
+        ;
+
+Constant
+        : INTEGER_CONSTANT
+        | FLOATING_CONSTANT
+    //  | EnumerationConstant  // reduce/reduce with PrimaryExpression, identical to IDENTIFIER
+        | CHARACTER_CONSTANT
+        ;
+
+GenericSelection
+        : GENERIC LPAREN AssignmentExpression COMMA GenericAssocList RPAREN
+        ;
+
+GenericAssocList
+        :                        GenericAssociation
+        | GenericAssocList COMMA GenericAssociation
+        ;
+
+GenericAssociation
+        : TypeName COLON AssignmentExpression
+        | DEFAULT  COLON AssignmentExpression
         ;
 
 /*TranslationUnit // TODO remove
