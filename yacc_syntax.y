@@ -8,7 +8,7 @@ extern int yylex();
 char const *yyerror(const char *str);
 %}
 
-%expect 0  // For expected amount of conflicts
+%expect 13  // For expected amount of conflicts
 
 %start TranslationUnit
 
@@ -271,7 +271,7 @@ EnumerationConstant
 
 AtomicTypeSpecifier
         : ATOMIC LPAREN TypeName RPAREN
-        ;
+        ; // TODO shift/reduce, ISO/IEC 9899:2017, p. 106
 
 TypeQualifier
         : CONST
@@ -317,7 +317,7 @@ Pointer
         | ASTERISK TypeQualifierList
         | ASTERISK                   Pointer
         | ASTERISK TypeQualifierList Pointer
-        ;
+        ;  // TODO left recursion?
 
 TypeQualifierList
         :                   TypeQualifier
