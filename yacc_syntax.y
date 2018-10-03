@@ -149,6 +149,272 @@ DeclarationList
 
 // ISO/IEC 9899:2017, 6.7 Declarations, p. 78-105
 
+Declaration
+        : DeclarationSpecifiers                    SEMICOLON
+        | DeclarationSpecifiers InitDeclaratorList SEMICOLON
+        | StaticAssertDeclaration
+        ;
+
+DeclarationSpecifiers
+        : StorageClassSpecifier
+        | TypeSpecifier
+        | TypeQualifier
+        | FunctionSpecifier
+        | AlignmentSpecifier
+        | StorageClassSpecifier DeclarationSpecifiers
+        | TypeSpecifier         DeclarationSpecifiers
+        | TypeQualifier         DeclarationSpecifiers
+        | FunctionSpecifier     DeclarationSpecifiers
+        | AlignmentSpecifier    DeclarationSpecifiers
+        ;  // TODO left recursion?
+
+InitDeclaratorList
+        :                          InitDeclarator
+        | InitDeclaratorList COMMA InitDeclarator
+        ;
+
+InitDeclarator
+        : Declarator
+        | Declarator ASSIGN Initializer
+        ;
+
+StorageClassSpecifier
+        : TYPEDEF
+        | EXTERN
+        | STATIC
+        | THREAD_LOCAL
+        | AUTO
+        | REGISTER
+        ;
+
+TypeSpecifier
+        : VOID
+        | CHAR
+        | SHORT
+        | INT
+        | LONG
+        | FLOAT
+        | DOUBLE
+        | SIGNED
+        | UNSIGNED
+        | BOOL
+        | COMPLEX
+        | AtomicTypeSpecifier
+        | StructOrUnionSpecifier
+        | EnumSpecifier
+        | TypedefName
+        ;
+
+StructOrUnionSpecifier
+        : StructOrUnion            LBRACE StructDeclarationList RBRACE
+        | StructOrUnion IDENTIFIER LBRACE StructDeclarationList RBRACE
+        | StructOrUnion IDENTIFIER
+        ;
+
+StructOrUnion
+        : STRUCT
+        | UNION
+        ;
+
+StructDeclarationList
+        :                       StructDeclaration
+        | StructDeclarationList StructDeclaration
+        ;
+
+StructDeclaration
+        : SpecifierQualifierList                      SEMICOLON
+        | SpecifierQualifierList StructDeclaratorList SEMICOLON
+        | StaticAssertDeclaration
+        ;
+
+SpecifierQualifierList
+        : TypeSpecifier
+        | TypeQualifier
+        | AlignmentSpecifier
+        | TypeSpecifier      SpecifierQualifierList
+        | TypeQualifier      SpecifierQualifierList
+        | AlignmentSpecifier SpecifierQualifierList
+        ;  // TODO left recursion?
+
+StructDeclaratorList
+        :                            StructDeclarator
+        | StructDeclaratorList COMMA StructDeclarator
+        ;
+
+StructDeclarator
+        : Declarator
+        |            COLON ConstantExpression
+        | Declarator COLON ConstantExpression
+        ;
+
+EnumSpecifier
+        : ENUM            LBRACE EnumeratorList       RBRACE
+        | ENUM            LBRACE EnumeratorList COMMA RBRACE
+        | ENUM IDENTIFIER LBRACE EnumeratorList       RBRACE
+        | ENUM IDENTIFIER LBRACE EnumeratorList COMMA RBRACE
+        | ENUM IDENTIFIER
+        ;
+
+EnumeratorList
+        :                      Enumerator
+        | EnumeratorList COMMA Enumerator
+        ;
+
+Enumerator
+        : EnumerationConstant
+        | EnumerationConstant ASSIGN ConstantExpression
+        ; // TODO IDENTIFIER?
+
+EnumerationConstant
+        : IDENTIFIER
+        ; // TODO put to constants
+
+AtomicTypeSpecifier
+        : ATOMIC LPAREN TypeName RPAREN
+        ;
+
+TypeQualifier
+        : CONST
+        | RESTRICT
+        | VOLATILE
+        | ATOMIC
+        ;
+
+FunctionSpecifier
+        : INLINE
+        | NORETURN
+        ;
+
+AlignmentSpecifier
+        : ALIGNAS LPAREN TypeName           RPAREN
+        | ALIGNAS LPAREN ConstantExpression RPAREN
+        ;
+
+Declarator
+        :         DirectDeclarator
+        | Pointer DirectDeclarator
+        ;
+
+DirectDeclarator
+        : IDENTIFIER
+        | LPAREN Declarator RPAREN
+        | DirectDeclarator LBRACKET                                               RBRACKET
+        | DirectDeclarator LBRACKET                          AssignmentExpression RBRACKET
+        | DirectDeclarator LBRACKET TypeQualifierList                             RBRACKET
+        | DirectDeclarator LBRACKET TypeQualifierList        AssignmentExpression RBRACKET
+        | DirectDeclarator LBRACKET                   STATIC AssignmentExpression RBRACKET
+        | DirectDeclarator LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
+        | DirectDeclarator LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
+        | DirectDeclarator LBRACKET                   ASTERISK                    RBRACKET
+        | DirectDeclarator LBRACKET TypeQualifierList ASTERISK                    RBRACKET
+        | DirectDeclarator LPAREN ParameterTypeList RPAREN
+        | DirectDeclarator LPAREN                   RPAREN
+        | DirectDeclarator LPAREN IdentifierList    RPAREN
+        ;
+
+Pointer
+        : ASTERISK
+        | ASTERISK TypeQualifierList
+        | ASTERISK                   Pointer
+        | ASTERISK TypeQualifierList Pointer
+        ;
+
+TypeQualifierList
+        :                   TypeQualifier
+        | TypeQualifierList TypeQualifier
+        ;
+
+ParameterTypeList
+        : ParameterList
+        | ParameterList COMMA ELLIPSIS
+        ;
+
+ParameterList
+        :                     ParameterDeclaration
+        | ParameterList COMMA ParameterDeclaration
+        ;
+
+ParameterDeclaration
+        : DeclarationSpecifiers Declarator
+        | DeclarationSpecifiers
+        | DeclarationSpecifiers AbstractDeclarator
+        ;
+
+IdentifierList
+        :                      IDENTIFIER
+        | IdentifierList COMMA IDENTIFIER
+        ;
+
+TypeName
+        : SpecifierQualifierList
+        | SpecifierQualifierList AbstractDeclarator
+        ;
+
+AbstractDeclarator
+        : Pointer
+        |         DirectAbstractDeclarator
+        | Pointer DirectAbstractDeclarator
+        ;
+
+DirectAbstractDeclarator
+        : LPAREN AbstractDeclarator RPAREN
+        |                             LBRACKET                                               RBRACKET
+        |                             LBRACKET                          AssignmentExpression RBRACKET
+        |                             LBRACKET TypeQualifierList                             RBRACKET
+        |                             LBRACKET TypeQualifierList        AssignmentExpression RBRACKET
+        |                             LBRACKET                   STATIC AssignmentExpression RBRACKET
+        |                             LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
+        |                             LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
+        |                             LBRACKET ASTERISK RBRACKET
+        |                             LPAREN                   RPAREN
+        |                             LPAREN ParameterTypeList RPAREN
+        | DirectAbstractDeclaratoropt LBRACKET                                               RBRACKET
+        | DirectAbstractDeclaratoropt LBRACKET                          AssignmentExpression RBRACKET
+        | DirectAbstractDeclaratoropt LBRACKET TypeQualifierList                             RBRACKET
+        | DirectAbstractDeclaratoropt LBRACKET TypeQualifierList        AssignmentExpression RBRACKET
+        | DirectAbstractDeclaratoropt LBRACKET                   STATIC AssignmentExpression RBRACKET
+        | DirectAbstractDeclaratoropt LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
+        | DirectAbstractDeclaratoropt LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
+        | DirectAbstractDeclaratoropt LBRACKET ASTERISK RBRACKET
+        | DirectAbstractDeclaratoropt LPAREN                   RPAREN
+        | DirectAbstractDeclaratoropt LPAREN ParameterTypeList RPAREN
+        ; // TODO make DirectAbstractDelarator optional
+
+TypedefName
+        : IDENTIFIER
+        ; // TODO reduce/reduce
+
+Initializer
+        : AssignmentExpression
+        | LBRACE InitializerList       RBRACE
+        | LBRACE InitializerList COMMA RBRACE
+        ;
+
+InitializerList
+        :                                   Initializer
+        |                       Designation Initializer
+        | InitializerList COMMA             Initializer
+        | InitializerList COMMA Designation Initializer
+        ;
+
+Designation
+        : DesignatorList ASSIGN
+        ;
+
+DesignatorList
+        :                Designator
+        | DesignatorList Designator
+        ;
+
+Designator
+        : LBRACKET ConstantExpression RBRACKET
+        | DOT IDENTIFIER
+        ;
+
+StaticAssertDeclaration
+        : STATIC_ASSERT LPAREN ConstantExpression COMMA STRING_LITERAL RPAREN SEMICOLON
+        ;
+
 // ISO/IEC 9899:2017, 6.8 Statements, p. 106-112
 
 // ISO/IEC 9899:2017, 6.6 Constant expressions, p. 76-77
