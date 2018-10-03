@@ -358,26 +358,26 @@ AbstractDeclarator
 
 DirectAbstractDeclarator
         : LPAREN AbstractDeclarator RPAREN
-        |                             LBRACKET                                               RBRACKET
-        |                             LBRACKET                          AssignmentExpression RBRACKET
-        |                             LBRACKET TypeQualifierList                             RBRACKET
-        |                             LBRACKET TypeQualifierList        AssignmentExpression RBRACKET
-        |                             LBRACKET                   STATIC AssignmentExpression RBRACKET
-        |                             LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
-        |                             LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
-        |                             LBRACKET ASTERISK RBRACKET
-        |                             LPAREN                   RPAREN
-        |                             LPAREN ParameterTypeList RPAREN
-        | DirectAbstractDeclaratoropt LBRACKET                                               RBRACKET
-        | DirectAbstractDeclaratoropt LBRACKET                          AssignmentExpression RBRACKET
-        | DirectAbstractDeclaratoropt LBRACKET TypeQualifierList                             RBRACKET
-        | DirectAbstractDeclaratoropt LBRACKET TypeQualifierList        AssignmentExpression RBRACKET
-        | DirectAbstractDeclaratoropt LBRACKET                   STATIC AssignmentExpression RBRACKET
-        | DirectAbstractDeclaratoropt LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
-        | DirectAbstractDeclaratoropt LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
-        | DirectAbstractDeclaratoropt LBRACKET ASTERISK RBRACKET
-        | DirectAbstractDeclaratoropt LPAREN                   RPAREN
-        | DirectAbstractDeclaratoropt LPAREN ParameterTypeList RPAREN
+        |                          LBRACKET                                               RBRACKET
+        |                          LBRACKET                          AssignmentExpression RBRACKET
+        |                          LBRACKET TypeQualifierList                             RBRACKET
+        |                          LBRACKET TypeQualifierList        AssignmentExpression RBRACKET
+        |                          LBRACKET                   STATIC AssignmentExpression RBRACKET
+        |                          LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
+        |                          LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
+        |                          LBRACKET ASTERISK RBRACKET
+        |                          LPAREN                   RPAREN
+        |                          LPAREN ParameterTypeList RPAREN
+        | DirectAbstractDeclarator LBRACKET                                               RBRACKET
+        | DirectAbstractDeclarator LBRACKET                          AssignmentExpression RBRACKET
+        | DirectAbstractDeclarator LBRACKET TypeQualifierList                             RBRACKET
+        | DirectAbstractDeclarator LBRACKET TypeQualifierList        AssignmentExpression RBRACKET
+        | DirectAbstractDeclarator LBRACKET                   STATIC AssignmentExpression RBRACKET
+        | DirectAbstractDeclarator LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
+        | DirectAbstractDeclarator LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
+        | DirectAbstractDeclarator LBRACKET ASTERISK RBRACKET
+        | DirectAbstractDeclarator LPAREN                   RPAREN
+        | DirectAbstractDeclarator LPAREN ParameterTypeList RPAREN
         ; // TODO make DirectAbstractDelarator optional
 
 TypedefName
