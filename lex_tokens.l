@@ -39,8 +39,9 @@ WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 
 extern YYSTYPE yylval;
 
+_Bool istypedefname(char *);
 char *readstr(char *, size_t);
-short istrigraphsuf(char);
+_Bool istrigraphsuf(char);
 %}
 
 %%
@@ -57,7 +58,7 @@ short istrigraphsuf(char);
 <PREP>"undef"{PR_INS}   { BEGIN INITIAL; }
 <PREP>"line"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"error"{PR_INS}   { BEGIN INITIAL; /* TODO error */ }
-<PREP>"warning"{PR_INS} { BEGIN INITIAL; /* TODO warning, no in ISO/IEC 9899:2017 review */ }
+<PREP>"warning"{PR_INS} { BEGIN INITIAL; /* TODO warning, not in ISO/IEC 9899:2017 review */ }
 <PREP>"pragma"{PR_INS}  { BEGIN INITIAL; }
 <PREP>""$               { BEGIN INITIAL; /* TODO ISO/IEC 9899:2017, pages 136-146 or 363-364 */ }
 <PREP>[^\n\r]+$         { BEGIN INITIAL; /* TODO error */ }
@@ -113,17 +114,19 @@ short istrigraphsuf(char);
 "_Thread_local"         { return THREAD_LOCAL; }
 
 {ID} {
-    yylval.text = (char *) malloc(strlen(yytext));
-    strcpy(yylval.text, yytext);
-    return IDENTIFIER;  // TODO TYPEDEF_NAME
+    yylval.id = (char *) malloc(strlen(yytext));
+    strcpy(yylval.id, yytext);
+    if (istypedefname(yytext)) return TYPEDEF_NAME;
+    return IDENTIFIER;
 }
 
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
 {D}+{IS}? {
-    yylval.integer = atoi(yytext); // TODO custom translator
+    yylval.integer = (char *) malloc(sizeof(char) * yyleng);
+    strcpy(yylval.integer, yytext);
     return INTEGER_CONSTANT;
-    // TODO check bounds, ISO/IEC 9899:2017, p. 387
+    // TODO check value, ISO/IEC 9899:2017, p. 387
 }
 
 {D}+{DE}{FS}?           |
@@ -135,7 +138,7 @@ short istrigraphsuf(char);
     yylval.floating = (char *) malloc(sizeof(char) * yyleng);
     strcpy(yylval.floating, yytext);
     return FLOATING_CONSTANT;
-    // TODO check bounds, ISO/IEC 9899:2017, p. 387
+    // TODO check value, ISO/IEC 9899:2017, p. 387
 }
 
 ' { BEGIN CHR; }
@@ -151,7 +154,7 @@ short istrigraphsuf(char);
 }
 <STR>\" {
     BEGIN INITIAL;
-    yylval.text = readstr(yytext, yyleng);
+    yylval.string = readstr(yytext, yyleng);
     return STRING_LITERAL;
 }
 <STR,CHR>{ESC}          { yymore(); }
@@ -219,6 +222,11 @@ short istrigraphsuf(char);
 .                       { /* TODO error */ }
 
 %%
+
+/// Is given identifier - Typedef name?
+_Bool istypedefname(char *id) {
+    return 0;  // TODO
+}
 
 /// Replace escapes in string literal. Needs to be freed.
 char *readstr(char *inp, size_t len) {
@@ -300,11 +308,11 @@ char *readstr(char *inp, size_t len) {
         ++j;
     }
     res[j] = '\0';
-    return res; // TODO
+    return res;
 }
 
 /// Is given character - trigraph suffix?
-short istrigraphsuf(char c) {
+_Bool istrigraphsuf(char c) {
     return c == '='  || c == '(' || c == '/' || c == ')'
         || c == '\'' || c == '<' || c == '!' || c == '>' || c == '-';
 }

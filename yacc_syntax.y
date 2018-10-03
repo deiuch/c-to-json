@@ -8,17 +8,19 @@ extern int yylex();
 char const *yyerror(const char *str);
 %}
 
-%expect 0  // For expected amount of conflicts
+%expect 0  // shift/reduce
+%expect-rr 0  // reduce/reduce
 
 %start TranslationUnit
 
 %union
 {
-    char *text;
-    long long int integer;
-    char *floating; // TODO long double
+    char *id;
+    char *integer;
+    char *floating;
     char character;
-}
+    char *string;
+}  // TODO type conversions
 
 %token AUTO
 %token BREAK
@@ -65,13 +67,20 @@ char const *yyerror(const char *str);
 %token STATIC_ASSERT
 %token THREAD_LOCAL
 
-%token TYPEDEF_NAME  // TODO description
+/*
+    This nonterminal was introduced
+    in order to deal with reduce/reduce
+    conflict of TypedefName with PrimaryExpression.
+    Lexical analyzer should make distinction
+    between this nonterminal and IDENTIFIER.
+*/
+%token TYPEDEF_NAME
 
-%token <text> IDENTIFIER
-%token <integer> INTEGER_CONSTANT
-%token <floating> FLOATING_CONSTANT
+%token <text>      IDENTIFIER
+%token <integer>   INTEGER_CONSTANT
+%token <floating>  FLOATING_CONSTANT
 %token <character> CHARACTER_CONSTANT
-%token <text> STRING_LITERAL
+%token <text>      STRING_LITERAL
 
 %token LBRACKET
 %token RBRACKET
@@ -223,6 +232,7 @@ TypeSpecifier
         | UNSIGNED
         | BOOL
         | COMPLEX
+        | IMAGINARY  // TODO check (reserved for future)
         | AtomicTypeSpecifier
         | StructOrUnionSpecifier
         | EnumSpecifier
@@ -398,10 +408,11 @@ DirectAbstractDeclarator
         | DirectAbstractDeclarator LBRACKET ASTERISK RBRACKET
         | DirectAbstractDeclarator LPAREN                   RPAREN
         | DirectAbstractDeclarator LPAREN ParameterTypeList RPAREN
-        ; // TODO DirectAbstractDelaratorOpt
+        ; // TODO DirectAbstractDeсlaratorOpt
 
 TypedefName
         : TYPEDEF_NAME
+    //  | IDENTIFIER  // reduce/reduce with PrimaryExpression, resolved using lexical analyzer
         ; // TODO reduce/reduce, ISO/IEC 9899:2017, p. 118
 
 Initializer
@@ -680,11 +691,12 @@ GenericAssociation
         | TranslationUnit NORETURN { printf("NORETURN\n"); }
         | TranslationUnit STATIC_ASSERT { printf("STATIC_ASSERT\n"); }
         | TranslationUnit THREAD_LOCAL { printf("THREAD_LOCAL\n"); }
-        | TranslationUnit IDENTIFIER { printf("ID:%s\n", $2); }
-        | TranslationUnit INTEGER_CONSTANT { printf("INTEGER:%d\n", $2); }
-        | TranslationUnit FLOATING_CONSTANT { printf("FLOATING:%s\n", $2); }
-        | TranslationUnit CHARACTER_CONSTANT { printf("CHARACTER:%c\n", $2); }
-        | TranslationUnit STRING_LITERAL { printf("STR:%s\n", $2); }
+        | TranslationUnit IDENTIFIER { printf("ID: %s\n", $2); }
+        | TranslationUnit TYPEDEF_NAME { printf("TYPEDEF: %s\n", $2); }
+        | TranslationUnit INTEGER_CONSTANT { printf("INTEGER: %s\n", $2); }
+        | TranslationUnit FLOATING_CONSTANT { printf("FLOATING: %s\n", $2); }
+        | TranslationUnit CHARACTER_CONSTANT { printf("CHARACTER: '%c'\n", $2); }
+        | TranslationUnit STRING_LITERAL { printf("STR: \"%s\"\n", $2); }
         | TranslationUnit LBRACKET { printf("LBRACKET\n"); }
         | TranslationUnit RBRACKET { printf("RBRACKET\n"); }
         | TranslationUnit LPAREN { printf("LPAREN\n"); }
