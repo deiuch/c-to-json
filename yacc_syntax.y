@@ -8,7 +8,7 @@ extern int yylex();
 char const *yyerror(const char *str);
 %}
 
-%expect 0  // shift/reduce
+%expect    0  // shift/reduce
 %expect-rr 0  // reduce/reduce
 
 %start TranslationUnit
@@ -131,9 +131,9 @@ char const *yyerror(const char *str);
 
 // Lower precedence
 
-// Atomic type shift/reduce resolution
+// _Atomic type shift/reduce resolution
 %nonassoc ATOMIC
-%nonassoc LPAREN // TODO change
+%nonassoc LPAREN
 
 // "Dangling Else" shift/reduce resolution
 %nonassoc NO_ELSE  // Fake token for precedence
