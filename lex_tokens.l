@@ -118,7 +118,7 @@ _Bool istrigraphsuf(char);
     strcpy(yylval.id, yytext);
     if (istypedefname(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
-    // TODO check Universal character name, ISO/IEC 9899:2017, p. 44
+    // TODO check Universal character name, ISO/IEC 9899:2017, page 44
 }
 
 0[Xx]{H}+{IS}?          |
@@ -127,7 +127,7 @@ _Bool istrigraphsuf(char);
     yylval.integer = (char *) malloc(sizeof(char) * yyleng);
     strcpy(yylval.integer, yytext);
     return INTEGER_CONSTANT;
-    // TODO value conversion, ISO/IEC 9899:2017, p. 45-46
+    // TODO value conversion, ISO/IEC 9899:2017, page 45-46
 }
 
 {D}+{DE}{FS}?           |
@@ -139,11 +139,11 @@ _Bool istrigraphsuf(char);
     yylval.floating = (char *) malloc(sizeof(char) * yyleng);
     strcpy(yylval.floating, yytext);
     return FLOATING_CONSTANT;
-    // TODO value conversion, ISO/IEC 9899:2017, p. 47-48
+    // TODO value conversion, ISO/IEC 9899:2017, page 47-48
 }
 
-[LUu]?'                 { BEGIN CHR; /* TODO prefix considering, p. 48-50 */ }
-(L|U|u|u8)?\"           { BEGIN STR; /* TODO prefix considering, p. 50-52 */ }
+[LUu]?'                 { BEGIN CHR; /* TODO prefix considering, ISO/IEC 9899:2017, page 48-50 */ }
+(L|U|u|u8)?\"           { BEGIN STR; /* TODO prefix considering, ISO/IEC 9899:2017, page 50-52 */ }
 <CHR>' {
     BEGIN INITIAL;
     char *content = readstr(yytext, yyleng);
@@ -156,7 +156,8 @@ _Bool istrigraphsuf(char);
 <STR>\" {
     BEGIN INITIAL;
     yylval.string = readstr(yytext, yyleng);
-    return STRING_LITERAL;  // TODO consequent literals, UTF-8, p. 50-52
+    return STRING_LITERAL;
+    // TODO consequent literals, UTF-8, ISO/IEC 9899:2017, page 50-52
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
