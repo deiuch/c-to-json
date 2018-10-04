@@ -1,4 +1,7 @@
 %{
+// TODO ISO/IEC 9899:2017, pages 55-116 or 338-344
+// http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,8 +23,10 @@ char const *yyerror(const char *str);
     char *floating;
     char character;
     char *string;
-}  // TODO type conversions
+}  // TODO constant types support
 
+// Keywords
+// ISO/IEC 9899:2017, 6.4.1 Keywords, page 42
 %token AUTO
 %token BREAK
 %token CASE
@@ -68,20 +73,27 @@ char const *yyerror(const char *str);
 %token THREAD_LOCAL
 
 /*
-    This nonterminal was introduced
-    in order to deal with reduce/reduce
-    conflict of TypedefName with PrimaryExpression.
-    Lexical analyzer should make distinction
-    between this nonterminal and IDENTIFIER.
-*/
+ *  NOTE:
+ *  This nonterminal was introduced
+ *  in order to deal with reduce/reduce
+ *  conflict of TypedefName with PrimaryExpression.
+ *  Lexical analyzer should make distinction
+ *  between this nonterminal and IDENTIFIER.
+ *
+ *  ISO/IEC 9899:2017, 6.7.8 Type definitions, pages 99-100
+ */
 %token <id> TYPEDEF_NAME
 
+// Literals
+// ISO/IEC 9899:2017, 6.4.2 and 6.4.4, pages 43-52
 %token <id>        IDENTIFIER
 %token <integer>   INTEGER_CONSTANT
 %token <floating>  FLOATING_CONSTANT
 %token <character> CHARACTER_CONSTANT
 %token <string>    STRING_LITERAL
 
+// Punctuators
+// ISO/IEC 9899:2017, 6.4.6 Punctuators, page 52
 %token LBRACKET
 %token RBRACKET
 %token LPAREN
@@ -129,17 +141,22 @@ char const *yyerror(const char *str);
 %token OR_ASSIGN
 %token COMMA
 
+// *** PRECEDENCE ASSIGNMENT ***
+
 // Lower precedence
 
 // _Atomic type shift/reduce resolution
+// ISO/IEC 9899:2017, 6.7.2.4 Atomic type specifiers (Semantics), page 87
 %nonassoc ATOMIC
 %nonassoc LPAREN
 
 // "Dangling Else" shift/reduce resolution
+// ISO/IEC 9899:2017, 6.8.4.1 The if statement (Semantics), page 108
 %nonassoc NO_ELSE  // Fake token for precedence
 %nonassoc ELSE
 
 // Expression precedence
+// ISO/IEC 9899:2017, 6.5.5-6.5.14 Expressions, pages 66-71
 %left LOG_OR                  // Logical OR
 %left LOG_AND                 // Logical AND
 %left VERTICAL                // Inclusive OR
@@ -153,12 +170,9 @@ char const *yyerror(const char *str);
 
 // Higher precedence
 
-// TODO ISO/IEC 9899:2017, pages 55-116 or 338-344
-// http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
-
 %%
 
-// ISO/IEC 9899:2017, 6.9 External definitions, p. 113-116
+// ISO/IEC 9899:2017, 6.9 External definitions, pages 113-116
 
 TranslationUnit
         :                 ExternalDeclaration
@@ -180,7 +194,7 @@ DeclarationList
         | DeclarationList Declaration
         ;
 
-// ISO/IEC 9899:2017, 6.7 Declarations, p. 78-105
+// ISO/IEC 9899:2017, 6.7 Declarations, pages 78-105
 
 Declaration
         : DeclarationSpecifiers                    SEMICOLON
@@ -413,7 +427,7 @@ DirectAbstractDeclarator
 TypedefName
         : TYPEDEF_NAME
     //  | IDENTIFIER  // reduce/reduce with PrimaryExpression, resolved using lexical analyzer
-        ; // TODO reduce/reduce, ISO/IEC 9899:2017, p. 99 (in PDF - 118)
+        ; // TODO reduce/reduce, ISO/IEC 9899:2017, page 99 (in PDF - 118)
 
 Initializer
         : AssignmentExpression
@@ -446,7 +460,7 @@ StaticAssertDeclaration
         : STATIC_ASSERT LPAREN ConstantExpression COMMA STRING_LITERAL RPAREN SEMICOLON
         ;
 
-// ISO/IEC 9899:2017, 6.8 Statements, p. 106-112
+// ISO/IEC 9899:2017, 6.8 Statements, page 106-112
 
 Statement
         : LabeledStatement
@@ -514,13 +528,13 @@ JumpStatement
         | RETURN Expression SEMICOLON
         ;
 
-// ISO/IEC 9899:2017, 6.6 Constant expressions, p. 76-77
+// ISO/IEC 9899:2017, 6.6 Constant expressions, page 76-77
 
 ConstantExpression
         : ConditionalExpression
         ;
 
-// ISO/IEC 9899:2017, 6.5 Expressions, p. 55-75
+// ISO/IEC 9899:2017, 6.5 Expressions, page 55-75
 
 Expression
         :                  AssignmentExpression
