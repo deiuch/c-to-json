@@ -1,2 +1,2 @@
 # c-to-json
-Basic C parser (by 2018 standard review) on Lex/Yacc converting programs to JSON.
+Basic C parser (by ISO/IEC 9899:2017 standard review) on Lex/Yacc converting programs to JSON.
