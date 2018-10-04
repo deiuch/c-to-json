@@ -662,12 +662,14 @@ GenericAssociation
 %%
 
 /// Called when parse error was detected.
-char const *yyerror(const char *str) {
+char const *yyerror(const char *str)
+{
     fprintf(stderr, "yyerror: %s\n", str);
 }
 
 /// Program entry point.
-int main() {
+int main()
+{
     yydebug = 1;  // TODO: REMOVE IN PROD, set 0 for no debug info.
     return yyparse();
 }

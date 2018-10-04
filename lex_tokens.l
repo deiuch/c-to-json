@@ -223,29 +223,40 @@ _Bool istrigraphsuf(char);
 %%
 
 /// Is given identifier - Typedef name?
-_Bool istypedefname(char *id) {
+_Bool istypedefname(char *id)
+{
     return 0;  // TODO Typedef table search
 }
 
 /// Replace escapes in string literal. Needs to be freed.
-char *readstr(char *inp, size_t len) {
+char *readstr(char *inp, size_t len)
+{
     char *res = (char *) malloc(sizeof(char) * (len - 1));
     size_t i = 0, j = 0;
     char to_put;
-    while (i < len - 1) {
-        if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/') {
+    while (i < len - 1)
+    {
+        if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/')
+        {
             ++i;
             if (yytext[i-1] != '\\') i += 2;
-            switch (yytext[i]) {
+            switch (yytext[i])
+            {
                 case '?':
-                    if (yytext[i+1] == '?' && istrigraphsuf(yytext[i+2])) {
+                    if (yytext[i+1] == '?' && istrigraphsuf(yytext[i+2]))
+                    {
                         i += 2;
-                        if (yytext[i] == '/') {
+                        if (yytext[i] == '/')
+                        {
                             to_put = '\\';
-                        } else {
+                        }
+                        else
+                        {
                             /* TODO error */;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         to_put = '?';
                     }
                     break;
@@ -286,9 +297,12 @@ char *readstr(char *inp, size_t len) {
                 default:
                     /* TODO error */;
             }
-        } else if (yytext[i] == '?' && yytext[i+1] == '?' && istrigraphsuf(yytext[i+2])) {
+        }
+        else if (yytext[i] == '?' && yytext[i+1] == '?' && istrigraphsuf(yytext[i+2]))
+        {
             i += 2;
-            switch (yytext[i]) {
+            switch (yytext[i])
+            {
                 case '=': to_put = '#'; break;
                 case '(': to_put = '['; break;
                 case ')': to_put = ']'; break;
@@ -299,7 +313,9 @@ char *readstr(char *inp, size_t len) {
                 case '-': to_put = '~'; break;
                 default: /* TODO error */;
             }
-        } else {
+        }
+        else
+        {
             to_put = yytext[i];
         }
         res[j] = to_put;
@@ -311,12 +327,14 @@ char *readstr(char *inp, size_t len) {
 }
 
 /// Is given character - trigraph suffix?
-_Bool istrigraphsuf(char c) {
+_Bool istrigraphsuf(char c)
+{
     return c == '='  || c == '(' || c == '/' || c == ')'
         || c == '\'' || c == '<' || c == '!' || c == '>' || c == '-';
 }
 
 /// Change input after EOF was reached.
-int yywrap() {
+int yywrap()
+{
     return 1; // TODO change input on #include
 }
