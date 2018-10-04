@@ -11,6 +11,7 @@ extern int yylex();
 char const *yyerror(const char *str);
 %}
 
+// Expected number of conflicts
 %expect    0  // shift/reduce
 %expect-rr 0  // reduce/reduce
 
