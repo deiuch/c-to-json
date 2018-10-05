@@ -166,7 +166,7 @@ _Bool istrigraphsuf(char);
     for (i = 2;; ++i) {
         if (yytext[yyleng - i] == '"') break;
     }
-    shiftyytext(i);
+    shiftyytext(i);  // skip and retry TODO efficiency
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
@@ -219,11 +219,17 @@ _Bool istrigraphsuf(char);
 {VERTICAL}=             { return OR_ASSIGN; }
 ","                     { return COMMA; }
 
-.*{BS}\r\n {
-    shiftyytext(3);
+<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*"??/"\r\n {
+    shiftyytext(5);  // skip and retry
 }
-.*{BS}[\n\r] {
-    shiftyytext(2);
+<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*"??/"[\r\n] {
+    shiftyytext(4);  // skip and retry
+}
+<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*\\\r\n {
+    shiftyytext(3);  // skip and retry
+}
+<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*\\[\n\r] {
+    shiftyytext(2);  // skip and retry
 }
 {WS}                    { /* skip over whitespaces */ }
 .                       { /* TODO error */ }
