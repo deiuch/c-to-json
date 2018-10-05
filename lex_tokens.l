@@ -300,20 +300,20 @@ char *readstr(char *inp, size_t len)
                 case '5':
                 case '6':
                 case '7':
-                    // TODO: up to 3 octal
+                    to_put = '\x1A'; // TODO: up to 3 octal
                     break;
                 case 'x':
                     ++i;
-                    // TODO: closest hexes
+                    to_put = '\x1A'; // TODO: closest hexes
                     break;
                 case 'u':
                     ++i;
-                    // TODO: 4 hexes
+                    to_put = '\x1A'; // TODO: 4 hexes
                     i += 3;
                     break;
                 case 'U':
                     ++i;
-                    // TODO: 8 hexes
+                    to_put = '\x1A'; // TODO: 8 hexes
                     i += 7;
                     break;
                 default:
