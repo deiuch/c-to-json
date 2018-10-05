@@ -1,7 +1,7 @@
-%{
 // TODO ISO/IEC 9899:2017, pages 55-116 or 338-344
 // http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
 
+%{
 extern int yylex();
 void yyerror(const char *str);
 %}
