@@ -150,7 +150,7 @@ _Bool istrigraphsuf(char);
     BEGIN INITIAL;
     char *content = readstr(yytext, yyleng);
     if (strlen(content) != 1) {
-        return ERROR;
+        // TODO error
     }
     yylval.character = content[0];
     return CHARACTER_CONSTANT;
