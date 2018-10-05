@@ -30,6 +30,7 @@ CHAR      [LUu]?'({ESC}|[^'\\\n\r])+'
 WRONGCHR  [LUu]?'[^']*(("??/"[^'"?\\abfnrtv])+[^']*|"??/")'
 STRL      ([LUu]|u8)?\"({ESC}|[^"\\\n\r])+\"
 WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
+WS        [ \f\n\r\t\v]
 
 %{
 /// Lexer for C language on ISO/IEC 9899:2017 standard revision.
@@ -40,6 +41,7 @@ WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 extern YYSTYPE yylval;
 
 _Bool istypedefname(char *);
+void shiftyytext(int);
 char *readstr(char *, size_t);
 _Bool istrigraphsuf(char);
 %}
@@ -157,7 +159,14 @@ _Bool istrigraphsuf(char);
     BEGIN INITIAL;
     yylval.string = readstr(yytext, yyleng);
     return STRING_LITERAL;
-    // TODO consequent literals, UTF-8, ISO/IEC 9899:2017, page 50-52
+    // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
+}
+<STR>\"{WS}*\" {
+    int i;
+    for (i = 2;; ++i) {
+        if (yytext[yyleng - i] == '"') break;
+    }
+    shiftyytext(i);
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
@@ -210,14 +219,13 @@ _Bool istrigraphsuf(char);
 {VERTICAL}=             { return OR_ASSIGN; }
 ","                     { return COMMA; }
 
-.*{BS}(\n|\r|\r\n) {
-    /* remove escaped newline and check again */
-    int i;
-    for (i = yyleng - 3; i >= 0; --i) {
-        unput(yytext[i]);
-    }
+.*{BS}\r\n {
+    shiftyytext(3);
 }
-[ \f\n\r\t\v]           { /* skip over whitespaces */ }
+.*{BS}[\n\r] {
+    shiftyytext(2);
+}
+{WS}                    { /* skip over whitespaces */ }
 .                       { /* TODO error */ }
 
 %%
@@ -228,12 +236,20 @@ _Bool istypedefname(char *id)
     return 0;  // TODO Typedef table search
 }
 
+void shiftyytext(int n)
+{
+    int i;
+    for (i = yyleng - n - 1; i >= 0; --i) {
+        unput(yytext[i]);
+    }
+}
+
 /// Replace escapes in string literal. Needs to be freed.
 char *readstr(char *inp, size_t len)
 {
-    char *res = (char *) malloc(sizeof(char) * (len - 1));
     size_t i = 0, j = 0;
     char to_put;
+    char *res = (char *) malloc(sizeof(char) * (len - 1));
     while (i < len - 1)
     {
         if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/')

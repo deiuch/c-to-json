@@ -631,18 +631,18 @@ ArgumentExpressionList
         ;
 
 PrimaryExpression
-        : IDENTIFIER
+        : IDENTIFIER { printf("ID: %s\n", $1); }
         | Constant
-        | STRING_LITERAL
+        | STRING_LITERAL { printf("STR: \"%s\"\n", $1); }
         | LPAREN Expression RPAREN
         | GenericSelection
         ;
 
 Constant
-        : INTEGER_CONSTANT
-        | FLOATING_CONSTANT
+        : INTEGER_CONSTANT { printf("INT: %s\n", $1); }
+        | FLOATING_CONSTANT { printf("FLOAT: %s\n", $1); }
     //  | EnumerationConstant  // reduce/reduce with PrimaryExpression, identical to IDENTIFIER
-        | CHARACTER_CONSTANT
+        | CHARACTER_CONSTANT { printf("CHAR: '%c'\n", $1); }
         ;
 
 GenericSelection
