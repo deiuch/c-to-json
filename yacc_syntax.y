@@ -2,13 +2,8 @@
 // TODO ISO/IEC 9899:2017, pages 55-116 or 338-344
 // http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-extern int yydebug;  // TODO: REMOVE IN PROD, 'yacc' it with -t flag.
 extern int yylex();
-char const *yyerror(const char *str);
+void yyerror(const char *str);
 %}
 
 // Expected number of conflicts
@@ -662,7 +657,7 @@ GenericAssociation
 %%
 
 /// Called when parse error was detected.
-char const *yyerror(const char *str)
+void yyerror(const char *str)
 {
     fprintf(stderr, "yyerror: %s\n", str);
 }

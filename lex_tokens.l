@@ -38,7 +38,7 @@ WS        [ \f\n\r\t\v]
 #include <string.h>
 #include "y.tab.h"
 
-extern YYSTYPE yylval;
+#define ERROR 256
 
 _Bool istypedefname(char *);
 void shiftyytext(int);
@@ -150,7 +150,7 @@ _Bool istrigraphsuf(char);
     BEGIN INITIAL;
     char *content = readstr(yytext, yyleng);
     if (strlen(content) != 1) {
-        /* TODO error */
+        return ERROR;
     }
     yylval.character = content[0];
     return CHARACTER_CONSTANT;
