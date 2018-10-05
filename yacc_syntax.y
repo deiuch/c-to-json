@@ -214,7 +214,7 @@ DeclarationSpecifiers
         | TypeQualifier         DeclarationSpecifiers
         | FunctionSpecifier     DeclarationSpecifiers
         | AlignmentSpecifier    DeclarationSpecifiers
-        ;  // TODO left recursion?
+        ;
 
 InitDeclaratorList
         :                          InitDeclarator
@@ -283,7 +283,7 @@ SpecifierQualifierList
         | TypeSpecifier      SpecifierQualifierList
         | TypeQualifier      SpecifierQualifierList
         | AlignmentSpecifier SpecifierQualifierList
-        ;  // TODO left recursion?
+        ;
 
 StructDeclaratorList
         :                            StructDeclarator
@@ -362,7 +362,7 @@ Pointer
         | ASTERISK TypeQualifierList
         | ASTERISK                   Pointer
         | ASTERISK TypeQualifierList Pointer
-        ;  // TODO left recursion?
+        ;
 
 TypeQualifierList
         :                   TypeQualifier
