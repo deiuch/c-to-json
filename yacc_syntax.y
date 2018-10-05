@@ -665,6 +665,6 @@ void yyerror(const char *str)
 /// Program entry point.
 int main()
 {
-    yydebug = 1;  // TODO: REMOVE IN PROD, set 0 for no debug info.
+    yydebug = 1;  // TODO remove in prod, set 0 for no debug info.
     return yyparse();
 }
