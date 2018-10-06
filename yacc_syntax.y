@@ -670,7 +670,8 @@ GenericAssociation
 %%
 
 /// Called when parse error was detected.
-void yyerror(const char *str)
+int yyerror(const char *str)
 {
-    fprintf(stderr, "yyerror: %s\n", str);
+    fprintf(stderr, "%s\n", str);
+    return 0;
 }
