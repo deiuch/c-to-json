@@ -45,6 +45,12 @@ void put_typedef_name(char *id)
     }
     typedef_table[typedef_table_size]
         = (char *) malloc(sizeof(char) * (strlen(id) + 1));
+    if (!typedef_table[typedef_table_size])
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for new typedef-name cannot be allocated!\n");
+        exit(-1);
+    }
     strcpy(typedef_table[typedef_table_size - 1], id);
     ++typedef_table_size;
 }
