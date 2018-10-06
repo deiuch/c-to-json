@@ -17,6 +17,7 @@
 
 %{
 #include "ast.h"
+#include "typedef_name.h"
 
 extern int yylex();
 void yyerror(const char *str);
