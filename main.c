@@ -11,7 +11,7 @@
 /// Program entry point.
 int main()
 {
-    yydebug = 1;  // TODO remove in production, set 0 for no debug info
+    yydebug = 1;  // Set 0 for no debug info TODO remove in production
 //    astnode *astroot = TODO allocate astroot memory
     if (yyparse(/*astroot*/)) return 1;  // TODO param, error
     // TODO operate on AST
