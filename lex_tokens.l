@@ -141,7 +141,7 @@ int file_stack_ptr = 0;
 
 {ID} {
     yylval.id = (char *) malloc(strlen(yytext));
-    if (!ylval.id)
+    if (!yylval.id)
     {
         fprintf(stderr,
             "FATAL ERROR! Memory for IDENTIFIER cannot be allocated!\n");
