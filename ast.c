@@ -5,10 +5,24 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "ast.h"
 
 // TODO node building functions
 
-//char *ast_free(astnode *root); TODO tree free
+void ast_free(astnode *root) {
+    // TODO tree free
+}
 
-//char *ast_to_json(astnode *root); TODO JSON representation
+char *ast_to_json(astnode *root) {
+    char *res = (char *) malloc(0);
+    if (!res)
+    {
+        fprintf(stderr,
+                "FATAL ERROR! Memory for JSON string cannot be allocated!\n");
+        exit(-1);
+    }
+    // TODO JSON representation
+    return res;
+}

@@ -8,12 +8,12 @@
 #ifndef C_PARSER_AST_BUILDER_H_INCLUDED
 #define C_PARSER_AST_BUILDER_H_INCLUDED
 
-// TODO node struct
+typedef struct {} astnode;  // TODO node struct
 
 // TODO node building functions
 
-//char *ast_free(astnode *root);  // TODO tree free
+void ast_free(astnode *root);
 
-//char *ast_to_json(astnode *root);  // TODO JSON representation
+char *ast_to_json(astnode *root);
 
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED

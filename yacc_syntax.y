@@ -12,8 +12,8 @@
 %expect    0  // shift/reduce
 %expect-rr 0  // reduce/reduce
 //%lex-param {}
-//%parse-param { node *astroot }  // TODO set
-//%pure-parser  // TODO check
+//%parse-param {}
+//%pure-parser
 
 %{
 #include "ast.h"
