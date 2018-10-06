@@ -15,11 +15,12 @@ extern FILE *yyin, *yyout;  // Flex in/out
 int main()
 {
     yydebug = 1;  // Set 0 for no debug info TODO remove in production
-    // TODO set up the input file
+//    yyin = fopen( yytext, "r" );
+//    if (!yyin)  /* TODO error */;
 //    astnode *astroot = TODO allocate astroot memory
     if (yyparse(/*astroot*/)) return 1;  // TODO param, error
-//    char *json = asttojson(astroot);  // TODO
-//    astfree(astroot);  // TODO
+//    char *json = ast_to_json(astroot);  // TODO
+//    ast_free(astroot);  // TODO
     // TODO write JSON
     return 0;
 }

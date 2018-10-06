@@ -8,6 +8,7 @@
 
 %x COMMENT
 %x PREP
+%x INCLUDE
 %x CHR
 %x STR
 
@@ -47,9 +48,15 @@ WS        [ \f\n\r\t\v]
 
 #define ERROR 256
 
-void shiftyytext(int);
+void change_source(char *);
+void shift_yytext(int);
 char *readstr(char *, size_t);
-_Bool istrigraphsuf(char);
+_Bool is_trigraph_suf(char);
+
+#define MAX_INCLUDE_DEPTH 20  // TODO check
+YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+int start_stack[MAX_INCLUDE_DEPTH];
+int include_stack_ptr = 0;
 %}
 
 %%
@@ -61,15 +68,22 @@ _Bool istrigraphsuf(char);
 <PREP>"elif"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"else"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"endif"{PR_INS}   { BEGIN INITIAL; }
-<PREP>"include"{PR_INS} { BEGIN INITIAL; }
+<PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
+<INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
+<INCLUDE>[^"\n\r]*$     { BEGIN INITIAL; /* TODO error */ }
+<INCLUDE>\"{WS}*$       { BEGIN INITIAL; }
 <PREP>"define"{PR_INS}  { BEGIN INITIAL; }
 <PREP>"undef"{PR_INS}   { BEGIN INITIAL; }
 <PREP>"line"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"error"{PR_INS}   { BEGIN INITIAL; /* TODO error */ }
 <PREP>"warning"{PR_INS} { BEGIN INITIAL; /* TODO warning, not in ISO/IEC 9899:2017 review */ }
 <PREP>"pragma"{PR_INS}  { BEGIN INITIAL; }
-<PREP>""$               { BEGIN INITIAL; /* TODO ISO/IEC 9899:2017, pages 117-127 or 344-345 */ }
-<PREP>[^\n\r]+$         { BEGIN INITIAL; /* TODO error */ }
+<PREP>""$ {
+    BEGIN INITIAL;
+    if (yyleng > 0) /* TODO error */;
+    /* TODO ISO/IEC 9899:2017, pages 117-127 or 344-345 */
+}
+<PREP>[^\n\r]           { yymore(); }
 
 "/"{NLE}?"/"({NLE}|[^\n\r])*$ { /* ignore inline comment */ }
 "/"{NLE}?"*"            { BEGIN COMMENT; }
@@ -124,7 +138,7 @@ _Bool istrigraphsuf(char);
 {ID} {
     yylval.id = (char *) malloc(strlen(yytext));
     strcpy(yylval.id, yytext);
-    if (istypedefname(yytext)) return TYPEDEF_NAME;
+    if (is_typedef_name(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
     // TODO check Universal character name, ISO/IEC 9899:2017, page 44
 }
@@ -172,7 +186,7 @@ _Bool istrigraphsuf(char);
     for (i = 2;; ++i) {
         if (yytext[yyleng - i] == '"') break;
     }
-    shiftyytext(i);  // skip and retry TODO efficiency
+    shift_yytext(i);  // skip and retry TODO efficiency
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
@@ -226,16 +240,16 @@ _Bool istrigraphsuf(char);
 ","                     { return COMMA; }
 
 <INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*"??/"\r\n {
-    shiftyytext(5);  // skip and retry
+    shift_yytext(5);  // skip and retry
 }
 <INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*"??/"[\r\n] {
-    shiftyytext(4);  // skip and retry
+    shift_yytext(4);  // skip and retry
 }
 <INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*\\\r\n {
-    shiftyytext(3);  // skip and retry
+    shift_yytext(3);  // skip and retry
 }
 <INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*\\[\n\r] {
-    shiftyytext(2);  // skip and retry
+    shift_yytext(2);  // skip and retry
 }
 
 <COMMENT,STR,CHR><<EOF>> { /* TODO error */ }
@@ -244,7 +258,33 @@ _Bool istrigraphsuf(char);
 
 %%
 
-void shiftyytext(int n)
+/// Change source file to read next.
+void change_source(char *newfile)
+{
+    if (include_stack_ptr >= MAX_INCLUDE_DEPTH)
+    {
+        fprintf(stderr, "Includes nested too deeply");
+        exit(1);
+    }
+    include_stack[include_stack_ptr] = YY_CURRENT_BUFFER;
+    start_stack[include_stack_ptr++] = YY_START;
+    yyin = fopen(newfile, "r");
+    if (!yyin) /* TODO error */;
+    yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+    BEGIN INITIAL;
+}
+
+/// Change input after EOF was reached.
+int yywrap()
+{
+    if (--include_stack_ptr < 0) return 1;
+    yy_delete_buffer(YY_CURRENT_BUFFER);
+    yy_switch_to_buffer(include_stack[include_stack_ptr]);
+    BEGIN start_stack[include_stack_ptr];
+    return 0;
+}
+
+void shift_yytext(int n)
 {
     int i;
     for (i = yyleng - n - 1; i >= 0; --i) {
@@ -267,7 +307,7 @@ char *readstr(char *inp, size_t len)
             switch (yytext[i])
             {
                 case '?':
-                    if (yytext[i+1] == '?' && istrigraphsuf(yytext[i+2]))
+                    if (yytext[i+1] == '?' && is_trigraph_suf(yytext[i+2]))
                     {
                         i += 2;
                         if (yytext[i] == '/')
@@ -322,7 +362,7 @@ char *readstr(char *inp, size_t len)
                     /* TODO error */;
             }
         }
-        else if (yytext[i] == '?' && yytext[i+1] == '?' && istrigraphsuf(yytext[i+2]))
+        else if (yytext[i] == '?' && yytext[i+1] == '?' && is_trigraph_suf(yytext[i+2]))
         {
             i += 2;
             switch (yytext[i])
@@ -351,14 +391,8 @@ char *readstr(char *inp, size_t len)
 }
 
 /// Is given character - trigraph suffix?
-_Bool istrigraphsuf(char c)
+_Bool is_trigraph_suf(char c)
 {
     return c == '='  || c == '(' || c == '/' || c == ')'
         || c == '\'' || c == '<' || c == '!' || c == '>' || c == '-';
-}
-
-/// Change input after EOF was reached.
-int yywrap()
-{
-    return 1; // TODO change input on #include using `yyrestart(FILE *new_file)'
 }

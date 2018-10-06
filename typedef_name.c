@@ -8,16 +8,16 @@
 #include <stdbool.h>
 #include "typedef_name.h"
 
-_Bool isallocated = true;
+_Bool is_allocated = true;
 
-_Bool istypedefname(char *id)
+_Bool is_typedef_name(char *id)
 {
     return false;  // TODO Typedef table search
 }
 
-void puttypedefname(char *id)
+void put_typedef_name(char *id)
 {
-    if (!isallocated)
+    if (!is_allocated)
     {
         // TODO allocate typedef-name symbol table
     }

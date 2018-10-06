@@ -13,9 +13,9 @@
 // TODO table global variable
 
 /// Is given identifier - Typedef name?
-_Bool istypedefname(char *);
+_Bool is_typedef_name(char *);
 
 /// Put this string into typedef-name symbol table. Repetitions allowed.
-void puttypedefname(char *);
+void put_typedef_name(char *);
 
 #endif //C_PARSER_TYPEDEF_NAME_H_H_INCLUDED
