@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    char *in_name = argc > 2 ? argv[1] : '\0';
+    char *in_name = argc > 2 ? argv[1] : NULL;
     char *out_name = argc > 2 ? argv[2] : argv[1];
 
-    yyin = *in_name == '\0' ? fopen(in_name, "r") : stdin;
+    yyin = in_name != NULL ? fopen(in_name, "r") : stdin;
     if (!yyin)
     {
         fprintf(stderr, "Cannot open for reading: %s\n", in_name);
