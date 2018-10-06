@@ -208,7 +208,7 @@ Declaration
         : DeclarationSpecifiers                    SEMICOLON
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
         | StaticAssertDeclaration
-        ;
+        ;  // TODO use `puttypedefname()` if TYPEDEF specifier used
 
 DeclarationSpecifiers
         : StorageClassSpecifier
