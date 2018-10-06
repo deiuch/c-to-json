@@ -54,7 +54,13 @@ char *readstr(char *, size_t);
 _Bool is_trigraph_suf(char);
 
 #define MAX_INCLUDE_DEPTH 20  // TODO check
-typedef struct { FILE *file; YY_BUFFER_STATE buffer; int start_cond; } config;
+typedef struct
+{
+    FILE *file;
+    YY_BUFFER_STATE buffer;
+    int start_cond;
+} config;
+
 config config_stack[MAX_INCLUDE_DEPTH];
 int file_stack_ptr = 0;
 %}
