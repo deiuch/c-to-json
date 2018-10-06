@@ -16,29 +16,27 @@ O         [0-7]
 D         [0-9]
 H         [0-9A-Fa-f]
 ND        [A-Za-z_]
-DE        ([Ee][+-]?{D}+)
-HE        ([Pp][+-]?{D}+)
-LS        (L|l|LL|ll)
-IS        ([Uu]{LS}?|{LS}[Uu]?)
+DE        [Ee][+-]?{D}+
+HE        [Pp][+-]?{D}+
+LS        L|l|LL|ll
+IS        [Uu]{LS}?|{LS}[Uu]?
 FS        [FfLl]
-HASH      ("??="|"#")
-LBRACKET  ("??("|"[")
-BS        ("??/"|"\\")
-RBRACKET  ("??)"|"]")
-CARET     ("??'"|"^")
-LBRACE    ("??<"|"{")
-VERTICAL  ("??!"|"|")
-RBRACE    ("??>"|"}")
-TILDE     ("??-"|"~")
+HASH      "??="|"#"
+LBRACKET  "??("|"["
+BS        "??/"|"\\"
+RBRACKET  "??)"|"]"
+CARET     "??'"|"^"
+LBRACE    "??<"|"{"
+VERTICAL  "??!"|"|"
+RBRACE    "??>"|"}"
+TILDE     "??-"|"~"
 PR_INS    [ \t]+[^\n\r]*$
-NLE       ({BS}(\n|\r|\r\n))
-UCN       ({BS}(u{H}{4}|U{H}{8}))
+NLE       {BS}(\n|\r|\r\n)
+UCN       {BS}(u{H}{4}|U{H}{8})
 ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
-ESC       ({BS}['"?\\abfnrtv]|{BS}"??/"|{BS}{O}{1,3}|{BS}x{H}+|{UCN})
+ESC       {BS}['"?\\abfnrtv]|{BS}"??/"|{BS}{O}{1,3}|{BS}x{H}+|{UCN}
 CHAR      [LUu]?'({ESC}|[^'\\\n\r])+'
-WRONGCHR  [LUu]?'[^']*(("??/"[^'"?\\abfnrtv])+[^']*|"??/")'
 STRL      ([LUu]|u8)?\"({ESC}|[^"\\\n\r])+\"
-WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 WS        [ \f\n\r\t\v]
 
 %{
