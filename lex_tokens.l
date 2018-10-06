@@ -141,6 +141,12 @@ int file_stack_ptr = 0;
 
 {ID} {
     yylval.id = (char *) malloc(strlen(yytext));
+    if (!ylval.id)
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for IDENTIFIER cannot be allocated!\n");
+        exit(-1);
+    }
     strcpy(yylval.id, yytext);
     if (is_typedef_name(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
@@ -151,6 +157,12 @@ int file_stack_ptr = 0;
 0{O}+{IS}?              |
 {D}+{IS}? {
     yylval.integer = (char *) malloc(sizeof(char) * yyleng);
+    if (!yylval.integer)
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for INTEGER_CONSTANT cannot be allocated!\n");
+        exit(-1);
+    }
     strcpy(yylval.integer, yytext);
     return INTEGER_CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 45-46
@@ -163,6 +175,12 @@ int file_stack_ptr = 0;
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? {
     yylval.floating = (char *) malloc(sizeof(char) * yyleng);
+    if (!yylval.floating)
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for FLOATING_CONSTANT cannot be allocated!\n");
+        exit(-1);
+    }
     strcpy(yylval.floating, yytext);
     return FLOATING_CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 47-48
@@ -267,7 +285,8 @@ void change_source(char *name)
 {
     if (file_stack_ptr >= MAX_INCLUDE_DEPTH)
     {
-        fprintf(stderr, "Includes nested too deeply");
+        fprintf(stderr,
+            "Includes nested too deeply (more than %d)\n", MAX_INCLUDE_DEPTH);
         exit(1);
     }
 
@@ -311,6 +330,12 @@ char *readstr(char *inp, size_t len)
     size_t i = 0, j = 0;
     char to_put;
     char *res = (char *) malloc(sizeof(char) * (len - 1));
+    if (!res)
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for STRING_LITERAL cannot be allocated!\n");
+        exit(-1);
+    }
     while (i < len - 1)
     {
         if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/')
