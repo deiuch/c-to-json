@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
     int yyres = yyparse();
     if (argc > 2) fclose(yyin);
     free_typedef_name();
-    astnode *astroot = 0;  // TODO get AST root
     if (yyres || !astroot)
     {
         fprintf(stderr, "Parsing failed! No output will be provided.\n");

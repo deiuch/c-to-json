@@ -8,12 +8,18 @@
 #ifndef C_PARSER_AST_BUILDER_H_INCLUDED
 #define C_PARSER_AST_BUILDER_H_INCLUDED
 
+/// Structure for storing AST node data.
 typedef struct {} astnode;  // TODO node struct
+
+/// Root of builded AST after parsing.
+astnode *astroot;
 
 // TODO node building functions
 
-void ast_free(astnode *root);
+/// Free memory associated with node and it's clidren.
+void ast_free(astnode *node);
 
+/// Get JSON string representation of an AST.
 char *ast_to_json(astnode *root);
 
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED
