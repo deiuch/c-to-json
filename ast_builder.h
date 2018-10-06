@@ -8,4 +8,8 @@
 #ifndef C_PARSER_AST_BUILDER_H_INCLUDED
 #define C_PARSER_AST_BUILDER_H_INCLUDED
 
+// TODO node struct
+
+// TODO node building functions
+
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED

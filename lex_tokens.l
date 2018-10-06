@@ -41,10 +41,10 @@ WS        [ \f\n\r\t\v]
 %{
 #include <string.h>
 #include "y.tab.h"
+#include "typedef_name.h"
 
 #define ERROR 256
 
-_Bool istypedefname(char *);
 void shiftyytext(int);
 char *readstr(char *, size_t);
 _Bool istrigraphsuf(char);
@@ -239,12 +239,6 @@ _Bool istrigraphsuf(char);
 .                       { /* TODO error */ }
 
 %%
-
-/// Is given identifier - Typedef name?
-_Bool istypedefname(char *id)
-{
-    return 0;  // TODO Typedef table search
-}
 
 void shiftyytext(int n)
 {
