@@ -1,8 +1,8 @@
-/*
+/**
  * Entry point for parer for C Programming Language
  * (ISO/IEC 9899:2018).
  *
- * Authors: Denis Chernikov, Vladislav Kuleykin
+ * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
 #include "y.tab.h"
