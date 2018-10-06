@@ -356,5 +356,5 @@ _Bool istrigraphsuf(char c)
 /// Change input after EOF was reached.
 int yywrap()
 {
-    return 1; // TODO change input on #include
+    return 1; // TODO change input on #include using `yyrestart(FILE *new_file)'
 }
