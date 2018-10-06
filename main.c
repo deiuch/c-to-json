@@ -9,7 +9,7 @@
 #include "ast.h"
 #include "y.tab.h"
 
-extern FILE *yyin, *yyout;  // Flex in/out
+extern FILE *yyin;  // Flex in/out
 
 /// Program entry point.
 int main(int argc, char *argv[])

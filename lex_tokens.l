@@ -268,7 +268,7 @@ void change_source(char *name)
         exit(1);
     }
 
-    new_file = fopen(name, "r");
+    FILE *new_file = fopen(name, "r");
     if (!new_file) /* TODO error */;
 
     file_stack[file_stack_ptr] = yyin;
