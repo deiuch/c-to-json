@@ -54,9 +54,10 @@ char *readstr(char *, size_t);
 _Bool is_trigraph_suf(char);
 
 #define MAX_INCLUDE_DEPTH 20  // TODO check
+FILE *file_stack[MAX_INCLUDE_DEPTH];
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
 int start_stack[MAX_INCLUDE_DEPTH];
-int include_stack_ptr = 0;
+int file_stack_ptr = 0;
 %}
 
 %%
@@ -261,13 +262,14 @@ int include_stack_ptr = 0;
 /// Change source file to read next.
 void change_source(char *newfile)
 {
-    if (include_stack_ptr >= MAX_INCLUDE_DEPTH)
+    if (file_stack_ptr >= MAX_INCLUDE_DEPTH)
     {
         fprintf(stderr, "Includes nested too deeply");
         exit(1);
     }
-    include_stack[include_stack_ptr] = YY_CURRENT_BUFFER;
-    start_stack[include_stack_ptr++] = YY_START;
+    file_stack[file_stack_ptr] = yyin;
+    include_stack[file_stack_ptr] = YY_CURRENT_BUFFER;
+    start_stack[file_stack_ptr++] = YY_START;
     yyin = fopen(newfile, "r");
     if (!yyin) /* TODO error */;
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
@@ -277,10 +279,12 @@ void change_source(char *newfile)
 /// Change input after EOF was reached.
 int yywrap()
 {
-    if (--include_stack_ptr < 0) return 1;
+    if (--file_stack_ptr < 0) return 1;
     yy_delete_buffer(YY_CURRENT_BUFFER);
-    yy_switch_to_buffer(include_stack[include_stack_ptr]);
-    BEGIN start_stack[include_stack_ptr];
+    fclose(yyin);
+    yyin = file_stack[file_stack_ptr];
+    yy_switch_to_buffer(include_stack[file_stack_ptr]);
+    BEGIN start_stack[file_stack_ptr];
     return 0;
 }
 

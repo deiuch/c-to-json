@@ -22,5 +22,6 @@ int main()
 //    char *json = ast_to_json(astroot);  // TODO
 //    ast_free(astroot);  // TODO
     // TODO write JSON
+//    fclose(yyin);
     return 0;
 }
