@@ -20,7 +20,7 @@
 #include "typedef_name.h"
 
 extern int yylex();
-void yyerror(const char *str);
+int yyerror(const char *str);
 %}
 
 %start TranslationUnit
