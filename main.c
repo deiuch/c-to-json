@@ -12,7 +12,7 @@
 int main()
 {
     yydebug = 1;  // TODO remove in production, set 0 for no debug info
-//  astnode *astroot = TODO allocate astroot memory
+//    astnode *astroot = TODO allocate astroot memory
     if (yyparse(/*astroot*/)) return 1;  // TODO param, error
     // TODO operate on AST
     return 0;
