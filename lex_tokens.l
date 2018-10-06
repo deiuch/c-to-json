@@ -260,18 +260,22 @@ int file_stack_ptr = 0;
 %%
 
 /// Change source file to read next.
-void change_source(char *newfile)
+void change_source(char *name)
 {
     if (file_stack_ptr >= MAX_INCLUDE_DEPTH)
     {
         fprintf(stderr, "Includes nested too deeply");
         exit(1);
     }
+
+    new_file = fopen(name, "r");
+    if (!new_file) /* TODO error */;
+
     file_stack[file_stack_ptr] = yyin;
     include_stack[file_stack_ptr] = YY_CURRENT_BUFFER;
     start_stack[file_stack_ptr++] = YY_START;
-    yyin = fopen(newfile, "r");
-    if (!yyin) /* TODO error */;
+
+    yyin = new_file;
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
     BEGIN INITIAL;
 }
@@ -280,11 +284,14 @@ void change_source(char *newfile)
 int yywrap()
 {
     if (--file_stack_ptr < 0) return 1;
+
     yy_delete_buffer(YY_CURRENT_BUFFER);
     fclose(yyin);
+
     yyin = file_stack[file_stack_ptr];
     yy_switch_to_buffer(include_stack[file_stack_ptr]);
     BEGIN start_stack[file_stack_ptr];
+
     return 0;
 }
 
