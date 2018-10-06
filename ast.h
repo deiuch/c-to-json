@@ -9,7 +9,10 @@
 #define C_PARSER_AST_BUILDER_H_INCLUDED
 
 /// Structure for storing AST node data.
-typedef struct {} astnode;  // TODO node struct
+typedef struct
+{
+    // TODO node struct
+} astnode;
 
 /// Root of builded AST after parsing.
 astnode *astroot;
