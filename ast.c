@@ -5,6 +5,6 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
-#include "ast_builder.h"
+#include "ast.h"
 
 // TODO node building functions
