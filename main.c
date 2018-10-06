@@ -14,6 +14,8 @@ int main()
     yydebug = 1;  // Set 0 for no debug info TODO remove in production
 //    astnode *astroot = TODO allocate astroot memory
     if (yyparse(/*astroot*/)) return 1;  // TODO param, error
-    // TODO operate on AST
+//    char *json = asttojson(astroot);  // TODO
+//    astfree(astroot);  // TODO
+    // TODO write JSON
     return 0;
 }

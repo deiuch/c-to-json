@@ -12,4 +12,8 @@
 
 // TODO node building functions
 
+//char *astfree(astnode *root); TODO tree free
+
+//char *asttojson(astnode *root); TODO JSON representation
+
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED

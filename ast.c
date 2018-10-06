@@ -8,3 +8,7 @@
 #include "ast.h"
 
 // TODO node building functions
+
+//char *astfree(astnode *root); TODO tree free
+
+//char *asttojson(astnode *root); TODO JSON representation
