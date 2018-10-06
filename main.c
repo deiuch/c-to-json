@@ -5,6 +5,7 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
+#include "ast.h"
 #include "y.tab.h"
 
 /// Program entry point.

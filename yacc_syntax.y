@@ -16,7 +16,7 @@
 //%pure-parser  // TODO check
 
 %{
-#include "ast_builder.h"
+#include "ast.h"
 
 extern int yylex();
 void yyerror(const char *str);
