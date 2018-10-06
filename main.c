@@ -11,7 +11,8 @@
 int main()
 {
     yydebug = 1;  // TODO remove in prod, set 0 for no debug info
-    if (yyparse()) return 1;  // TODO error
+    // TODO allocate astroot pointer
+    if (yyparse(/*astroot*/)) return 1;  // TODO param, error
     // TODO operate on AST
     return 0;
 }
