@@ -1,7 +1,17 @@
-// TODO ISO/IEC 9899:2017, pages 55-116 or 338-344
-// http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
+/*
+ * Parser for C Programming Language (ISO/IEC 9899:2018).
+ *
+ * Authors: Denis Chernikov, Vladislav Kuleykin
+ *
+ * Source (ISO/IEC 9899:2017):
+ * http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
+ *
+ * Not for commercial use.
+ */
 
 %{
+#include "ast_builder.h"
+
 extern int yylex();
 void yyerror(const char *str);
 %}

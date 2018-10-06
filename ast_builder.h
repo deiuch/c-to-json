@@ -1,8 +1,11 @@
-//
-// Created by Denis Chernikov on 06.10.2018.
-//
+/*
+ * Abstract Syntax Tree building functions for parser
+ * of the C Programming Language (ISO/IEC 9899:2018).
+ *
+ * Authors: Denis Chernikov, Vladislav Kuleykin
+ */
 
-#ifndef C_PARSER_AST_BUILDER_H
-#define C_PARSER_AST_BUILDER_H
+#ifndef C_PARSER_AST_BUILDER_H_INCLUDED
+#define C_PARSER_AST_BUILDER_H_INCLUDED
 
-#endif //C_PARSER_AST_BUILDER_H
+#endif //C_PARSER_AST_BUILDER_H_INCLUDED

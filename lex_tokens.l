@@ -1,3 +1,9 @@
+/*
+ * Lexer for C Programming Language (ISO/IEC 9899:2018).
+ *
+ * Author: Denis Chernikov
+ */
+
 %x COMMENT
 %x PREP
 %x CHR
@@ -33,8 +39,6 @@ WRONGSTR  ([LUu]|u8)?\"[^"]*(("??/"[^'"?\\abfnrtv])+[^"]*|"??/")\"
 WS        [ \f\n\r\t\v]
 
 %{
-/// Lexer for C language on ISO/IEC 9899:2017 standard revision.
-/// Author: Denis Chernikov
 #include <string.h>
 #include "y.tab.h"
 
