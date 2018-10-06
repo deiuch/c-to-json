@@ -3,4 +3,4 @@ project(c_parser C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(yacc lex.yy.c y.tab.c ast_builder.c ast_builder.h)
+add_executable(c_parser lex.yy.c y.tab.c ast_builder.c typedef_name.c main.c)

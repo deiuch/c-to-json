@@ -3,7 +3,7 @@
  *
  * Authors: Denis Chernikov, Vladislav Kuleykin
  *
- * Source (ISO/IEC 9899:2017):
+ * Source (ISO/IEC 9899:2017, no critical changes were applied):
  * http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
  *
  * Not for commercial use.
@@ -670,11 +670,4 @@ GenericAssociation
 void yyerror(const char *str)
 {
     fprintf(stderr, "yyerror: %s\n", str);
-}
-
-/// Program entry point.
-int main()
-{
-    yydebug = 1;  // TODO remove in prod, set 0 for no debug info.
-    return yyparse();
 }
