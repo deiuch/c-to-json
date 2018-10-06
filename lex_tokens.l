@@ -54,9 +54,8 @@ char *readstr(char *, size_t);
 _Bool is_trigraph_suf(char);
 
 #define MAX_INCLUDE_DEPTH 20  // TODO check
-FILE *file_stack[MAX_INCLUDE_DEPTH];
-YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
-int start_stack[MAX_INCLUDE_DEPTH];
+typedef struct { FILE *file; YY_BUFFER_STATE buffer; int start_cond; } config;
+config config_stack[MAX_INCLUDE_DEPTH];
 int file_stack_ptr = 0;
 %}
 
@@ -271,9 +270,7 @@ void change_source(char *name)
     FILE *new_file = fopen(name, "r");
     if (!new_file) /* TODO error */;
 
-    file_stack[file_stack_ptr] = yyin;
-    include_stack[file_stack_ptr] = YY_CURRENT_BUFFER;
-    start_stack[file_stack_ptr++] = YY_START;
+    config_stack[file_stack_ptr++] = (config) {yyin, YY_CURRENT_BUFFER, YY_START};
 
     yyin = new_file;
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
@@ -288,9 +285,10 @@ int yywrap()
     yy_delete_buffer(YY_CURRENT_BUFFER);
     fclose(yyin);
 
-    yyin = file_stack[file_stack_ptr];
-    yy_switch_to_buffer(include_stack[file_stack_ptr]);
-    BEGIN start_stack[file_stack_ptr];
+    config *old_conf = &config_stack[file_stack_ptr];
+    yyin = old_conf->file;
+    yy_switch_to_buffer(old_conf->buffer);
+    BEGIN old_conf->start_cond;
 
     return 0;
 }
