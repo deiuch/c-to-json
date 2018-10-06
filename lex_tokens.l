@@ -4,6 +4,8 @@
  * @author: Denis Chernikov
  */
 
+%pointer
+
 %x COMMENT
 %x PREP
 %x CHR
@@ -235,6 +237,8 @@ _Bool istrigraphsuf(char);
 <INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*\\[\n\r] {
     shiftyytext(2);  // skip and retry
 }
+
+<COMMENT,STR,CHR><<EOF>> { /* TODO error */ }
 {WS}                    { /* skip over whitespaces */ }
 .                       { /* TODO error */ }
 
