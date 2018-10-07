@@ -14,12 +14,12 @@ typedef struct
     // TODO node struct
 } astnode;
 
-/// Root of builded AST after parsing.
+/// Root of built AST after parsing.
 astnode *astroot;
 
 // TODO node building functions
 
-/// Free memory associated with node and it's clidren.
+/// Free memory associated with node and it's children.
 void ast_free(astnode *node);
 
 /// Get JSON string representation of an AST.
