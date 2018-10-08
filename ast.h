@@ -8,10 +8,19 @@
 #ifndef C_PARSER_AST_BUILDER_H_INCLUDED
 #define C_PARSER_AST_BUILDER_H_INCLUDED
 
-/// Structure for storing AST node data.
-typedef struct
+/// Types of AST node content.
+typedef enum
 {
-    // TODO node struct
+    TranslationUnit,
+    // TODO content types
+} ast_content;
+
+/// Structure for storing AST node data.
+typedef struct ast_node
+{
+    ast_content type;
+    int children_number;
+    struct ast_node *children;
 } ast_node;
 
 /// Root of built AST after parsing.
