@@ -186,7 +186,7 @@ int yyerror(const char *str);
 TranslationUnit
         :                 ExternalDeclaration
         | TranslationUnit ExternalDeclaration
-        ;  // TODO return astroot
+        ;  // TODO return ast_root
 
 ExternalDeclaration
         : FunctionDefinition

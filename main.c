@@ -38,14 +38,14 @@ int main(int argc, char *argv[])
     int yyres = yyparse();
     if (argc > 2) fclose(yyin);
     free_typedef_name();
-    if (yyres || !astroot)
+    if (yyres || !ast_root)
     {
         fprintf(stderr, "Parsing failed! No output will be provided.\n");
         return 3;
     }
 
-    char *json = ast_to_json(astroot);
-    ast_free(astroot);
+    char *json = ast_to_json(ast_root);
+    ast_free(ast_root);
     if (!json)
     {
         fprintf(stderr, "JSON generation failure!\n");

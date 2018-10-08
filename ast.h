@@ -12,17 +12,17 @@
 typedef struct
 {
     // TODO node struct
-} astnode;
+} ast_node;
 
 /// Root of built AST after parsing.
-astnode *astroot;
+ast_node *ast_root;
 
 // TODO node building functions
 
 /// Free memory associated with node and it's children.
-void ast_free(astnode *node);
+void ast_free(ast_node *node);
 
 /// Get JSON string representation of an AST.
-char *ast_to_json(astnode *root);
+char *ast_to_json(ast_node *root);
 
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED
