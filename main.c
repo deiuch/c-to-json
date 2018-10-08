@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast.h"
-#include "y.tab.h"
 #include "typedef_name.h"
+#include "y.tab.h"
 
 extern FILE *yyin;  // Flex input
 
