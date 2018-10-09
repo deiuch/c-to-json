@@ -28,8 +28,8 @@ AST_NODE *ast_root;
 
 // TODO node building functions
 // Possibilities:
-// ast_create_node(AST_NODE_TYPE type, ...)
-// ast_expand_node(AST_NODE *node, AST_NODE *to_append)
+// ast_create_node(AST_NODE_TYPE type, ...);
+// ast_expand_node(AST_NODE *node, AST_NODE *to_append);
 
 /// Free memory associated with node and it's children.
 void ast_free(AST_NODE *node);
