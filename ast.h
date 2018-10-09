@@ -28,7 +28,7 @@ AST_NODE *ast_root;
 
 // TODO node building functions
 // Possibilities:
-// ast_create_node(AST_NODE_TYPE type, ...);
+// ast_create_node(AST_NODE_TYPE type, ...);  // See ISO/IEC 9899:2017, page 197 (216)
 // ast_expand_node(AST_NODE *node, AST_NODE *to_append);
 
 /// Free memory associated with node and it's children.
