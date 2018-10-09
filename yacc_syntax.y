@@ -186,11 +186,11 @@ int yyerror(const char *str);
 TranslationUnit
         :                 ExternalDeclaration
         {
-//            ast_root = TODO create
+//            ast_root = ast_create_node(TranslationUnit, $1); // TODO
         }
         | TranslationUnit ExternalDeclaration
         {
-//            TODO increase(ast_root)
+//            ast_expand_node(ast_root, $2);  // TODO
         }
         ;
 
@@ -213,24 +213,9 @@ DeclarationList
 
 Declaration
         : DeclarationSpecifiers                    SEMICOLON
-        {
-//            if (typedef_used($1))  // TODO
-//            {
-//                for (Declarator in $2)  // pseudocode
-//                {
-//                    put_typedef_name(Declarator.ID);
-//                }
-//            }
-        }
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
         {
-//            if (typedef_used($1))  // TODO
-//            {
-//                for (Declarator in $2)  // pseudocode
-//                {
-//                    put_typedef_name(Declarator.ID);
-//                }
-//            }
+//            if (is_typedef_used($1)) collect_typedef_names($2);  // TODO
         }
         | StaticAssertDeclaration
         ;
@@ -279,7 +264,7 @@ TypeSpecifier
         | UNSIGNED
         | BOOL
         | COMPLEX
-        | IMAGINARY  // TODO check (reserved for future)
+        | IMAGINARY  // TODO check (reserved for future in ISO/IEC 9899:2017)
         | AtomicTypeSpecifier
         | StructOrUnionSpecifier
         | EnumSpecifier
@@ -460,7 +445,7 @@ DirectAbstractDeclarator
 TypedefName
         : TYPEDEF_NAME
     //  | IDENTIFIER  // reduce/reduce with PrimaryExpression, resolved using lexical analyzer
-        ; // TODO reduce/reduce, ISO/IEC 9899:2017, page 99 (in PDF - 118)
+        ;
 
 Initializer
         : AssignmentExpression
@@ -698,4 +683,20 @@ int yyerror(const char *str)
 {
     fprintf(stderr, "%s\n", str);
     return 0;
+}
+
+/// Does this node (could be DeclarationSpecifiers) contains TYPEDEF token?
+_Bool is_typedef_used(AST_NODE *node)
+{
+    return false;  // TODO
+}
+
+/// Collect all the identifiers from DirectDeclarators
+/// from this node (could be InitDeclaratorList).
+void collect_typedef_names(AST_NODE *node)
+{
+//    for (DirectDeclarator in $2)  // TODO
+//    {
+//        put_typedef_name(DirectDeclarator.ID);
+//    }
 }
