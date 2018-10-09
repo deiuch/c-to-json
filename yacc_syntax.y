@@ -213,8 +213,12 @@ DeclarationList
 
 Declaration
         : DeclarationSpecifiers                    SEMICOLON
+        {
+//            $$ = ast_create_node(..., NULL, $2);  // TODO
+        }
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
         {
+//            $$ = ast_create_node(..., $1, $2);  // TODO
 //            if (is_typedef_used($1)) collect_typedef_names($2);  // TODO
         }
         | StaticAssertDeclaration
