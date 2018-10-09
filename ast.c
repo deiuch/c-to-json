@@ -11,11 +11,11 @@
 
 // TODO node building functions
 
-void ast_free(ast_node *node) {
+void ast_free(AST_NODE *node) {
     // TODO tree free
 }
 
-char *ast_to_json(ast_node *root) {
+char *ast_to_json(AST_NODE *root) {
     char *res = (char *) malloc(0);
     if (!res)
     {

@@ -185,8 +185,14 @@ int yyerror(const char *str);
 
 TranslationUnit
         :                 ExternalDeclaration
+        {
+//            ast_root = TODO create
+        }
         | TranslationUnit ExternalDeclaration
-        ;  // TODO return ast_root
+        {
+//            TODO increase(ast_root)
+        }
+        ;
 
 ExternalDeclaration
         : FunctionDefinition
@@ -207,9 +213,27 @@ DeclarationList
 
 Declaration
         : DeclarationSpecifiers                    SEMICOLON
+        {
+//            if (typedef_used($1))  // TODO
+//            {
+//                for (Declarator in $2)  // pseudocode
+//                {
+//                    put_typedef_name(Declarator.ID);
+//                }
+//            }
+        }
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
+        {
+//            if (typedef_used($1))  // TODO
+//            {
+//                for (Declarator in $2)  // pseudocode
+//                {
+//                    put_typedef_name(Declarator.ID);
+//                }
+//            }
+        }
         | StaticAssertDeclaration
-        ;  // TODO use `put_typedef_name()` if TYPEDEF specifier used
+        ;
 
 DeclarationSpecifiers
         : StorageClassSpecifier
