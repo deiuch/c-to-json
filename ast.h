@@ -20,7 +20,7 @@ typedef struct AST_NODE
 {
     AST_NODE_TYPE type;
     int children_number;
-    struct AST_NODE *children;
+    struct AST_NODE **children;
 } AST_NODE;
 
 /// Root of built AST after parsing.
