@@ -186,7 +186,7 @@ int yyerror(const char *str);
 TranslationUnit
         :                 ExternalDeclaration
         {
-//            ast_root = ast_create_node(TranslationUnit, $1);  // TODO
+//            ast_root = ast_create_node(TranslationUnit, 1, $1);  // TODO
         }
         | TranslationUnit ExternalDeclaration
         {
@@ -214,11 +214,11 @@ DeclarationList
 Declaration
         : DeclarationSpecifiers                    SEMICOLON
         {
-//            $$ = ast_create_node(..., NULL, $2);  // TODO
+//            $$ = ast_create_node(..., 2, NULL, $2);  // TODO
         }
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
         {
-//            $$ = ast_create_node(..., $1, $2);  // TODO
+//            $$ = ast_create_node(..., 2, $1, $2);  // TODO
 //            if (is_typedef_used($1)) collect_typedef_names($2);  // TODO
         }
         | StaticAssertDeclaration
@@ -692,6 +692,13 @@ int yyerror(const char *str)
 /// Does this node (could be DeclarationSpecifiers) contains TYPEDEF token?
 _Bool is_typedef_used(AST_NODE *node)
 {
+//    for (StorageClassSpecifier in node)
+//    {
+//        if (StorageClassSpecifier is TYPEDEF)
+//        {
+//            return true;
+//        }
+//    }
     return false;  // TODO
 }
 
@@ -699,7 +706,7 @@ _Bool is_typedef_used(AST_NODE *node)
 /// from this node (could be InitDeclaratorList).
 void collect_typedef_names(AST_NODE *node)
 {
-//    for (DirectDeclarator in $2)  // TODO
+//    for (DirectDeclarator in node)  // TODO
 //    {
 //        put_typedef_name(DirectDeclarator.ID);
 //    }
