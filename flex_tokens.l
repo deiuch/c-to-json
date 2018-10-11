@@ -539,6 +539,6 @@ char *readstr()
         ++i;
         ++j;
     }
-    res[j] = '\0';
+    res[i] = '\0';
     return res;
 }
