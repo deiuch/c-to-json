@@ -9,24 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ast.h"
+#include "string_tools.h"
 
 AST_NODE *ast_root = NULL;
 
 // TODO node building functions
 
-void ast_free(AST_NODE *root) {
-    // TODO content free
-//    for (int i = 0; i < root->children_number; ++i)
-//    {
-//        ast_free(root->children[i]);
-//    }
-//    free(root);
-}
-
-/// Convert enum AST_NODE_TYPE to string.
-///
-/// \param type Enum value to convert
-/// \return Actual string representation of a value
 char *ast_type_to_str(AST_NODE_TYPE type)
 {
     switch (type)
@@ -35,34 +23,13 @@ char *ast_type_to_str(AST_NODE_TYPE type)
     }
 }
 
-/// Repeat given source `n' times.
-///
-/// \param n Number of repetitions
-/// \param str String pattern to repeat
-/// \return `str' repeated `n' times
-char *mult(int n, char *str)
-{
-    if (n < 0)
+void ast_free(AST_NODE *root) {
+    free(root->content);
+    for (int i = 0; i < root->children_number; ++i)
     {
-        return NULL;
+        ast_free(root->children[i]);
     }
-    if (n == 0)
-    {
-        return "";
-    }
-    if (n == 1)
-    {
-        return str;
-    }
-    size_t src_len = strlen(str);
-    size_t res_len = src_len * n;
-    char *res = (char *) malloc(sizeof(char) * res_len);
-    int i;
-    for (i = 0; i < res_len; ++i)
-    {
-        res[i] = str[i % src_len];
-    }
-    return res;
+    free(root);
 }
 
 char *ast_to_json(AST_NODE *root, int shift, char *tab) {
@@ -73,7 +40,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
         children[i] = ast_to_json(root->children[i], shift + 2, tab);
     }
 
-    char *conc_children = "";  // TODO concatenation with ",\n"
+    char *conc_children = concat_array(children, ",\n");
     if (!conc_children)
     {
         fprintf(stderr,
@@ -93,10 +60,11 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
             "FATAL ERROR! Memory for JSON representation cannot be allocated!\n");
         exit(-1);
     }
-    char *act_tab = mult(shift, tab);
-    int res = sprintf(json,  // TODO content JSON
+    char *act_tab = repeat(shift, tab);
+    int res = sprintf(json,
                       "%s{\n"
                       "%s%s\"type\": \"%s\",\n"
+                      "%s%s\"content\": \"%s\",\n"
                       "%s%s\"children_number\": %d,\n"
                       "%s%s\"children\": [\n"
                       "%s"
@@ -104,6 +72,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
                       "%s}",
                       act_tab,
                       act_tab, tab, ast_type_to_str(root->type),
+                      act_tab, tab, "", // TODO
                       act_tab, tab, root->children_number,
                       act_tab, tab,
                       conc_children,
