@@ -13,7 +13,8 @@ typedef enum
 {
     TranslationUnit,
     // TODO content types
-} AST_NODE_TYPE;
+}
+AST_NODE_TYPE;
 
 /// Structure for storing AST node data.
 typedef struct AST_NODE
@@ -21,7 +22,8 @@ typedef struct AST_NODE
     AST_NODE_TYPE type;
     int children_number;
     struct AST_NODE **children;
-} AST_NODE;
+}
+AST_NODE;
 
 /// Root of built AST after parsing.
 AST_NODE *ast_root;
