@@ -47,7 +47,7 @@ char *concat_array(char **array, int n, char *delimiter)
         i += j;
     }
     res[i] = '\0';
-    return *res;
+    return res;
 }
 
 char *repeat(int n, char *str)
