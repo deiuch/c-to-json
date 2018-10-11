@@ -22,7 +22,7 @@
 
 /// Get next token from the specified input.
 ///
-/// \return Next token of the source.
+/// \return Next token of the source
 extern int yylex();
 
 /// Called when parse error was detected.
