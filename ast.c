@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include "ast.h"
 
+AST_NODE *ast_root = NULL;
+
 // TODO node building functions
 
 void ast_free(AST_NODE *root) {

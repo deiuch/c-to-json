@@ -25,6 +25,9 @@
 /// \return Next token of the source
 extern int yylex();
 
+/// Was error already found?
+_Bool error_found = false;
+
 /// Called when parse error was detected.
 ///
 /// \param str Error description to be printed
@@ -206,11 +209,17 @@ void collect_typedef_names(AST_NODE *node);
 TranslationUnit
         :                 ExternalDeclaration
         {
-//            ast_root = ast_create_node(TranslationUnit, 1, $1);  // TODO
+            if (!error_found)
+            {
+//                ast_root = ast_create_node(TranslationUnit, 1, $1);  // TODO
+            }
         }
         | TranslationUnit ExternalDeclaration
         {
-//            ast_expand_node(ast_root, $2);  // TODO
+            if (!error_found)
+            {
+//                ast_expand_node(ast_root, $2);  // TODO
+            }
         }
         ;
 
@@ -705,6 +714,7 @@ GenericAssociation
 int yyerror(const char *str)
 {
     fprintf(stderr, "%s\n", str);
+    error_found = true;
     return 0;
 }
 
