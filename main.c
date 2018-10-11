@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    char *json = ast_to_json(ast_root);
+    char *json = ast_to_json(ast_root, 0, "    ");
     ast_free(ast_root);
     if (!json)
     {

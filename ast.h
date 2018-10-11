@@ -38,10 +38,12 @@ AST_NODE *ast_root;
 /// \param root Root of the tree to be freed recursively
 void ast_free(AST_NODE *root);
 
-/// Get JSON string representation of an AST.
+/// Get JSON string representation of an AST. Needs to be freed.
 ///
 /// \param root Root of the tree to be converted to JSON
+/// \param shift Shift size at the beginning of line
+/// \param tab String representation of the tabulation
 /// \return JSON representation of a tree
-char *ast_to_json(AST_NODE *root);
+char *ast_to_json(AST_NODE *root, int shift, char *tab);
 
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED
