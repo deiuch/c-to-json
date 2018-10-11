@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
     if (argc < 2)
     {
-        printf("Usage: %s <out_file> OR %s <in_file> <out_file>",
+        printf("Usage: %s <out_file> OR %s <in_file> <out_file>\n",
                 argv[0], argv[0]);
         return 1;
     }
