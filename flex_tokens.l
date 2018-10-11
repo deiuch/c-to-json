@@ -362,7 +362,7 @@ char *readstr()
 {
     size_t i = 0, j = 0;
     char to_put;
-    char *res = (char *) malloc(sizeof(char) * (yyleng - 1));
+    char *res = (char *) malloc(sizeof(char) * (yyleng));
     if (!res)
     {
         fprintf(stderr,
