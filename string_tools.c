@@ -8,9 +8,46 @@
 #include <string.h>
 #include "string_tools.h"
 
-char *concat_array(char **array, char *delimiter)
+char *concat_array(char **array, int n, char *delimiter)
 {
-    return *array;  // TODO
+    if (n < 0)
+    {
+        return NULL;
+    }
+    if (n == 0)
+    {
+        return (char *) calloc(1, sizeof(char));
+    }
+    if (n == 1)
+    {
+        return *array;
+    }
+    int i, j;
+    size_t d_len = strlen(delimiter);
+    size_t len = d_len * (n - 1);
+    for (i = 0; i < n; ++i)
+    {
+        len += strlen(array[i]);
+    }
+    char *res = (char *) malloc(len);
+    size_t cur_len;
+    for (i = 0; i < n;)
+    {
+        cur_len = strlen(array[i]);
+        for (j = 0; j < cur_len; ++j)
+        {
+            res[i + j] = array[i][j];
+        }
+        i += j;
+        if (i == len - 1) break;
+        for (j = 0; j < d_len; ++j)
+        {
+            res[i + j] = delimiter[j];
+        }
+        i += j;
+    }
+    res[i] = '\0';
+    return *res;
 }
 
 char *repeat(int n, char *str)
@@ -21,7 +58,7 @@ char *repeat(int n, char *str)
     }
     if (n == 0)
     {
-        return "";
+        return (char *) calloc(1, sizeof(char));
     }
     if (n == 1)
     {
@@ -29,11 +66,12 @@ char *repeat(int n, char *str)
     }
     size_t src_len = strlen(str);
     size_t res_len = src_len * n;
-    char *res = (char *) malloc(sizeof(char) * res_len);
+    char *res = (char *) malloc(sizeof(char) * res_len + 1);
     int i;
     for (i = 0; i < res_len; ++i)
     {
         res[i] = str[i % src_len];
     }
+    res[i] = '\0';
     return res;
 }

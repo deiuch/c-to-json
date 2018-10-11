@@ -40,7 +40,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
         children[i] = ast_to_json(root->children[i], shift + 2, tab);
     }
 
-    char *conc_children = concat_array(children, ",\n");
+    char *conc_children = concat_array(children, root->children_number, ",\n");
     if (!conc_children)
     {
         fprintf(stderr,
