@@ -4,7 +4,7 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
-#include "stdio.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "string_tools.h"
