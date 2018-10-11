@@ -102,8 +102,8 @@ WS        [ \f\n\r\t\v]
 <PREP>"elif"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"else"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"endif"{PR_INS}   { BEGIN INITIAL; }
-<PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
 <PREP>"include"[ \t]*<[^>\f\n\r\v]*>[ \t]*$ { BEGIN INITIAL; }
+<PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
 <INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
 <INCLUDE>[^"\n\r]*$     { BEGIN INITIAL; /* TODO error */ }
 <INCLUDE>\"[ \t]*$      { BEGIN INITIAL; }
