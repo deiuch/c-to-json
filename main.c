@@ -17,7 +17,7 @@ extern FILE *yyin;  // Flex input file
 ///
 /// \param argc Size of `argv'
 /// \param argv Arguments passed to the program
-/// \return Execution status code (0 - OK, 1 - logic error, 2 - args error, 3 - I/O error)
+/// \return 0 - OK, 1 - logic error, 2 - args error, 3 - I/O error
 int main(int argc, char *argv[])
 {
     yydebug = 1;  // Set 0 for no debug info. TODO remove in production

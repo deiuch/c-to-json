@@ -11,7 +11,10 @@
 #include <string.h>
 #include "typedef_name.h"
 
+/// typedef-name table.
 char **typedef_table;
+
+/// Size of typedef-name table.
 int typedef_table_size = 0;
 
 _Bool is_typedef_name(char *id)

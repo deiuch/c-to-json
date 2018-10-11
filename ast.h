@@ -34,9 +34,14 @@ AST_NODE *ast_root;
 // ast_expand_node(AST_NODE *node, AST_NODE *to_append);
 
 /// Free memory associated with node and it's children.
-void ast_free(AST_NODE *node);
+///
+/// \param root Root of the tree to be freed recursively
+void ast_free(AST_NODE *root);
 
 /// Get JSON string representation of an AST.
+///
+/// \param root Root of the tree to be converted to JSON
+/// \return JSON representation of a tree
 char *ast_to_json(AST_NODE *root);
 
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED

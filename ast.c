@@ -11,7 +11,7 @@
 
 // TODO node building functions
 
-void ast_free(AST_NODE *node) {
+void ast_free(AST_NODE *root) {
     // TODO tree free
 }
 

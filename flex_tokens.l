@@ -12,6 +12,60 @@
 %x CHR
 %x STR
 
+%{
+#include <string.h>
+#include "y.tab.h"
+#include "typedef_name.h"
+
+/// Token for the error notification. TODO
+#define ERROR 256
+
+/// Change input after EOF was reached.
+/// NOTE: it is used by Flex.
+///
+/// \return 0 - new source is assigned, 1 - nothing more to read
+int yywrap();
+
+/// Change source file to read next.
+///
+/// \param name Name of new source file
+void change_source(char *name);
+
+/// Skip last `n' symbols and retry reading of a previous literal.
+///
+/// \param n Number of symbols to be dropped
+void shift_yytext(int n);
+
+/// Is given character - trigraph suffix?
+///
+/// \param c Character to be checked
+/// \return `true' - it is one of trigraph endings, `false' - otherwise
+_Bool is_trigraph_suf(char c);
+
+/// Expand escapes in string literal from `yytext'. NOTE: Needs to be freed.
+///
+/// \return Expanded string
+char *readstr();
+
+/// Maximum depth of the `#include' directive.
+#define MAX_INCLUDE_DEPTH 20  // TODO check
+
+/// Current source configuration.
+typedef struct
+{
+    FILE *file;
+    YY_BUFFER_STATE buffer;
+    int start_cond;
+}
+config;
+
+/// Stack of source configurations.
+config config_stack[MAX_INCLUDE_DEPTH];
+
+/// Size of the stack of source configurations.
+int file_stack_ptr = 0;
+%}
+
 O         [0-7]
 D         [0-9]
 H         [0-9A-Fa-f]
@@ -38,30 +92,6 @@ ESC       {BS}['"?\\abfnrtv]|{BS}"??/"|{BS}{O}{1,3}|{BS}x{H}+|{UCN}
 CHAR      [LUu]?'({ESC}|[^'\\\n\r])+'
 STRL      ([LUu]|u8)?\"({ESC}|[^"\\\n\r])+\"
 WS        [ \f\n\r\t\v]
-
-%{
-#include <string.h>
-#include "y.tab.h"
-#include "typedef_name.h"
-
-#define ERROR 256
-
-void change_source(char *);
-void shift_yytext(int);
-char *readstr(char *, size_t);
-_Bool is_trigraph_suf(char);
-
-#define MAX_INCLUDE_DEPTH 20  // TODO check
-typedef struct
-{
-    FILE *file;
-    YY_BUFFER_STATE buffer;
-    int start_cond;
-} config;
-
-config config_stack[MAX_INCLUDE_DEPTH];
-int file_stack_ptr = 0;
-%}
 
 %%
 
@@ -190,7 +220,7 @@ int file_stack_ptr = 0;
 (L|U|u|u8)?\"           { BEGIN STR; /* TODO prefix considering, ISO/IEC 9899:2017, page 50-52 */ }
 <CHR>' {
     BEGIN INITIAL;
-    char *content = readstr(yytext, yyleng);
+    char *content = readstr();
     if (strlen(content) != 1) {
         // TODO error
     }
@@ -199,7 +229,7 @@ int file_stack_ptr = 0;
 }
 <STR>\" {
     BEGIN INITIAL;
-    yylval.string = readstr(yytext, yyleng);
+    yylval.string = readstr();
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
@@ -280,7 +310,21 @@ int file_stack_ptr = 0;
 
 %%
 
-/// Change source file to read next.
+int yywrap()
+{
+    if (--file_stack_ptr < 0) return 1;
+
+    yy_delete_buffer(YY_CURRENT_BUFFER);
+    fclose(yyin);
+
+    config *old_conf = &config_stack[file_stack_ptr];
+    yyin = old_conf->file;
+    yy_switch_to_buffer(old_conf->buffer);
+    BEGIN old_conf->start_cond;
+
+    return 0;
+}
+
 void change_source(char *name)
 {
     if (file_stack_ptr >= MAX_INCLUDE_DEPTH)
@@ -300,22 +344,6 @@ void change_source(char *name)
     BEGIN INITIAL;
 }
 
-/// Change input after EOF was reached.
-int yywrap()
-{
-    if (--file_stack_ptr < 0) return 1;
-
-    yy_delete_buffer(YY_CURRENT_BUFFER);
-    fclose(yyin);
-
-    config *old_conf = &config_stack[file_stack_ptr];
-    yyin = old_conf->file;
-    yy_switch_to_buffer(old_conf->buffer);
-    BEGIN old_conf->start_cond;
-
-    return 0;
-}
-
 void shift_yytext(int n)
 {
     int i;
@@ -324,19 +352,24 @@ void shift_yytext(int n)
     }
 }
 
-/// Replace escapes in string literal. Needs to be freed.
-char *readstr(char *inp, size_t len)
+_Bool is_trigraph_suf(char c)
+{
+    return c == '='  || c == '(' || c == '/' || c == ')'
+        || c == '\'' || c == '<' || c == '!' || c == '>' || c == '-';
+}
+
+char *readstr()
 {
     size_t i = 0, j = 0;
     char to_put;
-    char *res = (char *) malloc(sizeof(char) * (len - 1));
+    char *res = (char *) malloc(sizeof(char) * (yyleng - 1));
     if (!res)
     {
         fprintf(stderr,
             "FATAL ERROR! Memory for STRING_LITERAL cannot be allocated!\n");
         exit(-1);
     }
-    while (i < len - 1)
+    while (i < yyleng - 1)
     {
         if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/')
         {
@@ -426,11 +459,4 @@ char *readstr(char *inp, size_t len)
     }
     res[j] = '\0';
     return res;
-}
-
-/// Is given character - trigraph suffix?
-_Bool is_trigraph_suf(char c)
-{
-    return c == '='  || c == '(' || c == '/' || c == ')'
-        || c == '\'' || c == '<' || c == '!' || c == '>' || c == '-';
 }

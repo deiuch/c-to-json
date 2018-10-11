@@ -8,10 +8,15 @@
 #ifndef C_PARSER_TYPEDEF_NAME_H_H_INCLUDED
 #define C_PARSER_TYPEDEF_NAME_H_H_INCLUDED
 
-/// Is given identifier - Typedef name?
+/// Is given identifier - typedef-name?
+///
+/// \param id Identifier to check
+/// \return `true' - there is such typedef-name table entry, `false' - otherwise
 _Bool is_typedef_name(char *id);
 
 /// Put this string into typedef-name symbol table. Repetitions allowed.
+///
+/// \param id Identifier to put to the typedef-name table
 void put_typedef_name(char *id);
 
 /// Free memory allocated by typedef-name symbol table.

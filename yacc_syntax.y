@@ -19,8 +19,27 @@
 #include "ast.h"
 #include "typedef_name.h"
 
+/// Get next token from the specified input.
+///
+/// \return Next token of the source.
 extern int yylex();
+
+/// Called when parse error was detected.
+///
+/// \param str Error description to be printed
+/// \return Always 0 TODO
 int yyerror(const char *str);
+
+/// Does this node contains TYPEDEF token?
+///
+/// \param node AST Node of `DeclarationSpecifiers' to search trough
+/// \return `true' - TYPEDEF is found, `false' - otherwise
+_Bool is_typedef_used(AST_NODE *node);
+
+/// Collect all the identifiers (DirectDeclarators) from this node.
+///
+/// \param node AST Node of `InitDeclaratorList' to collect from
+void collect_typedef_names(AST_NODE *node);
 %}
 
 %start TranslationUnit
@@ -682,16 +701,15 @@ GenericAssociation
 
 %%
 
-/// Called when parse error was detected.
 int yyerror(const char *str)
 {
     fprintf(stderr, "%s\n", str);
     return 0;
 }
 
-/// Does this node (could be DeclarationSpecifiers) contains TYPEDEF token?
 _Bool is_typedef_used(AST_NODE *node)
 {
+// TODO check for node type (DeclarationSpecifiers)
 //    for (StorageClassSpecifier in node)
 //    {
 //        if (StorageClassSpecifier is TYPEDEF)
@@ -702,10 +720,9 @@ _Bool is_typedef_used(AST_NODE *node)
     return false;  // TODO
 }
 
-/// Collect all the identifiers from DirectDeclarators
-/// from this node (could be InitDeclaratorList).
 void collect_typedef_names(AST_NODE *node)
 {
+// TODO check for node type (InitDeclaratorList)
 //    for (DirectDeclarator in node)  // TODO
 //    {
 //        put_typedef_name(DirectDeclarator.ID);
