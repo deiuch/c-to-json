@@ -105,12 +105,14 @@ WS        [ \f\n\r\t\v]
 <PREP>"endif"{PR_INS}   { BEGIN INITIAL; }
 <PREP>"include"[ \t]*<[^>\n\r]*>[ \t]*$ {
     BEGIN INITIAL;
-    fprintf(stderr, "WARNING: standard libraries' includes "
-                    "will be undefined! Syntax error may occur.\n");
+    // TODO warning
 }
 <PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
 <INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
-<INCLUDE>[^"\n\r]*$     { BEGIN INITIAL; /* TODO error */ }
+<INCLUDE>[^"\n\r]*$ {
+    BEGIN INITIAL;
+    yyerror("Include name does not have a closing quote.\n");
+}
 <INCLUDE>\"[ \t]*$      { BEGIN INITIAL; }
 <PREP>"define"{PR_INS}  { BEGIN INITIAL; }
 <PREP>"undef"{PR_INS}   { BEGIN INITIAL; }
@@ -250,7 +252,7 @@ WS        [ \f\n\r\t\v]
     for (i = 2;; ++i) {
         if (yytext[yyleng - i] == '"') break;
     }
-    shift_yytext(i);  // skip and retry TODO efficiency
+    shift_yytext(i);  // Skip and retry
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>.              { yymore(); }
