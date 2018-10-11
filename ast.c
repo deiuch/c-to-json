@@ -41,12 +41,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     }
 
     char *conc_children = concat_array(children, root->children_number, ",\n");
-    if (!conc_children)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for JSON concatenation cannot be allocated!\n");
-        exit(-1);
-    }
     for (i = 0; i < root->children_number; ++i)
     {
         free(children[i]);

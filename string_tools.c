@@ -4,6 +4,7 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
+#include "stdio.h"
 #include <stdlib.h>
 #include <string.h>
 #include "string_tools.h"
@@ -30,6 +31,12 @@ char *concat_array(char **array, int n, char *delimiter)
         len += strlen(array[i]);
     }
     char *res = (char *) malloc(len);
+    if (!res)
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for string concatenation cannot be allocated!\n");
+        exit(-1);
+    }
     size_t cur_len;
     for (i = 0; i < n;)
     {
@@ -67,6 +74,12 @@ char *repeat(int n, char *str)
     size_t src_len = strlen(str);
     size_t res_len = src_len * n;
     char *res = (char *) malloc(sizeof(char) * res_len + 1);
+    if (!res)
+    {
+        fprintf(stderr,
+                "FATAL ERROR! Memory for string repetition cannot be allocated!\n");
+        exit(-1);
+    }
     int i;
     for (i = 0; i < res_len; ++i)
     {
