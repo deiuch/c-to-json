@@ -286,7 +286,7 @@ WS        [ \f\n\r\t\v]
     BEGIN INITIAL;
     char *content = readstr();
     if (!yylval.string || strlen(content) != 1) {
-        return ERROR;  // TODO
+        return ERROR;  // TODO error message
     }
     yylval.character = content[0];
     return CHARACTER_CONSTANT;
@@ -297,7 +297,7 @@ WS        [ \f\n\r\t\v]
     yylval.string = readstr();
     if (!yylval.string)
     {
-        return ERROR;  // TODO
+        return ERROR;  // TODO error message
     }
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
@@ -372,9 +372,9 @@ WS        [ \f\n\r\t\v]
     shift_yytext(2);  // skip and retry
 }
 
-<COMMENT,STR,CHR><<EOF>> { return ERROR; /* TODO */ }
+<COMMENT,STR,CHR><<EOF>> { return ERROR; /* TODO error message */ }
 {WS}                    { /* skip over whitespaces */ }
-.                       { return ERROR; /* TODO */ }
+.                       { return ERROR; /* TODO error message */ }
 
 %%
 
