@@ -11,7 +11,8 @@
 #include "typedef_name.h"
 #include "y.tab.h"
 
-extern FILE *yyin;  // Flex input file
+/// Input file for Flex.
+extern FILE *yyin;
 
 /// Program entry point.
 ///
