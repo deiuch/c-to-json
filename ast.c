@@ -42,7 +42,7 @@ AST_NODE *ast_create_node(AST_NODE_TYPE type, void *content, int n_children, ...
         }
         va_end(ap);
     }
-    return (AST_NODE *) malloc(0);  // TODO, see ISO/IEC 9899:2017, page 197 (in PDF - 216)
+    return res;
 }
 
 AST_NODE *ast_expand_node(AST_NODE *node, AST_NODE *to_append)
