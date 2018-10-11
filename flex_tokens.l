@@ -105,7 +105,7 @@ WS        [ \f\n\r\t\v]
 <PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
 <INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
 <INCLUDE>[^"\n\r]*$     { BEGIN INITIAL; /* TODO error */ }
-<INCLUDE>\"{WS}*$       { BEGIN INITIAL; }
+<INCLUDE>\"[ \t]*$      { BEGIN INITIAL; }
 <PREP>"define"{PR_INS}  { BEGIN INITIAL; }
 <PREP>"undef"{PR_INS}   { BEGIN INITIAL; }
 <PREP>"line"{PR_INS}    { BEGIN INITIAL; }
@@ -216,8 +216,14 @@ WS        [ \f\n\r\t\v]
     // TODO value conversion, ISO/IEC 9899:2017, page 47-48
 }
 
-[LUu]?'                 { BEGIN CHR; /* TODO prefix considering, ISO/IEC 9899:2017, page 48-50 */ }
-(L|U|u|u8)?\"           { BEGIN STR; /* TODO prefix considering, ISO/IEC 9899:2017, page 50-52 */ }
+[LUu]?' {
+    BEGIN CHR;
+    /* TODO prefix considering, ISO/IEC 9899:2017, page 48-50 */
+}
+(L|U|u|u8)?\" {
+    BEGIN STR;
+    /* TODO prefix considering, ISO/IEC 9899:2017, page 50-52 */
+}
 <CHR>' {
     BEGIN INITIAL;
     char *content = readstr();
@@ -241,8 +247,11 @@ WS        [ \f\n\r\t\v]
     shift_yytext(i);  // skip and retry TODO efficiency
 }
 <STR,CHR>{ESC}          { yymore(); }
-<STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n) { BEGIN INITIAL; /* TODO error */ }
 <STR,CHR>.              { yymore(); }
+<STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n)[^"]*\" {
+    BEGIN INITIAL;
+    /* TODO error */
+}
 
 {LBRACKET}|"<:"         { return LBRACKET; }
 {RBRACKET}|":>"         { return RBRACKET; }
