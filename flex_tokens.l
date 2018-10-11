@@ -47,8 +47,9 @@ _Bool is_trigraph_suf(char c);
 /// \return Expanded string
 char *readstr();
 
+// ISO/IEC 9899:2017, 5.2.4.1 Translation limits, page 20
 /// Maximum depth of the `#include' directive.
-#define MAX_INCLUDE_DEPTH 20  // TODO check
+#define MAX_INCLUDE_DEPTH 15
 
 /// Current source configuration.
 typedef struct
