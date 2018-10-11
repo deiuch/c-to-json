@@ -16,6 +16,7 @@
 //%pure-parser
 
 %{
+#include <stdbool.h>
 #include "ast.h"
 #include "typedef_name.h"
 
