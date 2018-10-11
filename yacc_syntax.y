@@ -243,7 +243,7 @@ DeclarationList
 Declaration
         : DeclarationSpecifiers                    SEMICOLON
         {
-//            $$ = ast_create_node(..., 2, NULL, $2);  // TODO
+//            $$ = ast_create_node(..., 2, $1, NULL);  // TODO
         }
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
         {
@@ -713,8 +713,8 @@ GenericAssociation
 
 int yyerror(const char *str)
 {
-    fprintf(stderr, "%s\n", str);
     error_found = true;
+    fprintf(stderr, "%s\n", str);
     return 0;
 }
 
