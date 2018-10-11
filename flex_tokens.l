@@ -286,7 +286,7 @@ WS        [ \f\n\r\t\v]
 <CHR>' {
     BEGIN INITIAL;
     char *content = readstr();
-    if (strlen(content) != 1) {
+    if (!yylval.string || strlen(content) != 1) {
         // TODO error
     }
     yylval.character = content[0];
@@ -295,6 +295,10 @@ WS        [ \f\n\r\t\v]
 <STR>\" {
     BEGIN INITIAL;
     yylval.string = readstr();
+    if (!yylval.string)
+    {
+        // TODO error
+    }
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
@@ -388,7 +392,11 @@ int yywrap()
     if (--file_stack_ptr < 0) return 1;
 
     yy_delete_buffer(YY_CURRENT_BUFFER);
-    fclose(yyin);
+    int res = fclose(yyin);
+    if (res == EOF){
+        fprintf(stderr, "Cannot close opened source file!\n");
+        exit(3);
+    }
 
     config *old_conf = &config_stack[file_stack_ptr];
     yyin = old_conf->file;
@@ -408,7 +416,11 @@ void change_source(char *name)
     }
 
     FILE *new_file = fopen(name, "r");
-    if (!new_file) /* TODO error */;
+    if (!new_file)
+    {
+        fprintf(stderr, "Cannot open for reading: %s\n", name);
+        exit(3);
+    }
 
     config_stack[file_stack_ptr++] = (config) {yyin, YY_CURRENT_BUFFER, YY_START};
 
@@ -460,7 +472,7 @@ char *readstr()
                         }
                         else
                         {
-                            /* TODO error */;
+                            return NULL;
                         }
                     }
                     else
@@ -503,7 +515,7 @@ char *readstr()
                     i += 7;
                     break;
                 default:
-                    /* TODO error */;
+                    return NULL;
             }
         }
         else if (yytext[i] == '?' && yytext[i+1] == '?' && is_trigraph_suf(yytext[i+2]))
@@ -519,7 +531,7 @@ char *readstr()
                 case '!': to_put = '|'; break;
                 case '>': to_put = '}'; break;
                 case '-': to_put = '~'; break;
-                default: /* TODO error */;
+                default: return NULL;
             }
         }
         else
