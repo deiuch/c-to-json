@@ -3,7 +3,7 @@
  *
  * @authors: Denis Chernikov, Vladislav Kuleykin
  *
- * Source (ISO/IEC 9899:2017, no critical changes were applied):
+ * Source (ISO/IEC 9899:2017, no critical changes were applied in :2018):
  * http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf
  *
  * Not for commercial use.
