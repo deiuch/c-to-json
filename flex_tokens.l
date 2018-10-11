@@ -128,12 +128,12 @@ WS        [ \f\n\r\t\v]
     yywarn("Everything inside `#elif' will be processed "
         "considering condition as true! Syntax error may occur.");
 }
-<PREP>"else"{PR_INS} {
+<PREP>"else"[^\n\r]*$ {
     BEGIN INITIAL;
     yywarn("Everything inside `#else' will be processed "
         "considering previous condition as false! Syntax error may occur.");
 }
-<PREP>"endif"{PR_INS}   { BEGIN INITIAL; }
+<PREP>"endif"[^\n\r]*$  { BEGIN INITIAL; }
 
 <PREP>"include"[ \t]*<[^>\n\r]*>[ \t]*$ {
     BEGIN INITIAL;
@@ -174,7 +174,6 @@ WS        [ \f\n\r\t\v]
     {
         yyerror("Preprocessing error: Wrong preprocessing content found!");
     }
-    // TODO ISO/IEC 9899:2017, pages 117-127 or 344-345
 }
 <PREP>[^\n\r]           { yymore(); }
 
@@ -287,17 +286,18 @@ WS        [ \f\n\r\t\v]
     BEGIN INITIAL;
     char *content = readstr();
     if (!yylval.string || strlen(content) != 1) {
-        // TODO error
+        return ERROR;  // TODO
     }
     yylval.character = content[0];
     return CHARACTER_CONSTANT;
+    // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
 <STR>\" {
     BEGIN INITIAL;
     yylval.string = readstr();
     if (!yylval.string)
     {
-        // TODO error
+        return ERROR;  // TODO
     }
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
@@ -311,10 +311,6 @@ WS        [ \f\n\r\t\v]
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>.              { yymore(); }
-<STR,CHR>({BS}"??"[=()'<!>-]|{BS}.|\r|\n|\r\n)[^"]*\" {
-    BEGIN INITIAL;
-    /* TODO error */
-}
 
 {LBRACKET}|"<:"         { return LBRACKET; }
 {RBRACKET}|":>"         { return RBRACKET; }
@@ -376,9 +372,9 @@ WS        [ \f\n\r\t\v]
     shift_yytext(2);  // skip and retry
 }
 
-<COMMENT,STR,CHR><<EOF>> { /* TODO error */ }
+<COMMENT,STR,CHR><<EOF>> { return ERROR; /* TODO */ }
 {WS}                    { /* skip over whitespaces */ }
-.                       { /* TODO error */ }
+.                       { return ERROR; /* TODO */ }
 
 %%
 
@@ -460,6 +456,7 @@ char *readstr()
         {
             ++i;
             if (yytext[i-1] != '\\') i += 2;
+            if (i == yyleng) return NULL;
             switch (yytext[i])
             {
                 case '?':
