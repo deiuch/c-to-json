@@ -13,7 +13,15 @@
 
 AST_NODE *ast_root = NULL;
 
-// TODO node building functions
+AST_NODE *ast_create_node(AST_NODE_TYPE type, size_t n_children, ...)
+{
+    return (AST_NODE *) malloc(0);  // TODO
+}
+
+AST_NODE *ast_expand_node(AST_NODE *node, AST_NODE *to_append)
+{
+    return (AST_NODE *) malloc(0);  // TODO
+}
 
 char *ast_type_to_str(AST_NODE_TYPE type)
 {

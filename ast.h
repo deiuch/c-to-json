@@ -8,6 +8,8 @@
 #ifndef C_PARSER_AST_BUILDER_H_INCLUDED
 #define C_PARSER_AST_BUILDER_H_INCLUDED
 
+#include <stddef.h>
+
 /// Types of AST node content.
 typedef enum
 {
@@ -29,10 +31,21 @@ AST_NODE;
 /// Root of built AST after parsing.
 AST_NODE *ast_root;
 
-// TODO node building functions
-// Possibilities:
-// ast_create_node(AST_NODE_TYPE type, size_t n_children, ...);  // See ISO/IEC 9899:2017, page 197 (216)
-// ast_expand_node(AST_NODE *node, AST_NODE *to_append);
+/// Create node with a given set of children.
+/// Needs to be freed.
+///
+/// \param type Type of AST node
+/// \param n_children Number of children
+/// \param ... List of children
+/// \return New AST node
+AST_NODE *ast_create_node(AST_NODE_TYPE type, size_t n_children, ...);
+
+/// Append given child to the given AST node.
+///
+/// \param node Node to append child to
+/// \param to_append Child to append to the node
+/// \return New node after expansion
+AST_NODE *ast_expand_node(AST_NODE *node, AST_NODE *to_append);
 
 /// Convert enum AST_NODE_TYPE to string.
 ///
