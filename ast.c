@@ -5,6 +5,7 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,14 +14,53 @@
 
 AST_NODE *ast_root = NULL;
 
-AST_NODE *ast_create_node(AST_NODE_TYPE type, size_t n_children, ...)
+AST_NODE *ast_create_node(AST_NODE_TYPE type, void *content, int n_children, ...)
 {
+    AST_NODE *res = malloc(sizeof(AST_NODE));
+    if (!res)
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for AST node cannot be allocated!\n");
+        exit(-1);
+    }
+    *res = (AST_NODE) {type, content, n_children, NULL};
+    va_list ap;
+    int i = 0;
+    if (n_children > 0)
+    {
+        res->children = (AST_NODE **) malloc(sizeof(AST_NODE *) * n_children);
+        if (!res->children)
+        {
+            fprintf(stderr,
+                    "FATAL ERROR! Memory for AST node's children cannot be allocated!\n");
+            exit(-1);
+        }
+        va_start(ap, n_children);
+        while (i < n_children)
+        {
+            res->children[i++] = va_arg(ap, AST_NODE *);
+        }
+        va_end(ap);
+    }
     return (AST_NODE *) malloc(0);  // TODO, see ISO/IEC 9899:2017, page 197 (in PDF - 216)
 }
 
 AST_NODE *ast_expand_node(AST_NODE *node, AST_NODE *to_append)
 {
-    return (AST_NODE *) malloc(0);  // TODO
+    if (!node)
+    {
+        return node;
+    }
+    ++node->children_number;
+    realloc(node->children, sizeof(AST_NODE *) * node->children_number);
+    if (!node->children)
+    {
+        fprintf(stderr,
+            "FATAL ERROR! Memory for AST node's children cannot be reallocated!\n");
+        exit(-1);
+    }
+    node->children[node->children_number - 1] = to_append;
+    return node;
 }
 
 char *ast_type_to_str(AST_NODE_TYPE type)

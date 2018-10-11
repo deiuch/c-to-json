@@ -211,7 +211,7 @@ TranslationUnit
         {
             if (!error_found)
             {
-//                ast_root = ast_create_node(TranslationUnit, 1, $1);  // TODO
+//                ast_root = ast_create_node(TranslationUnit, NULL, 1, $1);  // TODO
             }
         }
         | TranslationUnit ExternalDeclaration
@@ -243,11 +243,11 @@ DeclarationList
 Declaration
         : DeclarationSpecifiers                    SEMICOLON
         {
-//            $$ = ast_create_node(..., 2, $1, NULL);  // TODO
+//            $$ = ast_create_node(..., NULL, 2, $1, NULL);  // TODO
         }
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
         {
-//            $$ = ast_create_node(..., 2, $1, $2);  // TODO
+//            $$ = ast_create_node(..., NULL, 2, $1, $2);  // TODO
 //            if (is_typedef_used($1)) collect_typedef_names($2);  // TODO
         }
         | StaticAssertDeclaration
