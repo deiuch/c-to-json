@@ -103,7 +103,11 @@ WS        [ \f\n\r\t\v]
 <PREP>"elif"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"else"{PR_INS}    { BEGIN INITIAL; }
 <PREP>"endif"{PR_INS}   { BEGIN INITIAL; }
-<PREP>"include"[ \t]*<[^>\f\n\r\v]*>[ \t]*$ { BEGIN INITIAL; }
+<PREP>"include"[ \t]*<[^>\n\r]*>[ \t]*$ {
+    BEGIN INITIAL;
+    fprintf(stderr, "WARNING: standard libraries' includes "
+                    "will be undefined! Syntax error may occur.\n");
+}
 <PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
 <INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
 <INCLUDE>[^"\n\r]*$     { BEGIN INITIAL; /* TODO error */ }
