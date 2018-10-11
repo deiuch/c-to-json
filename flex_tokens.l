@@ -144,7 +144,7 @@ WS        [ \f\n\r\t\v]
 <INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
 <INCLUDE>[^"\n\r]*$ {
     BEGIN INITIAL;
-    yyerror("Include name does not have a closing quote.");  // TODO
+    yyerror("Preprocessing error: Include name does not have a closing quote.");
 }
 <INCLUDE>\"[ \t]*$      { BEGIN INITIAL; }
 
@@ -172,7 +172,7 @@ WS        [ \f\n\r\t\v]
     BEGIN INITIAL;
     if (yyleng > 0)
     {
-        yyerror("Wrong preprocessing content found!");
+        yyerror("Preprocessing error: Wrong preprocessing content found!");
     }
     // TODO ISO/IEC 9899:2017, pages 117-127 or 344-345
 }
