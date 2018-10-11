@@ -144,7 +144,7 @@ WS        [ \f\n\r\t\v]
 <INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
 <INCLUDE>[^"\n\r]*$ {
     BEGIN INITIAL;
-    yyerror("Include name does not have a closing quote.");
+    yyerror("Include name does not have a closing quote.");  // TODO
 }
 <INCLUDE>\"[ \t]*$      { BEGIN INITIAL; }
 
