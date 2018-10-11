@@ -17,7 +17,7 @@
 #include "y.tab.h"
 #include "typedef_name.h"
 
-/// Token for the error notification. TODO
+/// Token for the error notification.
 #define ERROR 256
 
 /// Change input after EOF was reached.
