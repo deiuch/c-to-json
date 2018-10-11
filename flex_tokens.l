@@ -9,6 +9,8 @@
 %x COMMENT
 %x PREP
 %x INCLUDE
+%x ERROR_S
+%x WARNING
 %x CHR
 %x STR
 
@@ -25,6 +27,14 @@
 ///
 /// \return 0 - new source is assigned, 1 - nothing more to read
 int yywrap();
+
+// Defined in `yacc_syntax.y'
+extern int yyerror(const char *);
+
+/// Print warning to user.
+///
+/// \param str Warning description to be printed
+void yywarn(const char *);
 
 /// Change source file to read next.
 ///
@@ -97,33 +107,74 @@ WS        [ \f\n\r\t\v]
 %%
 
 ^[ \t]*({HASH}|"%:")[ \t]* { BEGIN PREP; }
-<PREP>"if"{PR_INS}      { BEGIN INITIAL; }
-<PREP>"ifdef"{PR_INS}   { BEGIN INITIAL; }
-<PREP>"ifndef"{PR_INS}  { BEGIN INITIAL; }
-<PREP>"elif"{PR_INS}    { BEGIN INITIAL; }
-<PREP>"else"{PR_INS}    { BEGIN INITIAL; }
+
+<PREP>"if"{PR_INS} {
+    BEGIN INITIAL;
+    yywarn("Everything inside `#if' will be processed "
+        "considering condition as true! Syntax error may occur.");
+}
+<PREP>"ifdef"{PR_INS} {
+    BEGIN INITIAL;
+    yywarn("Everything inside `#ifdef' will be processed "
+        "considering pointed one as defined! Syntax error may occur.");
+}
+<PREP>"ifndef"{PR_INS} {
+    BEGIN INITIAL;
+    yywarn("Everything inside `#ifndef' will be processed "
+        "considering pointed one as not defined! Syntax error may occur.");
+}
+<PREP>"elif"{PR_INS} {
+    BEGIN INITIAL;
+    yywarn("Everything inside `#elif' will be processed "
+        "considering condition as true! Syntax error may occur.");
+}
+<PREP>"else"{PR_INS} {
+    BEGIN INITIAL;
+    yywarn("Everything inside `#else' will be processed "
+        "considering previous condition as false! Syntax error may occur.");
+}
 <PREP>"endif"{PR_INS}   { BEGIN INITIAL; }
+
 <PREP>"include"[ \t]*<[^>\n\r]*>[ \t]*$ {
     BEGIN INITIAL;
-    // TODO warning
+    yywarn("Standard libraries included will not be "
+        "considered by lexer! Syntax error may occur.");
 }
 <PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
 <INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
 <INCLUDE>[^"\n\r]*$ {
     BEGIN INITIAL;
-    yyerror("Include name does not have a closing quote.\n");
+    yyerror("Include name does not have a closing quote.");
 }
 <INCLUDE>\"[ \t]*$      { BEGIN INITIAL; }
-<PREP>"define"{PR_INS}  { BEGIN INITIAL; }
+
+<PREP>"define"{PR_INS}  {
+    BEGIN INITIAL;
+    yywarn("Everything defined by `#define' will be processed "
+        "considering no `#define' was used! Syntax error may occur.");
+}
 <PREP>"undef"{PR_INS}   { BEGIN INITIAL; }
-<PREP>"line"{PR_INS}    { BEGIN INITIAL; }
-<PREP>"error"{PR_INS}   { BEGIN INITIAL; /* TODO error */ }
-<PREP>"warning"{PR_INS} { BEGIN INITIAL; /* TODO warning, not in ISO/IEC 9899:2017 review */ }
-<PREP>"pragma"{PR_INS}  { BEGIN INITIAL; }
+
+<PREP>"line"{PR_INS}    { BEGIN INITIAL; /* TODO change source notification */ }
+<PREP>"error"{WS}*      { BEGIN ERROR_S; }
+<ERROR_S>[^\n\r]*$ {
+    BEGIN INITIAL;
+    yyerror(yytext);
+}
+<PREP>"warning"{WS}*    { BEGIN WARNING; /* not in ISO/IEC 9899:2017 */ }
+<WARNING>[^\n\r]*$ {
+    BEGIN INITIAL;
+    yywarn(yytext);
+}
+<PREP>"pragma"{PR_INS}  { BEGIN INITIAL; /* TODO compiler pragmas */}
+
 <PREP>""$ {
     BEGIN INITIAL;
-    if (yyleng > 0) /* TODO error */;
-    /* TODO ISO/IEC 9899:2017, pages 117-127 or 344-345 */
+    if (yyleng > 0)
+    {
+        yyerror("Wrong preprocessing content found!");
+    }
+    // TODO ISO/IEC 9899:2017, pages 117-127 or 344-345
 }
 <PREP>[^\n\r]           { yymore(); }
 
@@ -326,6 +377,11 @@ WS        [ \f\n\r\t\v]
 .                       { /* TODO error */ }
 
 %%
+
+void yywarn(const char *str)
+{
+    fprintf(stderr, "WARNING: %s\n", str);
+}
 
 int yywrap()
 {
