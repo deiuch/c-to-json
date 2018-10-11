@@ -30,7 +30,7 @@ char *concat_array(char **array, int n, char *delimiter)
     {
         len += strlen(array[i]);
     }
-    char *res = (char *) malloc(len);
+    char *res = (char *) malloc(len + 1);
     if (!res)
     {
         fprintf(stderr,
