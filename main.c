@@ -14,6 +14,10 @@
 extern FILE *yyin;  // Flex input file
 
 /// Program entry point.
+///
+/// \param argc Size of `argv'
+/// \param argv Arguments passed to the program
+/// \return Execution status code (0 - OK, 1 - logic error, 2 - args error, 3 - I/O error)
 int main(int argc, char *argv[])
 {
     yydebug = 1;  // Set 0 for no debug info. TODO remove in production
@@ -22,8 +26,10 @@ int main(int argc, char *argv[])
     {
         printf("Usage: %s <out_file> OR %s <in_file> <out_file>\n",
                 argv[0], argv[0]);
-        return 1;
+        return 2;
     }
+
+    int res;  // For results of I/O functions
 
     char *in_name = argc > 2 ? argv[1] : NULL;
     char *out_name = argc > 2 ? argv[2] : argv[1];
@@ -32,16 +38,23 @@ int main(int argc, char *argv[])
     if (!yyin)
     {
         fprintf(stderr, "Cannot open for reading: %s\n", in_name);
-        return 2;
+        return 3;
     }
 
     int yyres = yyparse();
-    if (argc > 2) fclose(yyin);
     free_typedef_name();
+
+    res = argc > 2 ? fclose(yyin) : 0;
+    if (res == EOF)
+    {
+        fprintf(stderr, "Cannot close opened source file: %s\n", in_name);
+        return 3;
+    }
+
     if (yyres || !ast_root)
     {
         fprintf(stderr, "Parsing failed! No output will be provided.\n");
-        return 3;
+        return 1;
     }
 
     char *json = ast_to_json(ast_root);
@@ -49,7 +62,7 @@ int main(int argc, char *argv[])
     if (!json)
     {
         fprintf(stderr, "JSON generation failure!\n");
-        return 4;
+        return 1;
     }
 
     FILE *out = fopen(argv[2], "w");
@@ -57,12 +70,23 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "Cannot open for writing: %s\n", out_name);
         free(json);
-        return 5;
+        return 3;
     }
 
-    fputs(json, out);
-    fclose(out);
+    res = fputs(json, out);
     free(json);
+    if (res == EOF)
+    {
+        fprintf(stderr, "Cannot write into opened target file: %s\n", out_name);
+        return 3;
+    }
+
+    res = fclose(out);
+    if (res == EOF)
+    {
+        fprintf(stderr, "Cannot close opened target file: %s\n", out_name);
+        return 3;
+    }
 
     return 0;
 }
