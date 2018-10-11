@@ -84,6 +84,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     {
         free(children[i]);
     }
+    free(children);
 
     char *json = (char *) malloc(/* TODO */);
     if (!json)
