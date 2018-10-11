@@ -95,7 +95,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     }
     free(children);
 
-    char *json = (char *) malloc(0);  // TODO strlen(json) after `sprintf' + 1
+    char *json = (char *) malloc(sizeof(char) * (0 + 1));  // TODO strlen(json) after `sprintf' instead 0
     if (!json)
     {
         fprintf(stderr,

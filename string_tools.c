@@ -30,7 +30,7 @@ char *concat_array(char **array, int n, char *delimiter)
     {
         len += strlen(array[i]);
     }
-    char *res = (char *) malloc(len + 1);
+    char *res = (char *) malloc(sizeof(char) * (len + 1));
     if (!res)
     {
         fprintf(stderr,
@@ -73,7 +73,7 @@ char *repeat(int n, char *str)
     }
     size_t src_len = strlen(str);
     size_t res_len = src_len * n;
-    char *res = (char *) malloc(sizeof(char) * res_len + 1);
+    char *res = (char *) malloc(sizeof(char) * (res_len + 1));
     if (!res)
     {
         fprintf(stderr,
