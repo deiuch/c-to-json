@@ -1,7 +1,7 @@
 /**
  * Lexer for C Programming Language (ISO/IEC 9899:2018).
  *
- * @author: Denis Chernikov
+ * @author: Denis Chernikov, Vladislav Kuleykin
  */
 
 %pointer
