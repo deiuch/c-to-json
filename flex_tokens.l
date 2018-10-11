@@ -228,7 +228,7 @@ WS        [ \f\n\r\t\v]
 "_Thread_local"         { return THREAD_LOCAL; }
 
 {ID} {
-    yylval.id = (char *) malloc(strlen(yytext));
+    yylval.id = (char *) malloc(sizeof(char) * yyleng + 1);
     if (!yylval.id)
     {
         fprintf(stderr,
@@ -244,7 +244,7 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
 {D}+{IS}? {
-    yylval.integer = (char *) malloc(sizeof(char) * yyleng);
+    yylval.integer = (char *) malloc(sizeof(char) * yyleng + 1);
     if (!yylval.integer)
     {
         fprintf(stderr,
@@ -262,7 +262,7 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? {
-    yylval.floating = (char *) malloc(sizeof(char) * yyleng);
+    yylval.floating = (char *) malloc(sizeof(char) * yyleng + 1);
     if (!yylval.floating)
     {
         fprintf(stderr,
@@ -443,7 +443,7 @@ char *readstr()
 {
     size_t i = 0, j = 0;
     char to_put;
-    char *res = (char *) malloc(sizeof(char) * (yyleng));
+    char *res = (char *) malloc(sizeof(char) * yyleng);
     if (!res)
     {
         fprintf(stderr,
