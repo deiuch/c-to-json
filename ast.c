@@ -69,50 +69,117 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     char *json;
     char *act_tab = repeat(shift, tab);
     int res;
+
+    // If given NULL root
     if (!root)
     {
         json = (char *) my_malloc(sizeof(char) * (shift * strlen(tab) + 5),
                 "JSON representation");
         res = sprintf(json, "%snull", act_tab);
         free(act_tab);
-        if (!res)
+        if (res < 0)
         {
             fprintf(stderr,
                 "FATAL ERROR! String formatting cannot be applied!\n");
+            free(json);
             exit(-1);
         }
         return json;
     }
+
+    // Get string representation of type field
+    char *type_str = ast_type_to_str(root->type);
+
+    // Det string representation of node content
+    char *content_str;
+    if (root->content)
+    {
+        // TODO content representation
+    }
+    else
+    {
+        content_str = (char *) my_malloc(sizeof(char) * 5, "JSON null");
+        res = sprintf(content_str, "null");
+        if (res < 0)
+        {
+            fprintf(stderr,
+                    "FATAL ERROR! String formatting cannot be applied!\n");
+            free(type_str);
+            free(content_str);
+            exit(-1);
+        }
+    }
+
+    // Get string representation of children amount
+    char *children_num_str = itoa(root->children_number);
+
+    // Get string representation of children array
     int i;
     char **children = (char **) malloc(sizeof(char *) * root->children_number);
     for (i = 0; i < root->children_number; ++i)
     {
         children[i] = ast_to_json(root->children[i], shift + 2, tab);
     }
-
-    char *conc_children = concat_array(children, root->children_number, ",\n");
-    for (i = 0; i < root->children_number; ++i)
+    char *children_str;
+    if (root->children)
     {
-        free(children[i]);
+        char *arr = concat_array(children, root->children_number, ",\n");
+        size_t size = strlen(arr) + strlen(tab) * (shift + 1) + sizeof(char) * (5 + 1);
+        children_str = (char *) my_malloc(size, "children array string");
+        res = sprintf(children_str, "[\n%s\n%s%s]\n", arr, act_tab, tab);
+        free(arr);
+        if (res < 0)
+        {
+            fprintf(stderr,
+                    "FATAL ERROR! String formatting cannot be applied!\n");
+            free(type_str);
+            free(content_str);
+            free(children_num_str);
+            free(children_str);
+            exit(-1);
+        }
+        for (i = 0; i < root->children_number; ++i)
+        {
+            free(children[i]);
+        }
+        free(children);
     }
-    free(children);
+    else
+    {
+        children_str = (char *) my_malloc(sizeof(char) * 5, "JSON null");
+        res = sprintf(children_str, "null");
+        if (res < 0)
+        {
+            fprintf(stderr,
+                    "FATAL ERROR! String formatting cannot be applied!\n");
+            free(type_str);
+            free(content_str);
+            free(children_num_str);
+            free(children_str);
+            exit(-1);
+        }
+    }
 
-    json = (char *) my_malloc(sizeof(char) * (0 + 1),  // TODO strlen(json) after `sprintf' instead 0
-            "JSON representation");
+    size_t json_size
+            = strlen(type_str)
+            + strlen(content_str)
+            + strlen(children_str)
+            + strlen(tab) * (shift * 6 + 4) + sizeof(char) * (0 + 1);
+    json = (char *) my_malloc(json_size, "JSON representation");
     res = sprintf(json,
                   "%s{\n"
                   "%s%s\"type\": \"%s\",\n"
                   "%s%s\"content\": %s,\n"
-                  "%s%s\"children_number\": %d,\n"
+                  "%s%s\"children_number\": %s,\n"
                   "%s%s\"children\": %s\n"
                   "%s}",
                   act_tab,
-                  act_tab, tab, ast_type_to_str(root->type),
-                  act_tab, tab, root->content ? "\"content\"" : "null",  // TODO content representation
-                  act_tab, tab, root->children_number,
-                  act_tab, tab, root->children ? "[\nconc_children\n%s%s]\n" : "null",  // TODO array
+                  act_tab, tab, type_str,
+                  act_tab, tab, content_str,
+                  act_tab, tab, children_num_str,
+                  act_tab, tab, children_str,
                   act_tab);
-    free(conc_children);
+    free(children_str);
     free(act_tab);
     if (res < 0)
     {
