@@ -57,6 +57,7 @@ char *ast_type_to_str(AST_NODE_TYPE type)
 }
 
 void ast_free(AST_NODE *root) {
+    if (root == NULL) return;
     free(root->content);
     for (int i = 0; i < root->children_number; ++i)
     {
@@ -111,7 +112,9 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     }
 
     // Get string representation of children amount
-    char *children_num_str = itoa(root->children_number);
+    char *children_num_str = (char *) my_malloc(, "number representation");  // TODO size
+    itoa(root->children_number, children_num_str, 10);
+    // TODO error handling
 
     // Get string representation of children array
     int i;
