@@ -92,7 +92,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     // Get string representation of type field
     char *type_str = ast_type_to_str(root->type);
 
-    // Det string representation of node content
+    // Get string representation of node content
     char *content_str;
     if (root->content)
     {
