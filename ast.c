@@ -81,6 +81,28 @@ void ast_free(AST_NODE *root) {
 }
 
 char *ast_to_json(AST_NODE *root, int shift, char *tab) {
+    char *json;
+    char *act_tab = repeat(shift, tab);
+    int res;
+    if (!root)
+    {
+        json = (char *) malloc(sizeof(char) * (shift * strlen(tab) + 5));
+        if (!json)
+        {
+            fprintf(stderr,
+                "FATAL ERROR! Memory for JSON representation cannot be allocated!\n");
+            exit(-1);
+        }
+        res = sprintf(json, "%snull", act_tab);
+        free(act_tab);
+        if (!res)
+        {
+            fprintf(stderr,
+                "FATAL ERROR! String formatting cannot be applied!\n");
+            exit(-1);
+        }
+        return json;
+    }
     int i;
     char **children = (char **) malloc(sizeof(char *) * root->children_number);
     for (i = 0; i < root->children_number; ++i)
@@ -95,31 +117,30 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     }
     free(children);
 
-    char *json = (char *) malloc(sizeof(char) * (0 + 1));  // TODO strlen(json) after `sprintf' instead 0
+    json = (char *) malloc(sizeof(char) * (0 + 1));  // TODO strlen(json) after `sprintf' instead 0
     if (!json)
     {
         fprintf(stderr,
             "FATAL ERROR! Memory for JSON representation cannot be allocated!\n");
         exit(-1);
     }
-    char *act_tab = repeat(shift, tab);
-    int res = sprintf(json,
-                      "%s{\n"
-                      "%s%s\"type\": \"%s\",\n"
-                      "%s%s\"content\": \"%s\",\n"
-                      "%s%s\"children_number\": %d,\n"
-                      "%s%s\"children\": [\n"
-                      "%s"
-                      "%s%s]"
-                      "%s}",
-                      act_tab,
-                      act_tab, tab, ast_type_to_str(root->type),
-                      act_tab, tab, "", // TODO
-                      act_tab, tab, root->children_number,
-                      act_tab, tab,
-                      conc_children,
-                      act_tab, tab,
-                      act_tab);
+    res = sprintf(json,
+                  "%s{\n"
+                  "%s%s\"type\": \"%s\",\n"
+                  "%s%s\"content\": \"%s\",\n"
+                  "%s%s\"children_number\": %d,\n"
+                  "%s%s\"children\": [\n"
+                  "%s\n"
+                  "%s%s]\n"
+                  "%s}",
+                  act_tab,
+                  act_tab, tab, ast_type_to_str(root->type),
+                  act_tab, tab, "", // TODO
+                  act_tab, tab, root->children_number,
+                  act_tab, tab,
+                  conc_children,
+                  act_tab, tab,
+                  act_tab);
     free(conc_children);
     free(act_tab);
     if (res < 0)
