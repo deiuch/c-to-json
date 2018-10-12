@@ -31,7 +31,7 @@ _Bool error_found = false;
 /// Called when parse error was detected.
 ///
 /// \param str Error description to be printed
-/// \return Always 0 TODO
+/// \return Always 0
 int yyerror(const char *str);
 
 /// Does this node contains TYPEDEF token?
@@ -297,7 +297,7 @@ TypeSpecifier
         | UNSIGNED
         | BOOL
         | COMPLEX
-        | IMAGINARY  // TODO check (reserved for future in ISO/IEC 9899:2017)
+        | IMAGINARY
         | AtomicTypeSpecifier
         | StructOrUnionSpecifier
         | EnumSpecifier
