@@ -15,6 +15,9 @@
 extern FILE *yyin;
 
 /// Conversion function for AST node content.
+///
+/// \param Object of AST content
+/// \return String representation of the given object, NULL if not AST_NODE
 extern char *content_to_str(void *);
 
 /// Program entry point.

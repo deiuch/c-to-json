@@ -743,7 +743,7 @@ void collect_typedef_names(AST_NODE *node)
 /// Conversion function for AST node content.
 ///
 /// \param obj Object of AST content
-/// \return String representation of the given object
+/// \return String representation of the given object, NULL if not AST_NODE
 char *content_to_str(void *obj)
 {
     return NULL;  // TODO
