@@ -57,6 +57,7 @@ char *ast_type_to_str(AST_NODE_TYPE type)
 }
 
 void ast_free(AST_NODE *root) {
+    if (root == NULL) return;
     free(root->content);
     for (int i = 0; i < root->children_number; ++i)
     {
@@ -110,7 +111,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
                   act_tab, tab, ast_type_to_str(root->type),
                   act_tab, tab, root->content ? "\"content\"" : "null",  // TODO content representation
                   act_tab, tab, root->children_number,
-                  act_tab, tab, root->children ? "[\nconc_children\n%s%s]\n" : "null",  // TODO array
+                  act_tab, tab, root->children ? "[\nconc_children\n%s%s]" : "null",  // TODO array
                   act_tab);
     free(conc_children);
     free(act_tab);
