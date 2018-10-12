@@ -83,6 +83,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
             fprintf(stderr,
                 "FATAL ERROR! String formatting cannot be applied!\n");
             free(json);
+            free(act_tab);
             exit(-1);
         }
         return json;
@@ -105,6 +106,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
+            free(act_tab);
             free(type_str);
             free(content_str);
             exit(-1);
@@ -134,6 +136,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
+            free(act_tab);
             free(type_str);
             free(content_str);
             free(children_num_str);
@@ -154,6 +157,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
+            free(act_tab);
             free(type_str);
             free(content_str);
             free(children_num_str);
@@ -162,11 +166,14 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
         }
     }
 
+    // Concatenate the resulting JSON object
     size_t json_size
             = strlen(type_str)
             + strlen(content_str)
+            + strlen(children_num_str)
             + strlen(children_str)
-            + strlen(tab) * (shift * 6 + 4) + sizeof(char) * (0 + 1);
+            + strlen(tab) * (shift * 6 + 4)
+            + sizeof(char) * (62 + 1);  // TODO check
     json = (char *) my_malloc(json_size, "JSON representation");
     res = sprintf(json,
                   "%s{\n"
@@ -181,8 +188,11 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
                   act_tab, tab, children_num_str,
                   act_tab, tab, children_str,
                   act_tab);
-    free(children_str);
     free(act_tab);
+    free(type_str);
+    free(content_str);
+    free(children_num_str);
+    free(children_str);
     if (res < 0)
     {
         fprintf(stderr,
