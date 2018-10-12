@@ -110,7 +110,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
                   "%s}",
                   act_tab,
                   act_tab, tab, ast_type_to_str(root->type),
-                  act_tab, tab, "", // TODO
+                  act_tab, tab, "", // TODO content representation
                   act_tab, tab, root->children_number,
                   act_tab, tab,
                   conc_children,
