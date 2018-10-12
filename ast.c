@@ -102,19 +102,15 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     res = sprintf(json,
                   "%s{\n"
                   "%s%s\"type\": \"%s\",\n"
-                  "%s%s\"content\": \"%s\",\n"
+                  "%s%s\"content\": %s,\n"
                   "%s%s\"children_number\": %d,\n"
-                  "%s%s\"children\": [\n"
-                  "%s\n"
-                  "%s%s]\n"
+                  "%s%s\"children\": %s\n"
                   "%s}",
                   act_tab,
                   act_tab, tab, ast_type_to_str(root->type),
-                  act_tab, tab, "", // TODO content representation
+                  act_tab, tab, root->content ? "\"TODO\"" : "null",  // TODO content representation
                   act_tab, tab, root->children_number,
-                  act_tab, tab,
-                  conc_children,
-                  act_tab, tab,
+                  act_tab, tab, root->children ? "[\nconc_children\n%s%s]\n" : "null",  // TODO array
                   act_tab);
     free(conc_children);
     free(act_tab);
