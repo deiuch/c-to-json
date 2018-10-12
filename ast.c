@@ -112,9 +112,8 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     }
 
     // Get string representation of children amount
-    char *children_num_str = (char *) my_malloc(, "number representation");  // TODO size
+    char *children_num_str = (char *) my_malloc(7, "number representation");  // TODO size
     itoa(root->children_number, children_num_str, 10);
-    // TODO error handling
 
     // Get string representation of children array
     int i;
