@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "alloc_wrap.h"
 #include "string_tools.h"
 
 char *concat_array(char **array, int n, char *delimiter)
@@ -30,13 +31,8 @@ char *concat_array(char **array, int n, char *delimiter)
     {
         len += strlen(array[i]);
     }
-    char *res = (char *) malloc(sizeof(char) * (len + 1));
-    if (!res)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for string concatenation cannot be allocated!\n");
-        exit(-1);
-    }
+    char *res = (char *) my_malloc(sizeof(char) * (len + 1),
+            "string concatenation");
     size_t cur_len;
     for (i = 0; i < n;)
     {
@@ -73,13 +69,8 @@ char *repeat(int n, char *str)
     }
     size_t src_len = strlen(str);
     size_t res_len = src_len * n;
-    char *res = (char *) malloc(sizeof(char) * (res_len + 1));
-    if (!res)
-    {
-        fprintf(stderr,
-                "FATAL ERROR! Memory for string repetition cannot be allocated!\n");
-        exit(-1);
-    }
+    char *res = (char *) my_malloc(sizeof(char) * (res_len + 1),
+            "string repetition");
     int i;
     for (i = 0; i < res_len; ++i)
     {

@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "typedef_name.h"
+#include "alloc_wrap.h"
 
 /// typedef-name table.
 char **typedef_table;
@@ -37,23 +38,12 @@ _Bool is_typedef_name(char *id)
 
 void put_typedef_name(char *id)
 {
-    typedef_table
-        = realloc(typedef_table, (typedef_table_size + 1) * sizeof(char *));
-    if (!typedef_table)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for typedef-name "
-            "symbol table cannot be reallocated!\n");
-        exit(-1);
-    }
-    typedef_table[typedef_table_size]
-        = (char *) malloc(sizeof(char) * (strlen(id) + 1));
-    if (!typedef_table[typedef_table_size])
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for new typedef-name cannot be allocated!\n");
-        exit(-1);
-    }
+    typedef_table = my_realloc(typedef_table,
+            (typedef_table_size + 1) * sizeof(char *),
+            "typedef-name symbol table");
+    typedef_table[typedef_table_size] = (char *) my_malloc(
+            sizeof(char) * (strlen(id) + 1),
+            "new typedef-name");
     strcpy(typedef_table[typedef_table_size - 1], id);
     ++typedef_table_size;
 }

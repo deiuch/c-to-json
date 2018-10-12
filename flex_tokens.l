@@ -16,17 +16,12 @@
 
 %{
 #include <string.h>
-#include "y.tab.h"
+#include "alloc_wrap.h"
 #include "typedef_name.h"
+#include "y.tab.h"
 
 /// Token for the error notification.
 #define ERROR 256
-
-/// Change input after EOF was reached.
-/// NOTE: it is used by Flex.
-///
-/// \return 0 - new source is assigned, 1 - nothing more to read
-int yywrap();
 
 // Defined in `yacc_syntax.y'
 extern int yyerror(const char *);
@@ -35,6 +30,12 @@ extern int yyerror(const char *);
 ///
 /// \param str Warning description to be printed
 void yywarn(const char *);
+
+/// Change input after EOF was reached.
+/// NOTE: it is used by Flex.
+///
+/// \return 0 - new source is assigned, 1 - nothing more to read
+int yywrap();
 
 /// Change source file to read next.
 ///
@@ -228,13 +229,8 @@ WS        [ \f\n\r\t\v]
 "_Thread_local"         { return THREAD_LOCAL; }
 
 {ID} {
-    yylval.id = (char *) malloc(sizeof(char) * (yyleng + 1));
-    if (!yylval.id)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for IDENTIFIER cannot be allocated!\n");
-        exit(-1);
-    }
+    yylval.id = (char *) my_malloc(sizeof(char) * (yyleng + 1),
+            "IDENTIFIER");
     strcpy(yylval.id, yytext);
     if (is_typedef_name(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
@@ -244,13 +240,8 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
 {D}+{IS}? {
-    yylval.integer = (char *) malloc(sizeof(char) * (yyleng + 1));
-    if (!yylval.integer)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for INTEGER_CONSTANT cannot be allocated!\n");
-        exit(-1);
-    }
+    yylval.integer = (char *) my_malloc(sizeof(char) * (yyleng + 1),
+            "INTEGER_CONSTANT");
     strcpy(yylval.integer, yytext);
     return INTEGER_CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 45-46
@@ -262,13 +253,8 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? {
-    yylval.floating = (char *) malloc(sizeof(char) * (yyleng + 1));
-    if (!yylval.floating)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for FLOATING_CONSTANT cannot be allocated!\n");
-        exit(-1);
-    }
+    yylval.floating = (char *) my_malloc(sizeof(char) * (yyleng + 1),
+            "FLOATING_CONSTANT");
     strcpy(yylval.floating, yytext);
     return FLOATING_CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 47-48
@@ -443,13 +429,8 @@ char *readstr()
 {
     size_t i = 0, j = 0;
     char to_put;
-    char *res = (char *) malloc(sizeof(char) * yyleng);
-    if (!res)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for STRING_LITERAL cannot be allocated!\n");
-        exit(-1);
-    }
+    char *res = (char *) my_malloc(sizeof(char) * yyleng,
+            "STRING_LITERAL");
     while (i < yyleng - 1)
     {
         if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/')

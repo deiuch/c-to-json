@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "alloc_wrap.h"
 #include "ast.h"
 #include "string_tools.h"
 
@@ -16,25 +17,14 @@ AST_NODE *ast_root = NULL;
 
 AST_NODE *ast_create_node(AST_NODE_TYPE type, void *content, int n_children, ...)
 {
-    AST_NODE *res = malloc(sizeof(AST_NODE));
-    if (!res)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for AST node cannot be allocated!\n");
-        exit(-1);
-    }
+    AST_NODE *res = (AST_NODE *) my_malloc(sizeof(AST_NODE), "AST node");
     *res = (AST_NODE) {type, content, n_children, NULL};
     va_list ap;
     int i = 0;
     if (n_children > 0)
     {
-        res->children = (AST_NODE **) malloc(sizeof(AST_NODE *) * n_children);
-        if (!res->children)
-        {
-            fprintf(stderr,
-                    "FATAL ERROR! Memory for AST node's children cannot be allocated!\n");
-            exit(-1);
-        }
+        res->children = (AST_NODE **)
+            my_malloc(sizeof(AST_NODE *) * n_children, "AST node's children");
         va_start(ap, n_children);
         while (i < n_children)
         {
@@ -52,13 +42,8 @@ AST_NODE *ast_expand_node(AST_NODE *node, AST_NODE *to_append)
         return node;
     }
     ++node->children_number;
-    realloc(node->children, sizeof(AST_NODE *) * node->children_number);
-    if (!node->children)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for AST node's children cannot be reallocated!\n");
-        exit(-1);
-    }
+    node->children = my_realloc(node->children,
+            sizeof(AST_NODE *) * node->children_number, "AST node's children");
     node->children[node->children_number - 1] = to_append;
     return node;
 }
@@ -86,13 +71,8 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     int res;
     if (!root)
     {
-        json = (char *) malloc(sizeof(char) * (shift * strlen(tab) + 5));
-        if (!json)
-        {
-            fprintf(stderr,
-                "FATAL ERROR! Memory for JSON representation cannot be allocated!\n");
-            exit(-1);
-        }
+        json = (char *) my_malloc(sizeof(char) * (shift * strlen(tab) + 5),
+                "JSON representation");
         res = sprintf(json, "%snull", act_tab);
         free(act_tab);
         if (!res)
@@ -117,13 +97,8 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     }
     free(children);
 
-    json = (char *) malloc(sizeof(char) * (0 + 1));  // TODO strlen(json) after `sprintf' instead 0
-    if (!json)
-    {
-        fprintf(stderr,
-            "FATAL ERROR! Memory for JSON representation cannot be allocated!\n");
-        exit(-1);
-    }
+    json = (char *) my_malloc(sizeof(char) * (0 + 1),  // TODO strlen(json) after `sprintf' instead 0
+            "JSON representation");
     res = sprintf(json,
                   "%s{\n"
                   "%s%s\"type\": \"%s\",\n"
