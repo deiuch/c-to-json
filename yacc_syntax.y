@@ -739,3 +739,12 @@ void collect_typedef_names(AST_NODE *node)
 //        put_typedef_name(DirectDeclarator.ID);
 //    }
 }
+
+/// Conversion function for AST node content.
+///
+/// \param obj Object of AST content
+/// \return String representation of the given object
+char *content_to_str(void *obj)
+{
+    return NULL;  // TODO
+}

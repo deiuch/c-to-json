@@ -66,7 +66,7 @@ void ast_free(AST_NODE *root) {
     free(root);
 }
 
-char *ast_to_json(AST_NODE *root, int shift, char *tab) {
+char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(void *)) {
     char *json;
     char *act_tab = repeat(shift, tab);
     int res;
@@ -96,10 +96,15 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     char *content_str;
     if (root->content)
     {
-        // TODO content representation
+        content_str = (*cont_to_str)(root->content);
+        if (!content_str)
+        {
+            goto null_content;
+        }
     }
     else
     {
+        null_content:
         content_str = (char *) my_malloc(sizeof(char) * 5, "JSON null");
         res = sprintf(content_str, "null");
         if (res < 0)
@@ -122,7 +127,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab) {
     char **children = (char **) malloc(sizeof(char *) * root->children_number);
     for (i = 0; i < root->children_number; ++i)
     {
-        children[i] = ast_to_json(root->children[i], shift + 2, tab);
+        children[i] = ast_to_json(root->children[i], shift + 2, tab, cont_to_str);
     }
     char *children_str;
     if (root->children)

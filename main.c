@@ -14,6 +14,9 @@
 /// Input file for Flex.
 extern FILE *yyin;
 
+/// Conversion function for AST node content.
+extern char *content_to_str(void *);
+
 /// Program entry point.
 ///
 /// \param argc Size of `argv'
@@ -58,7 +61,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    char *json = ast_to_json(ast_root, 0, "    ");
+    char *json = ast_to_json(ast_root, 0, "    ", &content_to_str);
     ast_free(ast_root);
     if (!json)
     {
