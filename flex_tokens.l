@@ -18,6 +18,7 @@
 #include <string.h>
 #include "alloc_wrap.h"
 #include "typedef_name.h"
+#include "ast.h"
 #include "y.tab.h"
 
 /// Token for the error notification.
@@ -274,7 +275,7 @@ WS        [ \f\n\r\t\v]
     if (!yylval.string || strlen(content) != 1) {
         return ERROR;  // TODO error message
     }
-    yylval.character = content[0];
+    yylval.character = content;
     return CHARACTER_CONSTANT;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }

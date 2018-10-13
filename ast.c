@@ -52,7 +52,72 @@ char *ast_type_to_str(AST_NODE_TYPE type)
 {
     switch (type)
     {
-        default: return NULL;  // TODO
+        case TranslationUnit: return "TranslationUnit";
+        case FunctionDefinition: return "FunctionDefinition";
+        case DeclarationList: return "DeclarationList";
+        case Declaration: return "Declaration";
+        case DeclarationSpecifiers: return "DeclarationSpecifiers";
+        case InitDeclaratorList: return "InitDeclaratorList";
+        case InitDeclarator: return "InitDeclarator";
+        case StorageClassSpecifier: return "StorageClassSpecifier";
+        case TypeSpecifier: return "TypeSpecifier";
+        case StructSpecifier: return "StructSpecifier";
+        case UnionSpecifier: return "UnionSpecifier";
+        case StructDeclarationList: return "StructDeclarationList";
+        case StructDeclaration: return "StructDeclaration";
+        case SpecifierQualifierList: return "SpecifierQualifierList";
+        case StructDeclaratorList: return "StructDeclaratorList";
+        case StructDeclarator: return "StructDeclarator";
+        case EnumSpecifier: return "EnumSpecifier";
+        case EnumeratorList: return "EnumeratorList";
+        case Enumerator: return "Enumerator";
+        case AtomicTypeSpecifier: return "AtomicTypeSpecifier";
+        case TypeQualifier: return "TypeQualifier";
+        case FunctionSpecifier: return "FunctionSpecifier";
+        case AlignmentSpecifier: return "AlignmentSpecifier";
+        case Declarator: return "Declarator";
+        case DirectDeclarator: return "DirectDeclarator";
+        case DirectDeclaratorBrackets: return "DirectDeclaratorBrackets";
+        case DirectDeclaratorParen: return "DirectDeclaratorParen";
+        case Pointer: return "Pointer";
+        case TypeQualifierList: return "TypeQualifierList";
+        case ParameterList: return "ParameterList";
+        case ParameterDeclaration: return "ParameterDeclaration";
+        case IdentifierList: return "IdentifierList";
+        case TypeName: return "TypeName";
+        case AbstractDeclarator: return "AbstractDeclarator";
+        case DirectAbstractDeclarator: return "DirectAbstractDeclarator";
+        case DirectAbstractDeclaratorBrackets: return "DirectAbstractDeclaratorBrackets";
+        case DirectAbstractDeclaratorParen: return "DirectAbstractDeclaratorParen";
+        case Initializer: return "Initializer";
+        case InitializerList: return "InitializerList";
+        case InitializerListElem: return "InitializerListElem";
+        case DesignatorList: return "DesignatorList";
+        case StaticAssertDeclaration: return "StaticAssertDeclaration";
+        case LabeledStatement: return "LabeledStatement";
+        case BlockItemList: return "BlockItemList";
+        case SelectionStatement: return "SelectionStatement";
+        case IterationStatement: return "IterationStatement";
+        case JumpStatement: return "JumpStatement";
+        case Expression: return "Expression";
+        case AssignmentExpression: return "AssignmentExpression";
+        case AssignmentOperator: return "AssignmentOperator";
+        case ConditionalExpression: return "ConditionalExpression";
+        case ArithmeticalExpression: return "ArithmeticalExpression";
+        case CastExpression: return "CastExpression";
+        case UnaryExpression: return "UnaryExpression";
+        case UnaryOperator: return "UnaryOperator";
+        case PostfixExpression: return "PostfixExpression";
+        case ArgumentExpressionList: return "ArgumentExpressionList";
+        case GenericSelection: return "GenericSelection";
+        case GenericAssocList: return "GenericAssocList";
+        case GenericAssociation: return "GenericAssociation";
+        case Identifier: return "Identifier";
+        case StringLiteral: return "StringLiteral";
+        case IntegerConstant: return "IntegerConstant";
+        case FloatingConstant: return "FloatingConstant";
+        case CharacterConstant: return "CharacterConstant";
+        default: return NULL;
     }
 }
 
@@ -112,7 +177,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
             free(act_tab);
-            free(type_str);
             free(content_str);
             exit(-1);
         }
@@ -133,16 +197,15 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
     if (root->children)
     {
         char *arr = concat_array(children, root->children_number, ",\n");
-        size_t size = strlen(arr) + strlen(tab) * (shift + 1) + sizeof(char) * (5 + 1);
+        size_t size = strlen(arr) + strlen(tab) * (shift + 1) + sizeof(char) * (4 + 1);
         children_str = (char *) my_malloc(size, "children array string");
-        res = sprintf(children_str, "[\n%s\n%s%s]\n", arr, act_tab, tab);
+        res = sprintf(children_str, "[\n%s\n%s%s]", arr, act_tab, tab);
         free(arr);
         if (res < 0)
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
             free(act_tab);
-            free(type_str);
             free(content_str);
             free(children_num_str);
             free(children_str);
@@ -163,7 +226,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
             free(act_tab);
-            free(type_str);
             free(content_str);
             free(children_num_str);
             free(children_str);
@@ -194,7 +256,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
                   act_tab, tab, children_str,
                   act_tab);
     free(act_tab);
-    free(type_str);
     free(content_str);
     free(children_num_str);
     free(children_str);

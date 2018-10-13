@@ -24,7 +24,7 @@ char *concat_array(char **array, int n, char *delimiter)
     {
         return *array;
     }
-    int i, j;
+    int i, j, k;
     size_t d_len = strlen(delimiter);
     size_t len = d_len * (n - 1);
     for (i = 0; i < n; ++i)
@@ -34,22 +34,22 @@ char *concat_array(char **array, int n, char *delimiter)
     char *res = (char *) my_malloc(sizeof(char) * (len + 1),
             "string concatenation");
     size_t cur_len;
-    for (i = 0; i < n;)
+    k = 0;
+    for (i = 0; i < n; ++i)
     {
-        cur_len = strlen(array[i]);
-        for (j = 0; j < cur_len; ++j)
+        j = 0;
+        while (array[i][j] != '\0')
         {
-            res[i + j] = array[i][j];
+            res[k++] = array[i][j++];
         }
-        i += j;
-        if (i == len - 1) break;
-        for (j = 0; j < d_len; ++j)
+        if (k == len) break;
+        j = 0;
+        while (delimiter[j] != '\0')
         {
-            res[i + j] = delimiter[j];
+            res[k++] = delimiter[j++];
         }
-        i += j;
     }
-    res[i] = '\0';
+    res[k] = '\0';
     return res;
 }
 
