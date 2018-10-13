@@ -31,13 +31,13 @@ _Bool is_typedef_name(char *id)
 
 void put_typedef_name(char *id)
 {
-    typedef_table = my_realloc(typedef_table,
+    typedef_table = (char **) my_realloc(typedef_table,
             (typedef_table_size + 1) * sizeof(char *),
             "typedef-name symbol table");
     typedef_table[typedef_table_size] = (char *) my_malloc(
             sizeof(char) * (strlen(id) + 1),
             "new typedef-name");
-    strcpy(typedef_table[typedef_table_size - 1], id);
+    strcpy(typedef_table[typedef_table_size], id);
     ++typedef_table_size;
 }
 

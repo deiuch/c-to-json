@@ -13,6 +13,8 @@
 
 _Bool str_eq(char *str1, char *str2)
 {
+    if (!str1 && !str2) return true;
+    if (!str1 || !str2) return false;
     int i;
     for (i = 0; str1[i] != '\0' && str2[i] != '\0'; ++i)
     {
@@ -23,6 +25,7 @@ _Bool str_eq(char *str1, char *str2)
 
 char *wrap_by_quotes(char *str)
 {
+    if (!str) return NULL;
     char *res = (char *) my_malloc(strlen(str) + 3, "quoted string");
     int r = sprintf(res, "\"%s\"", str);
     if (r < 0)

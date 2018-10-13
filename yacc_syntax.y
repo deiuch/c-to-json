@@ -343,8 +343,8 @@ Declaration
         }
         | DeclarationSpecifiers InitDeclaratorList SEMICOLON
         {
-            $$ = ast_create_node(Declaration, NULL, 2, $1, $2);
             if (is_typedef_used($1)) collect_typedef_names($2);  // Storing typedef-name
+            $$ = ast_create_node(Declaration, NULL, 2, $1, $2);
         }
         | StaticAssertDeclaration  { $$ = $1; }
         ;
@@ -1335,7 +1335,7 @@ _Bool is_typedef_used(AST_NODE *node)
     if (node->type != DeclarationSpecifiers) return false;
     for (int i = 0; i < node->children_number; ++i)  // TODO
     {
-        if (str_eq("TYPEDEF", node->children[i]->content)) return true;
+        if (node->children[i] && str_eq("TYPEDEF", node->children[i]->content)) return true;
     }
     return false;
 }
@@ -1345,13 +1345,15 @@ void collect_typedef_names(AST_NODE *node)
     if (node->type != InitDeclaratorList) return;
     for (int i = 0; i < node->children_number; ++i)  // TODO
     {
-        for (int j = 0; j < node->children[i]->children_number; ++j)
+        if (node->children[i]->children[0]->type == DirectDeclarator
+            && node->children[i]->children[0]->children[0]->type == Identifier)
         {
-            if (node->children[i]->children[j]->type == DirectDeclarator
-                && node->children[i]->children[j]->children[0]->type == Identifier)
-            {
-                put_typedef_name(node->children[i]->children[j]->children[0]->content);
-            }
+            put_typedef_name(node->children[i]->children[0]->children[0]->content);
+        }
+        else if (node->children[i]->children[1]->type == DirectDeclarator
+            && node->children[i]->children[1]->children[0]->type == Identifier)
+        {
+            put_typedef_name(node->children[i]->children[1]->children[0]->content);
         }
     }
 }
