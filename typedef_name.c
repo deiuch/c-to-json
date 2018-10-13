@@ -32,7 +32,7 @@ _Bool is_typedef_name(char *id)
 void put_typedef_name(char *id)
 {
     typedef_table = (char **) my_realloc(typedef_table,
-            (typedef_table_size + 1) * sizeof(char *),
+            sizeof(char *) * (typedef_table_size + 1),
             "typedef-name symbol table");
     typedef_table[typedef_table_size] = (char *) my_malloc(
             sizeof(char) * (strlen(id) + 1),

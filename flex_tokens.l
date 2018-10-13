@@ -168,7 +168,7 @@ WS        [ \f\n\r\t\v]
     BEGIN INITIAL;
     yywarn(yytext);
 }
-<PREP>"pragma"{PR_INS}  { BEGIN INITIAL; /* TODO compiler pragmas */}
+<PREP>"pragma"{PR_INS}  { BEGIN INITIAL; /* TODO compiler pragmas */ }
 
 <PREP>""$ {
     BEGIN INITIAL;
