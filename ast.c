@@ -123,7 +123,7 @@ char *ast_type_to_str(AST_NODE_TYPE type)
 
 void ast_free(AST_NODE *root) {
     if (root == NULL) return;
-    free(root->content);
+//    free(root->content);  // FIXME
     for (int i = 0; i < root->children_number; ++i)
     {
         ast_free(root->children[i]);
@@ -183,7 +183,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
     }
 
     // Get string representation of children amount
-    char *children_num_str = (char *) my_malloc(7, "number representation");  // TODO size
+    char *children_num_str = (char *) my_malloc(7, "number representation");
     itoa(root->children_number, children_num_str, 10);
 
     // Get string representation of children array
@@ -197,10 +197,11 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
     if (root->children)
     {
         char *arr = concat_array(children, root->children_number, ",\n");
+//        for (i = 0; i < root->children_number; ++i) free(children[i]);  // FIXME
         size_t size = strlen(arr) + strlen(tab) * (shift + 1) + sizeof(char) * (4 + 1);
         children_str = (char *) my_malloc(size, "children array string");
         res = sprintf(children_str, "[\n%s\n%s%s]", arr, act_tab, tab);
-        free(arr);
+//        free(arr);  // FIXME
         if (res < 0)
         {
             fprintf(stderr,
@@ -210,10 +211,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
             free(children_num_str);
             free(children_str);
             exit(-1);
-        }
-        for (i = 0; i < root->children_number; ++i)
-        {
-            free(children[i]);
         }
         free(children);
     }
@@ -240,7 +237,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
             + strlen(children_num_str)
             + strlen(children_str)
             + strlen(tab) * (shift * 6 + 4)
-            + sizeof(char) * (62 + 1);  // TODO check
+            + sizeof(char) * (62 + 1);
     json = (char *) my_malloc(json_size, "JSON representation");
     res = sprintf(json,
                   "%s{\n"

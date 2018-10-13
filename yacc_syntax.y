@@ -51,9 +51,17 @@ void collect_typedef_names(AST_NODE *node);
 
 /// Convert constant value to the corresponding AST node.
 ///
-/// \param id Constant to put as content
+/// \param type Type of a new node
+/// \param val Constant to put as content
 /// \return New AST node for a given constant
 AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
+
+/// Wrap a given string into double quotes.
+/// Needs to be freed.
+///
+/// \param str String to wrap
+/// \return New string inside quotes
+char *wrap_by_quotes(char *str);
 %}
 
 %start TranslationUnit
@@ -413,27 +421,27 @@ InitDeclarator
         ;
 
 StorageClassSpecifier
-        : TYPEDEF       { $$ = ast_create_node(StorageClassSpecifier, "\"TYPEDEF\"", 0); }
-        | EXTERN        { $$ = ast_create_node(StorageClassSpecifier, "\"EXTERN\"", 0); }
-        | STATIC        { $$ = ast_create_node(StorageClassSpecifier, "\"STATIC\"", 0); }
-        | THREAD_LOCAL  { $$ = ast_create_node(StorageClassSpecifier, "\"THREAD_LOCAL\"", 0); }
-        | AUTO          { $$ = ast_create_node(StorageClassSpecifier, "\"AUTO\"", 0); }
-        | REGISTER      { $$ = ast_create_node(StorageClassSpecifier, "\"REGISTER\"", 0); }
+        : TYPEDEF       { $$ = ast_create_node(StorageClassSpecifier, wrap_by_quotes("TYPEDEF"), 0); }
+        | EXTERN        { $$ = ast_create_node(StorageClassSpecifier, wrap_by_quotes("EXTERN"), 0); }
+        | STATIC        { $$ = ast_create_node(StorageClassSpecifier, wrap_by_quotes("STATIC"), 0); }
+        | THREAD_LOCAL  { $$ = ast_create_node(StorageClassSpecifier, wrap_by_quotes("THREAD_LOCAL"), 0); }
+        | AUTO          { $$ = ast_create_node(StorageClassSpecifier, wrap_by_quotes("AUTO"), 0); }
+        | REGISTER      { $$ = ast_create_node(StorageClassSpecifier, wrap_by_quotes("REGISTER"), 0); }
         ;
 
 TypeSpecifier
-        : VOID       { $$ = ast_create_node(TypeSpecifier, "\"VOID\"", 0); }
-        | CHAR       { $$ = ast_create_node(TypeSpecifier, "\"CHAR\"", 0); }
-        | SHORT      { $$ = ast_create_node(TypeSpecifier, "\"SHORT\"", 0); }
-        | INT        { $$ = ast_create_node(TypeSpecifier, "\"INT\"", 0); }
-        | LONG       { $$ = ast_create_node(TypeSpecifier, "\"LONG\"", 0); }
-        | FLOAT      { $$ = ast_create_node(TypeSpecifier, "\"FLOAT\"", 0); }
-        | DOUBLE     { $$ = ast_create_node(TypeSpecifier, "\"DOUBLE\"", 0); }
-        | SIGNED     { $$ = ast_create_node(TypeSpecifier, "\"SIGNED\"", 0); }
-        | UNSIGNED   { $$ = ast_create_node(TypeSpecifier, "\"UNSIGNED\"", 0); }
-        | BOOL       { $$ = ast_create_node(TypeSpecifier, "\"BOOL\"", 0); }
-        | COMPLEX    { $$ = ast_create_node(TypeSpecifier, "\"COMPLEX\"", 0); }
-        | IMAGINARY  { $$ = ast_create_node(TypeSpecifier, "\"IMAGINARY\"", 0); }
+        : VOID       { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("VOID"), 0); }
+        | CHAR       { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("CHAR"), 0); }
+        | SHORT      { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("SHORT"), 0); }
+        | INT        { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("INT"), 0); }
+        | LONG       { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("LONG"), 0); }
+        | FLOAT      { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("FLOAT"), 0); }
+        | DOUBLE     { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("DOUBLE"), 0); }
+        | SIGNED     { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("SIGNED"), 0); }
+        | UNSIGNED   { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("UNSIGNED"), 0); }
+        | BOOL       { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("BOOL"), 0); }
+        | COMPLEX    { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("COMPLEX"), 0); }
+        | IMAGINARY  { $$ = ast_create_node(TypeSpecifier, wrap_by_quotes("IMAGINARY"), 0); }
         | AtomicTypeSpecifier     { $$ = $1; }
         | StructOrUnionSpecifier  { $$ = $1; }
         | EnumSpecifier           { $$ = $1; }
@@ -583,15 +591,15 @@ AtomicTypeSpecifier
         ;
 
 TypeQualifier
-        : CONST     { $$ = ast_create_node(TypeQualifier, "\"CONST\"", 0); }
-        | RESTRICT  { $$ = ast_create_node(TypeQualifier, "\"RESTRICT\"", 0); }
-        | VOLATILE  { $$ = ast_create_node(TypeQualifier, "\"VOLATILE\"", 0); }
-        | ATOMIC    { $$ = ast_create_node(TypeQualifier, "\"ATOMIC\"", 0); }
+        : CONST     { $$ = ast_create_node(TypeQualifier, wrap_by_quotes("CONST"), 0); }
+        | RESTRICT  { $$ = ast_create_node(TypeQualifier, wrap_by_quotes("RESTRICT"), 0); }
+        | VOLATILE  { $$ = ast_create_node(TypeQualifier, wrap_by_quotes("VOLATILE"), 0); }
+        | ATOMIC    { $$ = ast_create_node(TypeQualifier, wrap_by_quotes("ATOMIC"), 0); }
         ;
 
 FunctionSpecifier
-        : INLINE    { $$ = ast_create_node(FunctionSpecifier, "\"INLINE\"", 0); }
-        | NORETURN  { $$ = ast_create_node(FunctionSpecifier, "\"NORETURN\"", 0); }
+        : INLINE    { $$ = ast_create_node(FunctionSpecifier, wrap_by_quotes("INLINE"), 0); }
+        | NORETURN  { $$ = ast_create_node(FunctionSpecifier, wrap_by_quotes("NORETURN"), 0); }
         ;
 
 AlignmentSpecifier
@@ -643,23 +651,23 @@ DirectDeclarator
         }
         | DirectDeclarator LBRACKET                   STATIC AssignmentExpression RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, "\"STATIC\"", 1, $4));
+            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, wrap_by_quotes("STATIC"), 1, $4));
         }
         | DirectDeclarator LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, "\"STATIC\"", 2, $4, $5));
+            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, wrap_by_quotes("STATIC"), 2, $4, $5));
         }
         | DirectDeclarator LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, "\"STATIC\"", 2, $3, $5));
+            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, wrap_by_quotes("STATIC"), 2, $3, $5));
         }
         | DirectDeclarator LBRACKET                   ASTERISK                    RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, "\"ASTERISK\"", 0));
+            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, wrap_by_quotes("ASTERISK"), 0));
         }
         | DirectDeclarator LBRACKET TypeQualifierList ASTERISK                    RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, "\"ASTERISK\"", 1, $3));
+            $$ = ast_expand_node($1, ast_create_node(DirectDeclaratorBrackets, wrap_by_quotes("ASTERISK"), 1, $3));
         }
         | DirectDeclarator LPAREN ParameterTypeList RPAREN
         {
@@ -709,7 +717,7 @@ ParameterTypeList
         : ParameterList  { $$ = $1; }
         | ParameterList COMMA ELLIPSIS
         {
-            $1->content = "\"ELLIPSIS\"";
+            $1->content = wrap_by_quotes("ELLIPSIS");
             $$ = $1;
         }
         ;
@@ -805,22 +813,22 @@ DirectAbstractDeclarator
         |                          LBRACKET                   STATIC AssignmentExpression RBRACKET
         {
             $$ = ast_create_node(DirectAbstractDeclarator, NULL, 1,
-                ast_create_node(DirectAbstractDeclaratorBrackets, "\"STATIC\"", 1, $3));
+                ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("STATIC"), 1, $3));
         }
         |                          LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
         {
             $$ = ast_create_node(DirectAbstractDeclarator, NULL, 1,
-                ast_create_node(DirectAbstractDeclaratorBrackets, "\"STATIC\"", 2, $3, $4));
+                ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("STATIC"), 2, $3, $4));
         }
         |                          LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
         {
             $$ = ast_create_node(DirectAbstractDeclarator, NULL, 1,
-                ast_create_node(DirectAbstractDeclaratorBrackets, "\"STATIC\"", 2, $2, $4));
+                ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("STATIC"), 2, $2, $4));
         }
         |                          LBRACKET ASTERISK RBRACKET
         {
             $$ = ast_create_node(DirectAbstractDeclarator, NULL, 1,
-                ast_create_node(DirectAbstractDeclaratorBrackets, "\"ASTERISK\"", 0));
+                ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("ASTERISK"), 0));
         }
         |                          LPAREN                   RPAREN
         {
@@ -850,19 +858,19 @@ DirectAbstractDeclarator
         }
         | DirectAbstractDeclarator LBRACKET                   STATIC AssignmentExpression RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, "\"STATIC\"", 1, $4));
+            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("STATIC"), 1, $4));
         }
         | DirectAbstractDeclarator LBRACKET STATIC TypeQualifierList AssignmentExpression RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, "\"STATIC\"", 2, $4, $5));
+            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("STATIC"), 2, $4, $5));
         }
         | DirectAbstractDeclarator LBRACKET TypeQualifierList STATIC AssignmentExpression RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, "\"STATIC\"", 2, $3, $5));
+            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("STATIC"), 2, $3, $5));
         }
         | DirectAbstractDeclarator LBRACKET ASTERISK RBRACKET
         {
-            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, "\"ASTERISK\"", 0));
+            $$ = ast_expand_node($1, ast_create_node(DirectAbstractDeclaratorBrackets, wrap_by_quotes("ASTERISK"), 0));
         }
         | DirectAbstractDeclarator LPAREN                   RPAREN
         {
@@ -958,11 +966,11 @@ LabeledStatement
         }
         | CASE ConstantExpression COLON Statement
         {
-            $$ = ast_create_node(LabeledStatement, "\"CASE\"", 2, $2, $4);
+            $$ = ast_create_node(LabeledStatement, wrap_by_quotes("CASE"), 2, $2, $4);
         }
         | DEFAULT                 COLON Statement
         {
-            $$ = ast_create_node(LabeledStatement, "\"DEFAULT\"", 1, $3);
+            $$ = ast_create_node(LabeledStatement, wrap_by_quotes("DEFAULT"), 1, $3);
         }
         ;
 
@@ -995,57 +1003,57 @@ ExpressionStatement
 SelectionStatement
         : IF     LPAREN Expression RPAREN Statement %prec NO_ELSE
         {
-            $$ = ast_create_node(SelectionStatement, "\"IF\"", 2, $3, $5);
+            $$ = ast_create_node(SelectionStatement, wrap_by_quotes("IF"), 2, $3, $5);
         }
         | IF     LPAREN Expression RPAREN Statement ELSE Statement
         {
-            $$ = ast_create_node(SelectionStatement, "\"IF\"", 3, $3, $5, $7);
+            $$ = ast_create_node(SelectionStatement, wrap_by_quotes("IF"), 3, $3, $5, $7);
         }
         | SWITCH LPAREN Expression RPAREN Statement
         {
-            $$ = ast_create_node(SelectionStatement, "\"SWITCH\"", 2, $3, $5);
+            $$ = ast_create_node(SelectionStatement, wrap_by_quotes("SWITCH"), 2, $3, $5);
         }
         ;
 
 IterationStatement
         :              WHILE LPAREN Expression RPAREN Statement
         {
-            $$ = ast_create_node(IterationStatement, "\"WHILE\"", 2, $3, $5);
+            $$ = ast_create_node(IterationStatement, wrap_by_quotes("WHILE"), 2, $3, $5);
         }
         | DO Statement WHILE LPAREN Expression RPAREN SEMICOLON
         {
-            $$ = ast_create_node(IterationStatement, "\"DO\"", 2, $5, $2);  // Expression first
+            $$ = ast_create_node(IterationStatement, wrap_by_quotes("DO"), 2, $5, $2);  // Expression first
         }
         | FOR LPAREN ExpressionOpt SEMICOLON ExpressionOpt SEMICOLON ExpressionOpt RPAREN Statement
         {
-            $$ = ast_create_node(IterationStatement, "\"FOR\"", 4, $3, $5, $7, $9);
+            $$ = ast_create_node(IterationStatement, wrap_by_quotes("FOR"), 4, $3, $5, $7, $9);
         }
         | FOR LPAREN Declaration             ExpressionOpt SEMICOLON ExpressionOpt RPAREN Statement
         {
-            $$ = ast_create_node(IterationStatement, "\"FOR\"", 3, $3, $4, $6, $8);
+            $$ = ast_create_node(IterationStatement, wrap_by_quotes("FOR"), 3, $3, $4, $6, $8);
         }
         ;
 
 JumpStatement
         : GOTO IDENTIFIER   SEMICOLON
         {
-            $$ = ast_create_node(JumpStatement, "\"GOTO\"", 1, get_const_node(Identifier, $2));
+            $$ = ast_create_node(JumpStatement, wrap_by_quotes("GOTO"), 1, get_const_node(Identifier, $2));
         }
         | CONTINUE          SEMICOLON
         {
-            $$ = ast_create_node(JumpStatement, "\"CONTINUE\"", 0);
+            $$ = ast_create_node(JumpStatement, wrap_by_quotes("CONTINUE"), 0);
         }
         | BREAK             SEMICOLON
         {
-            $$ = ast_create_node(JumpStatement, "\"BREAK\"", 0);
+            $$ = ast_create_node(JumpStatement, wrap_by_quotes("BREAK"), 0);
         }
         | RETURN            SEMICOLON
         {
-            $$ = ast_create_node(JumpStatement, "\"RETURN\"", 0);
+            $$ = ast_create_node(JumpStatement, wrap_by_quotes("RETURN"), 0);
         }
         | RETURN Expression SEMICOLON
         {
-            $$ = ast_create_node(JumpStatement, "\"RETURN\"", 1, $2);
+            $$ = ast_create_node(JumpStatement, wrap_by_quotes("RETURN"), 1, $2);
         }
         ;
 
@@ -1082,17 +1090,17 @@ AssignmentExpression
         ;
 
 AssignmentOperator
-        : ASSIGN        { $$ = ast_create_node(AssignmentOperator, "\"ASSIGN\"", 0); }
-        | MUL_ASSIGN    { $$ = ast_create_node(AssignmentOperator, "\"MUL_ASSIGN\"", 0); }
-        | DIV_ASSIGN    { $$ = ast_create_node(AssignmentOperator, "\"DIV_ASSIGN\"", 0); }
-        | MOD_ASSIGN    { $$ = ast_create_node(AssignmentOperator, "\"MOD_ASSIGN\"", 0); }
-        | ADD_ASSIGN    { $$ = ast_create_node(AssignmentOperator, "\"ADD_ASSIGN\"", 0); }
-        | SUB_ASSIGN    { $$ = ast_create_node(AssignmentOperator, "\"SUB_ASSIGN\"", 0); }
-        | LEFT_ASSIGN   { $$ = ast_create_node(AssignmentOperator, "\"LEFT_ASSIGN\"", 0); }
-        | RIGHT_ASSIGN  { $$ = ast_create_node(AssignmentOperator, "\"RIGHT_ASSIGN\"", 0); }
-        | AND_ASSIGN    { $$ = ast_create_node(AssignmentOperator, "\"AND_ASSIGN\"", 0); }
-        | XOR_ASSIGN    { $$ = ast_create_node(AssignmentOperator, "\"XOR_ASSIGN\"", 0); }
-        | OR_ASSIGN     { $$ = ast_create_node(AssignmentOperator, "\"OR_ASSIGN\"", 0); }
+        : ASSIGN        { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("ASSIGN"), 0); }
+        | MUL_ASSIGN    { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("MUL_ASSIGN"), 0); }
+        | DIV_ASSIGN    { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("DIV_ASSIGN"), 0); }
+        | MOD_ASSIGN    { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("MOD_ASSIGN"), 0); }
+        | ADD_ASSIGN    { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("ADD_ASSIGN"), 0); }
+        | SUB_ASSIGN    { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("SUB_ASSIGN"), 0); }
+        | LEFT_ASSIGN   { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("LEFT_ASSIGN"), 0); }
+        | RIGHT_ASSIGN  { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("RIGHT_ASSIGN"), 0); }
+        | AND_ASSIGN    { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("AND_ASSIGN"), 0); }
+        | XOR_ASSIGN    { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("XOR_ASSIGN"), 0); }
+        | OR_ASSIGN     { $$ = ast_create_node(AssignmentOperator, wrap_by_quotes("OR_ASSIGN"), 0); }
         ;
 
 ConditionalExpression
@@ -1107,75 +1115,75 @@ ArithmeticalExpression
         : CastExpression  { $$ = $1; }
         | ArithmeticalExpression LOG_OR    ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"LOG_OR\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("LOG_OR"), 2, $1, $3);
         }
         | ArithmeticalExpression LOG_AND   ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"LOG_AND\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("LOG_AND"), 2, $1, $3);
         }
         | ArithmeticalExpression VERTICAL  ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"VERTICAL\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("VERTICAL"), 2, $1, $3);
         }
         | ArithmeticalExpression CARET     ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"CARET\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("CARET"), 2, $1, $3);
         }
         | ArithmeticalExpression AMPERSAND ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"AMPERSAND\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("AMPERSAND"), 2, $1, $3);
         }
         | ArithmeticalExpression EQ        ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"EQ\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("EQ"), 2, $1, $3);
         }
         | ArithmeticalExpression NE        ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"NE\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("NE"), 2, $1, $3);
         }
         | ArithmeticalExpression LS        ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"LS\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("LS"), 2, $1, $3);
         }
         | ArithmeticalExpression GR        ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"GR\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("GR"), 2, $1, $3);
         }
         | ArithmeticalExpression LE        ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"LE\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("LE"), 2, $1, $3);
         }
         | ArithmeticalExpression GE        ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"GE\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("GE"), 2, $1, $3);
         }
         | ArithmeticalExpression LSHIFT    ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"LSHIFT\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("LSHIFT"), 2, $1, $3);
         }
         | ArithmeticalExpression RSHIFT    ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"RSHIFT\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("RSHIFT"), 2, $1, $3);
         }
         | ArithmeticalExpression PLUS      ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"PLUS\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("PLUS"), 2, $1, $3);
         }
         | ArithmeticalExpression MINUS     ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"MINUS\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("MINUS"), 2, $1, $3);
         }
         | ArithmeticalExpression ASTERISK  ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"ASTERISK\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("ASTERISK"), 2, $1, $3);
         }
         | ArithmeticalExpression SLASH     ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"SLASH\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("SLASH"), 2, $1, $3);
         }
         | ArithmeticalExpression PERCENT   ArithmeticalExpression
         {
-            $$ = ast_create_node(ArithmeticalExpression, "\"PERCENT\"", 2, $1, $3);
+            $$ = ast_create_node(ArithmeticalExpression, wrap_by_quotes("PERCENT"), 2, $1, $3);
         }
         ;
 
@@ -1191,11 +1199,11 @@ UnaryExpression
         : PostfixExpression  { $$ = $1; }
         | DBL_PLUS  UnaryExpression
         {
-            $$ = ast_create_node(UnaryExpression, "\"DBL_PLUS\"", 1, $2);
+            $$ = ast_create_node(UnaryExpression, wrap_by_quotes("DBL_PLUS"), 1, $2);
         }
         | DBL_MINUS UnaryExpression
         {
-            $$ = ast_create_node(UnaryExpression, "\"DBL_MINUS\"", 1, $2);
+            $$ = ast_create_node(UnaryExpression, wrap_by_quotes("DBL_MINUS"), 1, $2);
         }
         | UnaryOperator CastExpression
         {
@@ -1203,56 +1211,56 @@ UnaryExpression
         }
         | SIZEOF  UnaryExpression
         {
-            $$ = ast_create_node(UnaryExpression, "\"SIZEOF\"", 1, $2);
+            $$ = ast_create_node(UnaryExpression, wrap_by_quotes("SIZEOF"), 1, $2);
         }
         | SIZEOF  LPAREN TypeName RPAREN
         {
-            $$ = ast_create_node(UnaryExpression, "\"SIZEOF\"", 1, $3);
+            $$ = ast_create_node(UnaryExpression, wrap_by_quotes("SIZEOF"), 1, $3);
         }
         | ALIGNOF LPAREN TypeName RPAREN
         {
-            $$ = ast_create_node(UnaryExpression, "\"AKIGNOF\"", 1, $3);
+            $$ = ast_create_node(UnaryExpression, wrap_by_quotes("AKIGNOF"), 1, $3);
         }
         ;
 
 UnaryOperator
-        : AMPERSAND { $$ = ast_create_node(UnaryOperator, "\"AMPERSAND\"", 0); }
-        | ASTERISK  { $$ = ast_create_node(UnaryOperator, "\"ASTERISK\"", 0); }
-        | PLUS      { $$ = ast_create_node(UnaryOperator, "\"PLUS\"", 0); }
-        | MINUS     { $$ = ast_create_node(UnaryOperator, "\"MINUS\"", 0); }
-        | TILDE     { $$ = ast_create_node(UnaryOperator, "\"TILDE\"", 0); }
-        | BANG      { $$ = ast_create_node(UnaryOperator, "\"BANG\"", 0); }
+        : AMPERSAND { $$ = ast_create_node(UnaryOperator, wrap_by_quotes("AMPERSAND"), 0); }
+        | ASTERISK  { $$ = ast_create_node(UnaryOperator, wrap_by_quotes("ASTERISK"), 0); }
+        | PLUS      { $$ = ast_create_node(UnaryOperator, wrap_by_quotes("PLUS"), 0); }
+        | MINUS     { $$ = ast_create_node(UnaryOperator, wrap_by_quotes("MINUS"), 0); }
+        | TILDE     { $$ = ast_create_node(UnaryOperator, wrap_by_quotes("TILDE"), 0); }
+        | BANG      { $$ = ast_create_node(UnaryOperator, wrap_by_quotes("BANG"), 0); }
         ;
 
 PostfixExpression
         : PrimaryExpression  { $$ = $1; }
         | PostfixExpression LBRACKET Expression RBRACKET
         {
-            $$ = ast_create_node(PostfixExpression, "\"BRACKETS\"", 1, $3);
+            $$ = ast_create_node(PostfixExpression, wrap_by_quotes("BRACKETS"), 1, $3);
         }
         | PostfixExpression LPAREN                        RPAREN
         {
-            $$ = ast_create_node(PostfixExpression, "\"PARENTHESES\"", 0);
+            $$ = ast_create_node(PostfixExpression, wrap_by_quotes("PARENTHESES"), 0);
         }
         | PostfixExpression LPAREN ArgumentExpressionList RPAREN
         {
-            $$ = ast_create_node(PostfixExpression, "\"PARENTHESES\"", 1, $3);
+            $$ = ast_create_node(PostfixExpression, wrap_by_quotes("PARENTHESES"), 1, $3);
         }
         | PostfixExpression DOT   IDENTIFIER
         {
-            $$ = ast_create_node(PostfixExpression, "\"DOT\"", 1, $3);
+            $$ = ast_create_node(PostfixExpression, wrap_by_quotes("DOT"), 1, $3);
         }
         | PostfixExpression ARROW IDENTIFIER
         {
-            $$ = ast_create_node(PostfixExpression, "\"ARROW\"", 1, $3);
+            $$ = ast_create_node(PostfixExpression, wrap_by_quotes("ARROW"), 1, $3);
         }
         | PostfixExpression DBL_PLUS
         {
-            $$ = ast_create_node(PostfixExpression, "\"DBL_PLUS\"", 0);
+            $$ = ast_create_node(PostfixExpression, wrap_by_quotes("DBL_PLUS"), 0);
         }
         | PostfixExpression DBL_MINUS
         {
-            $$ = ast_create_node(PostfixExpression, "\"DBL_MINUS\"", 0);
+            $$ = ast_create_node(PostfixExpression, wrap_by_quotes("DBL_MINUS"), 0);
         }
         | LPAREN TypeName RPAREN LBRACE InitializerList       RBRACE
         {
@@ -1315,7 +1323,7 @@ GenericAssociation
         }
         | DEFAULT  COLON AssignmentExpression
         {
-            $$ = ast_create_node(GenericAssociation, "\"DEFAULT\"", 1, $3);
+            $$ = ast_create_node(GenericAssociation, wrap_by_quotes("DEFAULT"), 1, $3);
         }
         ;
 
@@ -1352,13 +1360,20 @@ void collect_typedef_names(AST_NODE *node)
 
 AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
 {
-    AST_NODE *res = ast_create_node(type, NULL, 0);
-    res->content = (char *) my_malloc(strlen(val) + 3, "const node content");
-    int r = sprintf(res->content, "\"%s\"", val);
+    AST_NODE *res = ast_create_node(type, wrap_by_quotes(val), 0);
+    free(val);
+    return res;
+}
+
+char *wrap_by_quotes(char *str)
+{
+    char *res = (char *) my_malloc(strlen(str) + 3, "quoted string");
+    int r = sprintf(res, "\"%s\"", str);
     if (r < 0)
     {
         fprintf(stderr,
             "FATAL ERROR! String formatting cannot be applied!\n");
+        free(res);
         exit(-1);
     }
     return res;
