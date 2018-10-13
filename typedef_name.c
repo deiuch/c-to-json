@@ -11,6 +11,7 @@
 #include <string.h>
 #include "typedef_name.h"
 #include "alloc_wrap.h"
+#include "string_tools.h"
 
 /// typedef-name table.
 char **typedef_table;
@@ -21,17 +22,9 @@ int typedef_table_size = 0;
 _Bool is_typedef_name(char *id)
 {
     if (!typedef_table_size) return false;
-    int i, j;
-    char *cur;
-    for (i = 0; i < typedef_table_size; ++i)
+    for (int i = 0; i < typedef_table_size; ++i)
     {
-        cur = typedef_table[i];
-        for (j = 0; cur[j] != '\0' && id[j] != '\0'; ++j)
-        {
-            if (cur[j] != id[j]) break;
-        }
-        if (cur[j] != id[j]) continue;  // Both could be '\0'
-        return true;
+        if (str_eq(id, typedef_table[i])) return true;
     }
     return false;
 }

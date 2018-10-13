@@ -161,11 +161,13 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
     char *content_str;
     if (root->content)
     {
-        content_str = (*cont_to_str)(root->content);
-        if (!content_str)
+        char *tmp = (*cont_to_str)(root->content);
+        if (!tmp)
         {
             goto null_content;
         }
+        content_str = wrap_by_quotes(tmp);
+//        free(tmp);  // FIXME
     }
     else
     {

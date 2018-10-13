@@ -4,11 +4,36 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "alloc_wrap.h"
 #include "string_tools.h"
+
+_Bool str_eq(char *str1, char *str2)
+{
+    int i;
+    for (i = 0; str1[i] != '\0' && str2[i] != '\0'; ++i)
+    {
+        if (str1[i] != str2[i]) return false;
+    }
+    return str1[i] == str2[i];  // Both could be '\0'
+}
+
+char *wrap_by_quotes(char *str)
+{
+    char *res = (char *) my_malloc(strlen(str) + 3, "quoted string");
+    int r = sprintf(res, "\"%s\"", str);
+    if (r < 0)
+    {
+        fprintf(stderr,
+                "FATAL ERROR! String formatting cannot be applied!\n");
+        free(res);
+        exit(-1);
+    }
+    return res;
+}
 
 char *concat_array(char **array, int n, char *delimiter)
 {
