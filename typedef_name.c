@@ -50,3 +50,193 @@ void free_typedef_name()
     free(typedef_table);
     typedef_table_size = 0;
 }
+
+void add_str_typedef(char *header_name)
+{
+    if (str_eq(header_name, "assert.h"))
+    {
+        // Nothing
+    }
+    else if (str_eq(header_name, "complex.h"))
+    {
+        put_typedef_name(alloc_const_str("complex"));
+        put_typedef_name(alloc_const_str("_Complex_I"));
+        put_typedef_name(alloc_const_str("imaginary"));
+        put_typedef_name(alloc_const_str("_Imaginary_I"));
+        put_typedef_name(alloc_const_str("I"));
+    }
+    else if (str_eq(header_name, "ctype.h"))
+    {
+        // Nothing
+    }
+    else if (str_eq(header_name, "errno.h"))
+    {
+        put_typedef_name(alloc_const_str("errno_t"));
+    }
+    else if (str_eq(header_name, "fenv.h"))
+    {
+        put_typedef_name(alloc_const_str("fenv_t"));
+        put_typedef_name(alloc_const_str("fexcept_t"));
+    }
+    else if (str_eq(header_name, "float.h"))
+    {
+        // Nothing
+    }
+    else if (str_eq(header_name, "inttypes.h"))
+    {
+        if (!is_typedef_name("wchar_t")) add_str_typedef("stddef.h");
+        if (!is_typedef_name("intmax_t")) add_str_typedef("stdint.h");
+        put_typedef_name(alloc_const_str("imaxdiv_t"));
+    }
+    else if (str_eq(header_name, "iso646.h"))
+    {
+        // Nothing
+    }
+    else if (str_eq(header_name, "limits.h"))
+    {
+        // Nothing
+    }
+    else if (str_eq(header_name, "locale.h"))
+    {
+        // Nothing
+    }
+    else if (str_eq(header_name, "math.h"))
+    {
+        put_typedef_name(alloc_const_str("float_t"));
+        put_typedef_name(alloc_const_str("double_t"));
+    }
+    else if (str_eq(header_name, "setjmp.h"))
+    {
+        put_typedef_name(alloc_const_str("jmp_buf"));
+    }
+    else if (str_eq(header_name, "signal.h"))
+    {
+        put_typedef_name(alloc_const_str("sig_atomic_t"));
+    }
+    else if (str_eq(header_name, "stdalign.h"))
+    {
+        put_typedef_name(alloc_const_str("alignas"));
+        put_typedef_name(alloc_const_str("alignof"));
+    }
+    else if (str_eq(header_name, "stdarg.h"))
+    {
+        put_typedef_name(alloc_const_str("va_list"));
+    }
+    else if (str_eq(header_name, "stdatomic.h"))
+    {
+        put_typedef_name(alloc_const_str("memory_order"));
+        put_typedef_name(alloc_const_str("atomic_flag"));
+        put_typedef_name(alloc_const_str("atomic_bool"));
+        put_typedef_name(alloc_const_str("atomic_char"));
+        put_typedef_name(alloc_const_str("atomic_schar"));
+        put_typedef_name(alloc_const_str("atomic_uchar"));
+        put_typedef_name(alloc_const_str("atomic_short"));
+        put_typedef_name(alloc_const_str("atomic_ushort"));
+        put_typedef_name(alloc_const_str("atomic_int"));
+        put_typedef_name(alloc_const_str("atomic_uint"));
+        put_typedef_name(alloc_const_str("atomic_long"));
+        put_typedef_name(alloc_const_str("atomic_ulong"));
+        put_typedef_name(alloc_const_str("atomic_llong"));
+        put_typedef_name(alloc_const_str("atomic_ullong"));
+        put_typedef_name(alloc_const_str("atomic_char16_t"));
+        put_typedef_name(alloc_const_str("atomic_char32_t"));
+        put_typedef_name(alloc_const_str("atomic_wchar_t"));
+        put_typedef_name(alloc_const_str("atomic_int_least8_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_least8_t"));
+        put_typedef_name(alloc_const_str("atomic_int_least16_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_least16_t"));
+        put_typedef_name(alloc_const_str("atomic_int_least32_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_least32_t"));
+        put_typedef_name(alloc_const_str("atomic_int_least64_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_least64_t"));
+        put_typedef_name(alloc_const_str("atomic_int_fast8_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_fast8_t"));
+        put_typedef_name(alloc_const_str("atomic_int_fast16_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_fast16_t"));
+        put_typedef_name(alloc_const_str("atomic_int_fast32_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_fast32_t"));
+        put_typedef_name(alloc_const_str("atomic_int_fast64_t"));
+        put_typedef_name(alloc_const_str("atomic_uint_fast64_t"));
+        put_typedef_name(alloc_const_str("atomic_intptr_t"));
+        put_typedef_name(alloc_const_str("atomic_uintptr_t"));
+        put_typedef_name(alloc_const_str("atomic_size_t"));
+        put_typedef_name(alloc_const_str("atomic_ptrdiff_t"));
+        put_typedef_name(alloc_const_str("atomic_intmax_t"));
+        put_typedef_name(alloc_const_str("atomic_uintmax_t"));
+    }
+    else if (str_eq(header_name, "stdbool.h"))
+    {
+        put_typedef_name(alloc_const_str("bool"));
+    }
+    else if (str_eq(header_name, "stddef.h"))
+    {
+        put_typedef_name(alloc_const_str("ptrdiff_t"));
+        put_typedef_name(alloc_const_str("size_t"));
+        put_typedef_name(alloc_const_str("max_align_t"));
+        put_typedef_name(alloc_const_str("wchar_t"));
+    }
+    else if (str_eq(header_name, "stdint.h"))
+    {
+        // TODO
+        put_typedef_name(alloc_const_str("int_least8_t"));
+        put_typedef_name(alloc_const_str("int_least16_t"));
+        put_typedef_name(alloc_const_str("int_least32_t"));
+        put_typedef_name(alloc_const_str("int_least64_t"));
+        put_typedef_name(alloc_const_str("uint_least8_t"));
+        put_typedef_name(alloc_const_str("uint_least16_t"));
+        put_typedef_name(alloc_const_str("uint_least32_t"));
+        put_typedef_name(alloc_const_str("uint_least64_t"));
+        put_typedef_name(alloc_const_str("int_fast8_t"));
+        put_typedef_name(alloc_const_str("int_fast16_t"));
+        put_typedef_name(alloc_const_str("int_fast32_t"));
+        put_typedef_name(alloc_const_str("int_fast64_t"));
+        put_typedef_name(alloc_const_str("uint_fast8_t"));
+        put_typedef_name(alloc_const_str("uint_fast16_t"));
+        put_typedef_name(alloc_const_str("uint_fast32_t"));
+        put_typedef_name(alloc_const_str("uint_fast64_t"));
+        put_typedef_name(alloc_const_str("intptr_t"));
+        put_typedef_name(alloc_const_str("uintptr_t"));
+        put_typedef_name(alloc_const_str("intmax_t"));
+        put_typedef_name(alloc_const_str("uintmax_t"));
+    }
+    else if (str_eq(header_name, "stdio.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "stdlib.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "stdnoreturn.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "string.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "tgmath.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "threads.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "time.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "uchar.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "wchar.h"))
+    {
+        // TODO
+    }
+    else if (str_eq(header_name, "wctype.h"))
+    {
+        // TODO
+    }
+}

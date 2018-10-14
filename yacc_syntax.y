@@ -1333,7 +1333,7 @@ int yyerror(const char *str)
 _Bool is_typedef_used(AST_NODE *node)
 {
     if (node->type != DeclarationSpecifiers) return false;
-    for (int i = 0; i < node->children_number; ++i)  // TODO
+    for (int i = 0; i < node->children_number; ++i)
     {
         if (node->children[i] && str_eq("TYPEDEF", node->children[i]->content)) return true;
     }
@@ -1343,17 +1343,18 @@ _Bool is_typedef_used(AST_NODE *node)
 void collect_typedef_names(AST_NODE *node)
 {
     if (node->type != InitDeclaratorList) return;
-    for (int i = 0; i < node->children_number; ++i)  // TODO
+    if (node->children_number < 1) return;
+    for (int i = 0; i < node->children_number; ++i)
     {
-        if (node->children[i]->children[0]->type == DirectDeclarator
-            && node->children[i]->children[0]->children[0]->type == Identifier)
+        if (node->children[i]->children[0]->children[0]->type == DirectDeclarator
+            && node->children[i]->children[0]->children[0]->children[0]->type == Identifier)
         {
-            put_typedef_name(node->children[i]->children[0]->children[0]->content);
+            put_typedef_name(node->children[i]->children[0]->children[0]->children[0]->content);
         }
-        else if (node->children[i]->children[1]->type == DirectDeclarator
-            && node->children[i]->children[1]->children[0]->type == Identifier)
+        else if (node->children[i]->children[0]->children[1]->type == DirectDeclarator
+            && node->children[i]->children[0]->children[1]->children[0]->type == Identifier)
         {
-            put_typedef_name(node->children[i]->children[1]->children[0]->content);
+            put_typedef_name(node->children[i]->children[0]->children[1]->children[0]->content);
         }
     }
 }
@@ -1362,13 +1363,4 @@ AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
 {
     AST_NODE *res = ast_create_node(type, val, 0);
     return res;
-}
-
-/// Conversion function for AST node content.
-///
-/// \param obj Object of AST content
-/// \return String representation of the given object, NULL if not AST_NODE
-char *content_to_str(void *object)
-{
-    return object;
 }

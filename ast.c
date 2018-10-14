@@ -131,7 +131,7 @@ void ast_free(AST_NODE *root) {
     free(root);
 }
 
-char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(void *)) {
+char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST_NODE *)) {
     char *json;
     char *act_tab = repeat(shift, tab);
     int res;
@@ -161,13 +161,13 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
     char *content_str;
     if (root->content)
     {
-        char *tmp = (*cont_to_str)(root->content);
+        char *tmp = (*cont_to_str)(root);
         if (!tmp)
         {
             goto null_content;
         }
         content_str = wrap_by_quotes(tmp);
-//        free(tmp);  // FIXME
+        free(tmp);
     }
     else
     {
@@ -199,7 +199,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
     if (root->children)
     {
         char *arr = concat_array(children, root->children_number, ",\n");
-//        for (i = 0; i < root->children_number; ++i) free(children[i]);  // FIXME
+        for (i = 0; i < root->children_number; ++i) free(children[i]);
         size_t size = strlen(arr) + strlen(tab) * (shift + 1) + sizeof(char) * (4 + 1);
         children_str = (char *) my_malloc(size, "children array string");
         res = sprintf(children_str, "[\n%s\n%s%s]", arr, act_tab, tab);

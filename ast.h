@@ -127,6 +127,6 @@ void ast_free(AST_NODE *root);
 /// \param tab String representation of the tabulation
 /// \param cont_to_str Function for printing the content of the node
 /// \return JSON representation of a tree
-char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(void *));
+char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST_NODE *));
 
 #endif //C_PARSER_AST_BUILDER_H_INCLUDED

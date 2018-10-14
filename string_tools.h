@@ -21,6 +21,13 @@ _Bool str_eq(char *str1, char *str2);
 /// \return New string inside quotes
 char *wrap_by_quotes(char *str);
 
+/// Convert a constant string to an allocated memory.
+/// Needs to be freed.
+///
+/// \param str String to allocate memory for
+/// \return Pointer in a heap to the copy of a given string
+char *alloc_const_str(const char *str);
+
 /// Concatenate an array of strings into one string.
 /// Needs to be freed.
 ///

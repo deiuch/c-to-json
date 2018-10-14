@@ -8,7 +8,8 @@
 
 %x COMMENT
 %x PREP
-%x INCLUDE
+%x INCL_FL
+%x INCL_ST
 %x ERROR_S
 %x WARNING
 %x CHR
@@ -137,18 +138,24 @@ WS        [ \f\n\r\t\v]
 }
 <PREP>"endif"[^\n\r]*$  { BEGIN INITIAL; }
 
-<PREP>"include"[ \t]*<[^>\n\r]*>[ \t]*$ {
-    BEGIN INITIAL;
+<PREP>"include"[ \t]*\" { BEGIN INCL_FL; }
+<PREP>"include"[ \t]*<  { BEGIN INCL_ST; }
+<INCL_ST>[^>\n\r]*/> {
+    add_str_typedef(yytext);
     yywarn("Standard libraries included will not be "
         "considered by lexer! Syntax error may occur.");
 }
-<PREP>"include"[ \t]*\" { BEGIN INCLUDE; }
-<INCLUDE>[^"\n\r]*/\"   { change_source(yytext); }
-<INCLUDE>[^"\n\r]*$ {
+<INCL_ST>[^>\n\r]*$ {
     BEGIN INITIAL;
     yyerror("Preprocessing error: Include name does not have a closing quote.");
 }
-<INCLUDE>\"[ \t]*$      { BEGIN INITIAL; }
+<INCL_ST>>[ \t]*$       { BEGIN INITIAL; }
+<INCL_FL>[^"\n\r]*/\"   { change_source(yytext); }
+<INCL_FL>[^"\n\r]*$ {
+    BEGIN INITIAL;
+    yyerror("Preprocessing error: Include name does not have a closing quote.");
+}
+<INCL_FL>\"[ \t]*$      { BEGIN INITIAL; }
 
 <PREP>"define"{PR_INS}  {
     BEGIN INITIAL;

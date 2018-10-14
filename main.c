@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast.h"
+#include "string_tools.h"
 #include "typedef_name.h"
 #include "y.tab.h"
 
@@ -16,9 +17,12 @@ extern FILE *yyin;
 
 /// Conversion function for AST node content.
 ///
-/// \param Object of AST content
+/// \param obj Object of AST content
 /// \return String representation of the given object, NULL if not AST_NODE
-extern char *content_to_str(void *);
+char *content_to_str(AST_NODE *node)
+{
+    return alloc_const_str((char *) node->content);
+}
 
 /// Program entry point.
 ///

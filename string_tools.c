@@ -38,6 +38,14 @@ char *wrap_by_quotes(char *str)
     return res;
 }
 
+char *alloc_const_str(const char *str)
+{
+    char *buf = (char *) my_malloc(sizeof(char) * (strlen(str) + 1),
+        "constant character allocation buffer");
+    strcpy(buf, str);
+    return buf;
+}
+
 char *concat_array(char **array, int n, char *delimiter)
 {
     if (n < 0)
