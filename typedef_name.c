@@ -174,10 +174,18 @@ void add_str_typedef(char *header_name)
         put_typedef_name(alloc_const_str("size_t"));
         put_typedef_name(alloc_const_str("max_align_t"));
         put_typedef_name(alloc_const_str("wchar_t"));
+        put_typedef_name(alloc_const_str("rsize_t"));
     }
     else if (str_eq(header_name, "stdint.h"))
     {
-        // TODO
+        put_typedef_name(alloc_const_str("int8_t"));
+        put_typedef_name(alloc_const_str("int16_t"));
+        put_typedef_name(alloc_const_str("int32_t"));
+        put_typedef_name(alloc_const_str("int64_t"));
+        put_typedef_name(alloc_const_str("uint8_t"));
+        put_typedef_name(alloc_const_str("uint16_t"));
+        put_typedef_name(alloc_const_str("uint32_t"));
+        put_typedef_name(alloc_const_str("uint64_t"));
         put_typedef_name(alloc_const_str("int_least8_t"));
         put_typedef_name(alloc_const_str("int_least16_t"));
         put_typedef_name(alloc_const_str("int_least32_t"));
@@ -201,42 +209,71 @@ void add_str_typedef(char *header_name)
     }
     else if (str_eq(header_name, "stdio.h"))
     {
-        // TODO
+        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        put_typedef_name(alloc_const_str("FILE"));
+        put_typedef_name(alloc_const_str("fpos_t"));
     }
     else if (str_eq(header_name, "stdlib.h"))
     {
-        // TODO
+        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        put_typedef_name(alloc_const_str("div_t"));
+        put_typedef_name(alloc_const_str("ldiv_t"));
+        put_typedef_name(alloc_const_str("lldiv_t"));
+        put_typedef_name(alloc_const_str("constraint_handler_t"));
     }
     else if (str_eq(header_name, "stdnoreturn.h"))
     {
-        // TODO
+        put_typedef_name(alloc_const_str("noreturn"));
     }
     else if (str_eq(header_name, "string.h"))
     {
-        // TODO
+        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
     }
     else if (str_eq(header_name, "tgmath.h"))
     {
-        // TODO
+        add_str_typedef("math.h");
+        add_str_typedef("complex.h");
     }
     else if (str_eq(header_name, "threads.h"))
     {
-        // TODO
+        put_typedef_name(alloc_const_str("thread_local"));
+        put_typedef_name(alloc_const_str("cnd_t"));
+        put_typedef_name(alloc_const_str("thrd_t"));
+        put_typedef_name(alloc_const_str("tss_t"));
+        put_typedef_name(alloc_const_str("mtx_t"));
+        put_typedef_name(alloc_const_str("tss_dtor_t"));
+        put_typedef_name(alloc_const_str("thrd_start_t"));
+        put_typedef_name(alloc_const_str("once_flag"));
     }
     else if (str_eq(header_name, "time.h"))
     {
-        // TODO
+        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        put_typedef_name(alloc_const_str("clock_t"));
+        put_typedef_name(alloc_const_str("time_t"));
     }
     else if (str_eq(header_name, "uchar.h"))
     {
-        // TODO
+        if (!is_typedef_name("mbstate_t")) add_str_typedef("wchar.h");
+        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        put_typedef_name(alloc_const_str("char16_t"));
+        put_typedef_name(alloc_const_str("char32_t"));
     }
     else if (str_eq(header_name, "wchar.h"))
     {
-        // TODO
+        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        if (!is_typedef_name("FILE")) add_str_typedef("stdio.h");
+        put_typedef_name(alloc_const_str("mbstate_t"));
+        put_typedef_name(alloc_const_str("wint_t"));
     }
     else if (str_eq(header_name, "wctype.h"))
     {
-        // TODO
+        if (!is_typedef_name("wint_t")) add_str_typedef("wchar.h");
+        put_typedef_name(alloc_const_str("wctrans_t"));
+        put_typedef_name(alloc_const_str("wctype_t"));
     }
 }

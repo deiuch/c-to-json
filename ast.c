@@ -199,7 +199,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
     if (root->children)
     {
         char *arr = concat_array(children, root->children_number, ",\n");
-        for (i = 0; i < root->children_number; ++i) free(children[i]);
+//        for (i = 0; i < root->children_number; ++i) free(children[i]);  // FIXME
         size_t size = strlen(arr) + strlen(tab) * (shift + 1) + sizeof(char) * (4 + 1);
         children_str = (char *) my_malloc(size, "children array string");
         res = sprintf(children_str, "[\n%s\n%s%s]", arr, act_tab, tab);
