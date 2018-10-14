@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    FILE *out = fopen(argv[2], "w");
+    FILE *out = fopen(argv[in_name ? 2 : 1], "w");
     if (!out)
     {
         fprintf(stderr, "Cannot open for writing: %s\n", out_name);
