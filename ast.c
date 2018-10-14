@@ -154,10 +154,10 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
         return json;
     }
 
-    // Get string representation of type field
+    // Get string representation of `type' field
     char *type_str = ast_type_to_str(root->type);
 
-    // Get string representation of node content
+    // Get string representation of `node' content
     char *content_str;
     if (root->content)
     {
@@ -184,11 +184,11 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(voi
         }
     }
 
-    // Get string representation of children amount
+    // Get string representation of `children_number' field
     char *children_num_str = (char *) my_malloc(7, "number representation");
     itoa(root->children_number, children_num_str, 10);
 
-    // Get string representation of children array
+    // Get string representation of `children' array field
     int i;
     char **children = (char **) malloc(sizeof(char *) * root->children_number);
     for (i = 0; i < root->children_number; ++i)
