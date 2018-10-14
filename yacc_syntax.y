@@ -1348,7 +1348,7 @@ void collect_typedef_names(AST_NODE *node)
     for (int i = 0; i < node->children_number; ++i)
     {
         if (node->children[i]->children[0]->children[0]->type != DirectDeclarator) j = 1;
-        if (node->children[i]->children[0]->children[1]->children[0]->type == Identifier)
+        if (node->children[i]->children[0]->children[j]->children[0]->type == Identifier)
         {
             put_typedef_name(node->children[i]->children[0]->children[j]->children[0]->content);
         }
