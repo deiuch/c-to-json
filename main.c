@@ -31,8 +31,6 @@ char *content_to_str(AST_NODE *node)
 /// \return 0 - OK, 1 - processing error, 2 - args error, 3 - I/O error
 int main(int argc, char *argv[])
 {
-    yydebug = 1;  // Set 0 for no debug info. TODO remove in production
-
     if (argc < 2)
     {
         printf("Usage: %s <out_file> OR %s <in_file> <out_file>\n",
