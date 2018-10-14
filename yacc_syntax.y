@@ -625,7 +625,7 @@ DirectDeclarator
         }
         | LPAREN Declarator RPAREN
         {
-            $$ = ast_create_node(DirectDeclarator, NULL, 1, $2);
+            $$ = ast_create_node(DirectDeclarator, "PARENTHESES", 1, $2);
         }
         | DirectDeclarator LBRACKET                                               RBRACKET
         {

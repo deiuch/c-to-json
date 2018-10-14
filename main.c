@@ -22,7 +22,7 @@ extern FILE *yyin;
 char *content_to_str(AST_NODE *node)
 {
     return alloc_const_str((char *) node->content);
-}
+}  // TODO constant types support
 
 /// Program entry point.
 ///
