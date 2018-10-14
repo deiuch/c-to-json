@@ -1344,15 +1344,22 @@ void collect_typedef_names(AST_NODE *node)
 {
     if (node->type != InitDeclaratorList) return;
     if (node->children_number < 1) return;
-    int j;
+    AST_NODE *cur_decl;
+    AST_NODE *cur_direct_decl;
     for (int i = 0; i < node->children_number; ++i)
     {
-        j = node->children[i]->children[0]->children_number == 2;
-        if (node->children[i]->children[0]->children[j]->children[0]->type == Identifier)
+        cur_decl = node->children[i]->children[0];
+        sub_decl:
+        cur_direct_decl = cur_decl->children[cur_decl->children_number == 2];
+        if (cur_direct_decl->content && str_eq("PARENTHESES", cur_direct_decl->content))
         {
-            put_typedef_name(node->children[i]->children[0]->children[j]->children[0]->content);
+            cur_decl = cur_direct_decl->children[0];
+            goto sub_decl;
         }
-        // TODO collect from the inside of parentheses
+        else if (cur_direct_decl->children[0]->type == Identifier)
+        {
+            put_typedef_name(cur_direct_decl->children[0]->content);
+        }
     }
 }
 
