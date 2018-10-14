@@ -13,8 +13,8 @@
 
 _Bool str_eq(char *str1, char *str2)
 {
-    if (!str1 && !str2) return true;
-    if (!str1 || !str2) return false;
+    if (str1 == str2) return true;  // Same pointed memory
+    if (!str1 || !str2) return false;  // At least one is NULL
     int i;
     for (i = 0; str1[i] != '\0' && str2[i] != '\0'; ++i)
     {
