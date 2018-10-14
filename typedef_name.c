@@ -51,7 +51,7 @@ void free_typedef_name()
     typedef_table_size = 0;
 }
 
-void add_str_typedef(char *header_name)
+void add_std_typedef(char *header_name)
 {
     if (str_eq(header_name, "assert.h"))
     {

@@ -26,6 +26,6 @@ void free_typedef_name();
 /// NOTE: Supported only ones from the ISO/IEC 9899:2018, Section 7.
 ///
 /// \param header_name Name of the header to add typedef-names from
-void add_str_typedef(char *header_name);
+void add_std_typedef(char *header_name);
 
 #endif //C_PARSER_TYPEDEF_NAME_H_H_INCLUDED
