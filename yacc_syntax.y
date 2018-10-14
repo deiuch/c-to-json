@@ -1230,31 +1230,31 @@ PostfixExpression
         : PrimaryExpression  { $$ = $1; }
         | PostfixExpression LBRACKET Expression RBRACKET
         {
-            $$ = ast_create_node(PostfixExpression, "BRACKETS", 1, $3);
+            $$ = ast_create_node(PostfixExpression, "BRACKETS", 2, $1, $3);
         }
         | PostfixExpression LPAREN                        RPAREN
         {
-            $$ = ast_create_node(PostfixExpression, "PARENTHESES", 0);
+            $$ = ast_create_node(PostfixExpression, "PARENTHESES", 1, $1);
         }
         | PostfixExpression LPAREN ArgumentExpressionList RPAREN
         {
-            $$ = ast_create_node(PostfixExpression, "PARENTHESES", 1, $3);
+            $$ = ast_create_node(PostfixExpression, "PARENTHESES", 2, $1, $3);
         }
         | PostfixExpression DOT   IDENTIFIER
         {
-            $$ = ast_create_node(PostfixExpression, "DOT", 1, $3);
+            $$ = ast_create_node(PostfixExpression, "DOT", 2, $1, get_const_node(Identifier, $3));
         }
         | PostfixExpression ARROW IDENTIFIER
         {
-            $$ = ast_create_node(PostfixExpression, "ARROW", 1, $3);
+            $$ = ast_create_node(PostfixExpression, "ARROW", 2, $1, get_const_node(Identifier, $3));
         }
         | PostfixExpression DBL_PLUS
         {
-            $$ = ast_create_node(PostfixExpression, "DBL_PLUS", 0);
+            $$ = ast_create_node(PostfixExpression, "DBL_PLUS", 1, $1);
         }
         | PostfixExpression DBL_MINUS
         {
-            $$ = ast_create_node(PostfixExpression, "DBL_MINUS", 0);
+            $$ = ast_create_node(PostfixExpression, "DBL_MINUS", 1, $1);
         }
         | LPAREN TypeName RPAREN LBRACE InitializerList       RBRACE
         {
