@@ -142,8 +142,8 @@ WS        [ \f\n\r\t\v]
 <PREP>"include"[ \t]*<  { BEGIN INCL_ST; }
 <INCL_ST>[^>\n\r]*/> {
     add_str_typedef(yytext);
-    yywarn("Standard libraries included will not be "
-        "considered by lexer! Syntax error may occur.");
+    yywarn("Standard libraries included will not be considered by lexer!\n"
+        "Only `typedef-name's described in ISO/IEC 9899:2018.");
 }
 <INCL_ST>[^>\n\r]*$ {
     BEGIN INITIAL;
