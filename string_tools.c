@@ -23,17 +23,41 @@ _Bool str_eq(char *str1, char *str2)
     return str1[i] == str2[i];  // Both could be '\0'
 }
 
+/// Checks if provided character is needed to be escaped.
+///
+/// \param ch character to check
+/// \return `true' - it is to be escaped, `false' - otherwise
+_Bool is_to_escape(char ch)
+{
+    return ch == '"' || ch == '\\' || ch == '\b' || ch == '\f'
+        || ch == '\n' || ch == '\r' || ch == '\t';
+}
+
 char *wrap_by_quotes(char *str)
 {
     if (!str) return NULL;
-    char *res = (char *) my_malloc(strlen(str) + 3, "quoted string");
-    int r = sprintf(res, "\"%s\"", str);
-    if (r < 0)
+    int counter = 0;
+    for (int i = 0; i < strlen(str); ++i)
     {
-        fprintf(stderr,
-                "FATAL ERROR! String formatting cannot be applied!\n");
-        free(res);
-        exit(-1);
+        if (is_to_escape(str[i])) ++counter;
+    }
+    size_t new_size = strlen(str) + counter + 3;
+    char *res = (char *) my_malloc(new_size, "quoted string");
+    res[0] = '"'; res[new_size-2] = '"'; res[new_size-1] = '\0';
+    int j = 1;
+    for (int i = 0; i < strlen(str); ++i)
+    {
+        switch (str[i])
+        {
+            case '\\' : res[j++] = '\\'; res[j++] = '\\'; break;
+            case '\"' : res[j++] = '\\'; res[j++] = '"'; break;
+            case '\b' : res[j++] = '\\'; res[j++] = 'b'; break;
+            case '\f' : res[j++] = '\\'; res[j++] = 'f'; break;
+            case '\n' : res[j++] = '\\'; res[j++] = 'n'; break;
+            case '\r' : res[j++] = '\\'; res[j++] = 'r'; break;
+            case '\t' : res[j++] = '\\'; res[j++] = 't'; break;
+            default: res[j++] = str[i];
+        }
     }
     return res;
 }
@@ -48,7 +72,7 @@ char *alloc_const_str(const char *str)
 
 char *concat_array(char **array, int n, char *delimiter)
 {
-    if (n < 0)
+    if (!array || !delimiter || n < 0)
     {
         return NULL;
     }
@@ -65,19 +89,21 @@ char *concat_array(char **array, int n, char *delimiter)
     size_t len = d_len * (n - 1);
     for (i = 0; i < n; ++i)
     {
+        if (!array[i]) continue;
         len += strlen(array[i]);
     }
     char *res = (char *) my_malloc(sizeof(char) * (len + 1),
-            "string concatenation");
-    size_t cur_len;
+        "string concatenation");
     k = 0;
     for (i = 0; i < n; ++i)
     {
+        if (!array[i]) goto arr_i_null;
         j = 0;
         while (array[i][j] != '\0')
         {
             res[k++] = array[i][j++];
         }
+        arr_i_null:
         if (k == len) break;
         j = 0;
         while (delimiter[j] != '\0')
@@ -106,7 +132,7 @@ char *repeat(int n, char *str)
     size_t src_len = strlen(str);
     size_t res_len = src_len * n;
     char *res = (char *) my_malloc(sizeof(char) * (res_len + 1),
-            "string repetition");
+        "string repetition");
     int i;
     for (i = 0; i < res_len; ++i)
     {
