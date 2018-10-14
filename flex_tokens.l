@@ -284,7 +284,7 @@ WS        [ \f\n\r\t\v]
     }
     yylval.character = content;
     return CHARACTER_CONSTANT;
-    // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
+    // TODO value conversion, UTF-8, ISO/IEC 9899:2017, page 50-52
 }
 <STR>\" {
     BEGIN INITIAL;
