@@ -68,7 +68,7 @@
  *  in order to deal with reduce/reduce
  *  conflict of TypedefName with PrimaryExpression.
  *  Lexical analyzer should make distinction
- *  between this nonterminal and IDENTIFIER.
+ *  between this token and IDENTIFIER.
  *
  *  ISO/IEC 9899:2017, 6.7.8 Type definitions, pages 99-100
  */
