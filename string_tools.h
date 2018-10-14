@@ -15,21 +15,22 @@
 _Bool str_eq(char *str1, char *str2);
 
 /// Wrap a given string into double quotes.
-/// Needs to be freed.
+/// If the string contains special symbols, it escapes them.
+/// Needs to be released.
 ///
 /// \param str String to wrap
 /// \return New string inside quotes
 char *wrap_by_quotes(char *str);
 
 /// Convert a constant string to an allocated memory.
-/// Needs to be freed.
+/// Needs to be released.
 ///
 /// \param str String to allocate memory for
 /// \return Pointer in a heap to the copy of a given string
 char *alloc_const_str(const char *str);
 
 /// Concatenate an array of strings into one string.
-/// Needs to be freed.
+/// Needs to be released.
 ///
 /// \param array Array of strings
 /// \param n Number of strings in array
@@ -38,7 +39,7 @@ char *alloc_const_str(const char *str);
 char *concat_array(char **array, int n, char *delimiter);
 
 /// Repeat given source `n' times.
-/// Needs to be freed.
+/// Needs to be released.
 ///
 /// \param n Number of repetitions
 /// \param str String pattern to repeat
