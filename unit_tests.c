@@ -17,9 +17,12 @@ int failed = 0;
 
 void pass_test(_Bool result, char *label)
 {
-    if (result) {
+    if (result)
+    {
         ++passed;
-    } else {
+    }
+    else
+    {
         ++failed;
         printf("Failed test #%d:\n%s\n", passed + failed, label);
     }
