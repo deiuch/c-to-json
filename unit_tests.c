@@ -39,8 +39,9 @@ void pass_test(_Bool result, char *label)
 
 int main()
 {
-    // Test `str_eq'
     printf("Start of testing.\n\n");
+
+    // Test `str_eq'
     pass_test(str_eq(NULL, NULL), "str_eq(NULL, NULL)");
     pass_test(!str_eq(NULL, ""), "!str_eq(NULL, \"\")");
     pass_test(str_eq("", ""), "str_eq(\"\", \"\")");
