@@ -84,8 +84,8 @@ void add_std_typedef(char *header_name)
     }
     else if (str_eq(header_name, "inttypes.h"))
     {
-        if (!is_typedef_name("wchar_t")) add_str_typedef("stddef.h");
-        if (!is_typedef_name("intmax_t")) add_str_typedef("stdint.h");
+        if (!is_typedef_name("wchar_t")) add_std_typedef("stddef.h");
+        if (!is_typedef_name("intmax_t")) add_std_typedef("stdint.h");
         put_typedef_name(alloc_const_str("imaxdiv_t"));
     }
     else if (str_eq(header_name, "iso646.h"))
@@ -209,15 +209,15 @@ void add_std_typedef(char *header_name)
     }
     else if (str_eq(header_name, "stdio.h"))
     {
-        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
-        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        if (!is_typedef_name("errno_t")) add_std_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_std_typedef("stddef.h");
         put_typedef_name(alloc_const_str("FILE"));
         put_typedef_name(alloc_const_str("fpos_t"));
     }
     else if (str_eq(header_name, "stdlib.h"))
     {
-        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
-        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        if (!is_typedef_name("errno_t")) add_std_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_std_typedef("stddef.h");
         put_typedef_name(alloc_const_str("div_t"));
         put_typedef_name(alloc_const_str("ldiv_t"));
         put_typedef_name(alloc_const_str("lldiv_t"));
@@ -229,13 +229,13 @@ void add_std_typedef(char *header_name)
     }
     else if (str_eq(header_name, "string.h"))
     {
-        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
-        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        if (!is_typedef_name("errno_t")) add_std_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_std_typedef("stddef.h");
     }
     else if (str_eq(header_name, "tgmath.h"))
     {
-        add_str_typedef("math.h");
-        add_str_typedef("complex.h");
+        add_std_typedef("math.h");
+        add_std_typedef("complex.h");
     }
     else if (str_eq(header_name, "threads.h"))
     {
@@ -250,29 +250,29 @@ void add_std_typedef(char *header_name)
     }
     else if (str_eq(header_name, "time.h"))
     {
-        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
-        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        if (!is_typedef_name("errno_t")) add_std_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_std_typedef("stddef.h");
         put_typedef_name(alloc_const_str("clock_t"));
         put_typedef_name(alloc_const_str("time_t"));
     }
     else if (str_eq(header_name, "uchar.h"))
     {
-        if (!is_typedef_name("mbstate_t")) add_str_typedef("wchar.h");
-        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
+        if (!is_typedef_name("mbstate_t")) add_std_typedef("wchar.h");
+        if (!is_typedef_name("size_t")) add_std_typedef("stddef.h");
         put_typedef_name(alloc_const_str("char16_t"));
         put_typedef_name(alloc_const_str("char32_t"));
     }
     else if (str_eq(header_name, "wchar.h"))
     {
-        if (!is_typedef_name("errno_t")) add_str_typedef("errno.h");
-        if (!is_typedef_name("size_t")) add_str_typedef("stddef.h");
-        if (!is_typedef_name("FILE")) add_str_typedef("stdio.h");
+        if (!is_typedef_name("errno_t")) add_std_typedef("errno.h");
+        if (!is_typedef_name("size_t")) add_std_typedef("stddef.h");
+        if (!is_typedef_name("FILE")) add_std_typedef("stdio.h");
         put_typedef_name(alloc_const_str("mbstate_t"));
         put_typedef_name(alloc_const_str("wint_t"));
     }
     else if (str_eq(header_name, "wctype.h"))
     {
-        if (!is_typedef_name("wint_t")) add_str_typedef("wchar.h");
+        if (!is_typedef_name("wint_t")) add_std_typedef("wchar.h");
         put_typedef_name(alloc_const_str("wctrans_t"));
         put_typedef_name(alloc_const_str("wctype_t"));
     }
