@@ -37,7 +37,7 @@ AST_NODE *ast_create_node(AST_NODE_TYPE type, void *content, int n_children, ...
 
 AST_NODE *ast_expand_node(AST_NODE *node, AST_NODE *to_append)
 {
-    if (!node)
+    if (!node || !to_append)
     {
         return node;
     }
