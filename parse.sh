@@ -6,4 +6,4 @@ rm y.tab.c y.tab.h lex.yy.c
 read -p "Enter input filename (leave empty for `stdin'): " in
 c_parser $in out.txt
 rm c_parser.exe
-pause
+read -p "Press any key to continue . . ."
