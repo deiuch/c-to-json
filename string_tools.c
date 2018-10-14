@@ -91,7 +91,7 @@ char *concat_array(char **array, int n, char *delimiter)
 
 char *repeat(int n, char *str)
 {
-    if (n < 0)
+    if (!str || n < 0)
     {
         return NULL;
     }
