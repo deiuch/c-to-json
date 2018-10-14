@@ -43,13 +43,14 @@ int main(int argc, char *argv[])
     char *in_name = argc > 2 ? argv[1] : NULL;
     char *out_name = argc > 2 ? argv[2] : argv[1];
 
-    yyin = in_name != NULL ? fopen(in_name, "r") : stdin;
+    yyin = in_name ? fopen(in_name, "r") : stdin;
     if (!yyin)
     {
         fprintf(stderr, "Cannot open for reading: %s\n", in_name);
         return 3;
     }
 
+    if (!in_name) printf("Input your code here (Ctrl+Z for EOF):\n");
     int yyres = yyparse();
     free_typedef_name();
 
