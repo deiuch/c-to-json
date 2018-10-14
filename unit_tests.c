@@ -21,9 +21,7 @@ void pass_test(_Bool result, char *label)
         ++passed;
     } else {
         ++failed;
-        printf("Failed test #%d:\n", passed + failed);
-        printf("%s", label);
-        printf("\n");
+        printf("Failed test #%d:\n%s\n", passed + failed, label);
     }
 }
 
