@@ -108,7 +108,7 @@ TILDE     "??-"|"~"
 PR_INS    [ \t]+[^\n\r]*$
 NLE       {BS}(\n|\r|\r\n)
 UCN       {BS}(u{H}{4}|U{H}{8})
-ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
+ID        {ND}({ND}|{D}|{UCN})*
 ESC       {BS}['"?\\abfnrtv]|{BS}"??/"|{BS}{O}{1,3}|{BS}x{H}+|{UCN}
 CHAR      [LUu]?'({ESC}|[^'\\\n\r])+'
 STRL      ([LUu]|u8)?\"({ESC}|[^"\\\n\r])+\"
