@@ -26,7 +26,10 @@
 #include "typedef_name.h"
 #include "y.tab.h"
 
+/// Create an instance of AST_CONTENT with a `token' stored inside.
 #define content_t(v)  ((AST_CONTENT) {.token = v})
+
+/// Create an instance of AST_CONTENT with a `value' = NULL inside.
 #define content_null  ((AST_CONTENT) {.value = NULL})
 
 /// Get next token from the specified input.
