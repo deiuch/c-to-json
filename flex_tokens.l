@@ -44,25 +44,6 @@ AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
 ///
 /// \return Expanded string
 char *readstr();
-
-// ISO/IEC 9899:2017, 5.2.4.1 Translation limits, page 20
-/// Maximum depth of the `#include' directive.
-#define MAX_INCLUDE_DEPTH 15
-
-/// Current source configuration.
-typedef struct
-{
-    FILE *file;
-    YY_BUFFER_STATE buffer;
-    int start_cond;
-}
-config;
-
-/// Stack of source configurations.
-config config_stack[MAX_INCLUDE_DEPTH];
-
-/// Size of the stack of source configurations.
-int file_stack_ptr = 0;
 %}
 
 O         [0-7]
