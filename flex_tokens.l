@@ -6,12 +6,6 @@
 
 %pointer
 
-%x COMMENT
-%x PREP
-%x INCL_FL
-%x INCL_ST
-%x ERROR_S
-%x WARNING
 %x CHR
 %x STR
 
@@ -44,23 +38,12 @@ int yywrap();
 /// \param name Name of new source file
 void change_source(char *name);
 
-/// Skip last `n' symbols and retry reading of a previous literal.
-///
-/// \param n Number of symbols to be dropped
-void shift_yytext(int n);
-
 /// Convert constant value to the corresponding AST node.
 ///
 /// \param type Type of a new node
 /// \param val Constant to put as content
 /// \return New AST node for a given constant
 AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
-
-/// Is given character - trigraph suffix?
-///
-/// \param c Character to be checked
-/// \return `true' - it is one of trigraph endings, `false' - otherwise
-_Bool is_trigraph_suf(char c);
 
 /// Expand escapes in string literal from `yytext'. NOTE: Needs to be freed.
 ///
@@ -96,107 +79,15 @@ HE        [Pp][+-]?{D}+
 LS        L|l|LL|ll
 IS        [Uu]{LS}?|{LS}[Uu]?
 FS        [FfLl]
-HASH      "??="|"#"
-LBRACKET  "??("|"["
-BS        "??/"|"\\"
-RBRACKET  "??)"|"]"
-CARET     "??'"|"^"
-LBRACE    "??<"|"{"
-VERTICAL  "??!"|"|"
-RBRACE    "??>"|"}"
-TILDE     "??-"|"~"
 PR_INS    [ \t]+[^\n\r]*$
-NLE       {BS}(\n|\r|\r\n)
-UCN       {BS}(u{H}{4}|U{H}{8})
-ID        {ND}({ND}|{D}|{BS}u{H}{4}|{UCN})*
-ESC       {BS}['"?\\abfnrtv]|{BS}"??/"|{BS}{O}{1,3}|{BS}x{H}+|{UCN}
+UCN       \\(u{H}{4}|U{H}{8})
+ID        {ND}({ND}|{D}|{UCN})*
+ESC       \\['"?\\abfnrtv]|\\{O}{1,3}|\\x{H}+|{UCN}
 CHAR      [LUu]?'({ESC}|[^'\\\n\r])+'
 STRL      ([LUu]|u8)?\"({ESC}|[^"\\\n\r])+\"
 WS        [ \f\n\r\t\v]
 
 %%
-
-^[ \t]*({HASH}|"%:")[ \t]* { BEGIN PREP; }
-
-<PREP>"if"{PR_INS} {
-    BEGIN INITIAL;
-    yywarn("Everything inside `#if' will be processed "
-        "considering condition as true! Syntax error may occur.");
-}
-<PREP>"ifdef"{PR_INS} {
-    BEGIN INITIAL;
-    yywarn("Everything inside `#ifdef' will be processed "
-        "considering pointed one as defined! Syntax error may occur.");
-}
-<PREP>"ifndef"{PR_INS} {
-    BEGIN INITIAL;
-    yywarn("Everything inside `#ifndef' will be processed "
-        "considering pointed one as not defined! Syntax error may occur.");
-}
-<PREP>"elif"{PR_INS} {
-    BEGIN INITIAL;
-    yywarn("Everything inside `#elif' will be processed "
-        "considering condition as true! Syntax error may occur.");
-}
-<PREP>"else"[^\n\r]*$ {
-    BEGIN INITIAL;
-    yywarn("Everything inside `#else' will be processed "
-        "considering previous condition as false! Syntax error may occur.");
-}
-<PREP>"endif"[^\n\r]*$  { BEGIN INITIAL; }
-
-<PREP>"include"[ \t]*\" { BEGIN INCL_FL; }
-<PREP>"include"[ \t]*<  { BEGIN INCL_ST; }
-<INCL_ST>[^>\n\r]*/> {
-    add_std_typedef(yytext);
-    yywarn("Standard libraries included will not be considered by lexer!\n"
-        "Only `typedef-name's described in ISO/IEC 9899:2018.");
-}
-<INCL_ST>[^>\n\r]*$ {
-    BEGIN INITIAL;
-    yyerror("Preprocessing error: Include name does not have a closing quote.");
-}
-<INCL_ST>>[ \t]*$       { BEGIN INITIAL; }
-<INCL_FL>[^"\n\r]*/\"   { change_source(yytext); }
-<INCL_FL>[^"\n\r]*$ {
-    BEGIN INITIAL;
-    yyerror("Preprocessing error: Include name does not have a closing quote.");
-}
-<INCL_FL>\"[ \t]*$      { BEGIN INITIAL; }
-
-<PREP>"define"{PR_INS}  {
-    BEGIN INITIAL;
-    yywarn("Everything defined by `#define' will be processed "
-        "considering no `#define' was used! Syntax error may occur.");
-}
-<PREP>"undef"{PR_INS}   { BEGIN INITIAL; }
-
-<PREP>"line"{PR_INS}    { BEGIN INITIAL; /* TODO change source notification */ }
-<PREP>"error"{WS}*      { BEGIN ERROR_S; }
-<ERROR_S>[^\n\r]*$ {
-    BEGIN INITIAL;
-    yyerror(yytext);
-}
-<PREP>"warning"{WS}*    { BEGIN WARNING; /* not in ISO/IEC 9899:2017 */ }
-<WARNING>[^\n\r]*$ {
-    BEGIN INITIAL;
-    yywarn(yytext);
-}
-<PREP>"pragma"{PR_INS}  { BEGIN INITIAL; /* TODO compiler pragmas */ }
-
-<PREP>""$ {
-    BEGIN INITIAL;
-    if (yyleng > 0)
-    {
-        yyerror("Preprocessing error: Wrong preprocessing content found!");
-    }
-}
-<PREP>[^\n\r]           { yymore(); }
-
-"/"{NLE}?"/"({NLE}|[^\n\r])*$ { /* ignore inline comment */ }
-"/"{NLE}?"*"            { BEGIN COMMENT; }
-<COMMENT>(.|\n)|"*"{NLE}? { /* ignore comment content */ }
-<COMMENT>"*"{NLE}?"/"   { BEGIN INITIAL; }
 
 "auto"                  { return AUTO; }
 "break"                 { return BREAK; }
@@ -310,23 +201,15 @@ WS        [ \f\n\r\t\v]
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
-<STR>\"{WS}*\" {
-    int i;
-    for (i = 2;; ++i)
-    {
-        if (yytext[yyleng - i] == '"') break;
-    }
-    shift_yytext(i);  // Skip and retry
-}
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>.              { yymore(); }
 
-{LBRACKET}|"<:"         { return LBRACKET; }
-{RBRACKET}|":>"         { return RBRACKET; }
+"["|"<:"                { return LBRACKET; }
+"]"|":>"                { return RBRACKET; }
 "("                     { return LPAREN; }
 ")"                     { return RPAREN; }
-{LBRACE}|"<%"           { return LBRACE; }
-{RBRACE}|"%>"           { return RBRACE; }
+"{"|"<%"                { return LBRACE; }
+"}"|"%>"                { return RBRACE; }
 "."                     { return DOT; }
 "->"                    { return ARROW; }
 "++"                    { return DBL_PLUS; }
@@ -335,7 +218,7 @@ WS        [ \f\n\r\t\v]
 "*"                     { return ASTERISK; }
 "+"                     { return PLUS; }
 "-"                     { return MINUS; }
-{TILDE}                 { return TILDE; }
+"~"                     { return TILDE; }
 "!"                     { return BANG; }
 "/"                     { return SLASH; }
 "%"                     { return PERCENT; }
@@ -347,10 +230,10 @@ WS        [ \f\n\r\t\v]
 ">="                    { return GE; }
 "=="                    { return EQ; }
 "!="                    { return NE; }
-{CARET}                 { return CARET; }
-{VERTICAL}              { return VERTICAL; }
+"^"                     { return CARET; }
+"|"                     { return VERTICAL; }
 "&&"                    { return LOG_AND; }
-{VERTICAL}{VERTICAL}    { return LOG_OR; }
+"||"                    { return LOG_OR; }
 "?"                     { return QUESTION; }
 ":"                     { return COLON; }
 ";"                     { return SEMICOLON; }
@@ -364,22 +247,9 @@ WS        [ \f\n\r\t\v]
 "<<="                   { return LEFT_ASSIGN; }
 ">>="                   { return RIGHT_ASSIGN; }
 "&="                    { return AND_ASSIGN; }
-{CARET}=                { return XOR_ASSIGN; }
-{VERTICAL}=             { return OR_ASSIGN; }
+"^="                    { return XOR_ASSIGN; }
+"|="                    { return OR_ASSIGN; }
 ","                     { return COMMA; }
-
-<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*"??/"\r\n {
-    shift_yytext(5);  // skip and retry
-}
-<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*"??/"[\r\n] {
-    shift_yytext(4);  // skip and retry
-}
-<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*\\\r\n {
-    shift_yytext(3);  // skip and retry
-}
-<INITIAL,PREP,STR,CHR>[^ \f\n\r\t\v]*\\[\n\r] {
-    shift_yytext(2);  // skip and retry
-}
 
 <COMMENT,STR,CHR><<EOF>> { return ERROR; /* TODO error message */ }
 {WS}                    { /* skip over whitespaces */ }
@@ -434,25 +304,10 @@ void change_source(char *name)
     BEGIN INITIAL;
 }
 
-void shift_yytext(int n)
-{
-    int i;
-    for (i = yyleng - n - 1; i >= 0; --i)
-    {
-        unput(yytext[i]);
-    }
-}
-
 AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
 {
     AST_NODE *res = ast_create_node(type, (AST_CONTENT) {.value = val}, 0);
     return res;
-}
-
-_Bool is_trigraph_suf(char c)
-{
-    return c == '='  || c == '(' || c == '/' || c == ')'
-        || c == '\'' || c == '<' || c == '!' || c == '>' || c == '-';
 }
 
 char *readstr()
@@ -463,31 +318,13 @@ char *readstr()
             "STRING_LITERAL");
     while (i < yyleng - 1)
     {
-        if (yytext[i] == '\\' || yytext[i] == '?' && yytext[i+1] == '?' && yytext[i+2] == '/')
+        if (yytext[i] == '\\')
         {
             ++i;
-            if (yytext[i-1] != '\\') i += 2;
             if (i == yyleng) return NULL;
             switch (yytext[i])
             {
-                case '?':
-                    if (yytext[i+1] == '?' && is_trigraph_suf(yytext[i+2]))
-                    {
-                        i += 2;
-                        if (yytext[i] == '/')
-                        {
-                            to_put = '\\';
-                        }
-                        else
-                        {
-                            return NULL;
-                        }
-                    }
-                    else
-                    {
-                        to_put = '?';
-                    }
-                    break;
+                case '?':  to_put = '?'; break;
                 case '\'': to_put = '\''; break;
                 case '\"': to_put = '\"'; break;
                 case '\\': to_put = '\\'; break;
@@ -524,22 +361,6 @@ char *readstr()
                     break;
                 default:
                     return NULL;
-            }
-        }
-        else if (yytext[i] == '?' && yytext[i+1] == '?' && is_trigraph_suf(yytext[i+2]))
-        {
-            i += 2;
-            switch (yytext[i])
-            {
-                case '=': to_put = '#'; break;
-                case '(': to_put = '['; break;
-                case ')': to_put = ']'; break;
-                case '\'': to_put = '^'; break;
-                case '<': to_put = '{'; break;
-                case '!': to_put = '|'; break;
-                case '>': to_put = '}'; break;
-                case '-': to_put = '~'; break;
-                default: return NULL;
             }
         }
         else
