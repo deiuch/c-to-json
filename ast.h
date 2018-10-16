@@ -76,25 +76,21 @@ typedef enum
     IntegerConstant,
     FloatingConstant,
     CharacterConstant,
-}
-AST_NODE_TYPE;
+} AST_NODE_TYPE;
 
 typedef union
 {
     int token;
     void *value;
-}
-AST_CONTENT;
+} AST_CONTENT;
 
 /// Structure for storing AST node data.
-typedef struct AST_NODE
-{
+typedef struct AST_NODE {
     AST_NODE_TYPE type;
     AST_CONTENT content;
     int children_number;
     struct AST_NODE **children;
-}
-AST_NODE;
+} AST_NODE;
 
 /// Root of built AST after parsing.
 AST_NODE *ast_root;

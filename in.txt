@@ -121,7 +121,8 @@ char *ast_type_to_str(AST_NODE_TYPE type)
     }
 }
 
-void ast_free(AST_NODE *root) {
+void ast_free(AST_NODE *root)
+{
     if (root == NULL) return;
 //    free(root->content);  // FIXME
     for (int i = 0; i < root->children_number; ++i)
@@ -131,7 +132,8 @@ void ast_free(AST_NODE *root) {
     free(root);
 }
 
-char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST_NODE *)) {
+char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST_NODE *))
+{
     char *json;
     char *act_tab = repeat(shift, tab);
     int res;
