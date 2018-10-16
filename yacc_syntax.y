@@ -50,28 +50,15 @@ _Bool is_typedef_used(AST_NODE *node);
 ///
 /// \param node AST Node of `InitDeclaratorList' to collect from
 void collect_typedef_names(AST_NODE *node);
-
-/// Convert constant value to the corresponding AST node.
-///
-/// \param type Type of a new node
-/// \param val Constant to put as content
-/// \return New AST node for a given constant
-AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
 %}
 
 %start TranslationUnit
 
 %union
 {
-    char *id;
-    char *integer;
-    char *floating;
-    char *character;
-    char *string;
-    char *token;
     AST_NODE *node;
     _Bool boolean_v;
-}  // TODO constant types support
+}
 
 // Keywords
 // ISO/IEC 9899:2017, 6.4.1 Keywords, page 42
@@ -130,15 +117,13 @@ AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
  *
  *  ISO/IEC 9899:2017, 6.7.8 Type definitions, pages 99-100
  */
-%token <id> TYPEDEF_NAME
+%token <node> TYPEDEF_NAME
 
 // Literals
 // ISO/IEC 9899:2017, 6.4.2 and 6.4.4, pages 43-52
-%token <id>        IDENTIFIER
-%token <integer>   INTEGER_CONSTANT
-%token <floating>  FLOATING_CONSTANT
-%token <character> CHARACTER_CONSTANT
-%token <string>    STRING_LITERAL
+%token <node> IDENTIFIER
+%token <node> CONSTANT
+%token <node> STRING_LITERAL
 
 // Punctuators
 // ISO/IEC 9899:2017, 6.4.6 Punctuators, page 52
@@ -189,74 +174,73 @@ AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
 %token OR_ASSIGN
 %token COMMA
 
-%type <node> TranslationUnit
-%type <node> ExternalDeclaration
-%type <node> FunctionDefinition
-%type <node> DeclarationList
-%type <node> Declaration
-%type <node> DeclarationSpecifiers
-%type <node> InitDeclaratorList
-%type <node> InitDeclarator
-%type <node> StorageClassSpecifier
-%type <node> TypeSpecifier
-%type <node> StructOrUnionSpecifier
+%type <node>      TranslationUnit
+%type <node>      ExternalDeclaration
+%type <node>      FunctionDefinition
+%type <node>      DeclarationList
+%type <node>      Declaration
+%type <node>      DeclarationSpecifiers
+%type <node>      InitDeclaratorList
+%type <node>      InitDeclarator
+%type <node>      StorageClassSpecifier
+%type <node>      TypeSpecifier
+%type <node>      StructOrUnionSpecifier
 %type <boolean_v> StructOrUnion
-%type <node> StructDeclarationList
-%type <node> StructDeclaration
-%type <node> SpecifierQualifierList
-%type <node> StructDeclaratorList
-%type <node> StructDeclarator
-%type <node> EnumSpecifier
-%type <node> EnumeratorList
-%type <node> Enumerator
-%type <node> AtomicTypeSpecifier
-%type <node> TypeQualifier
-%type <node> FunctionSpecifier
-%type <node> AlignmentSpecifier
-%type <node> Declarator
-%type <node> DirectDeclarator
-%type <node> Pointer
-%type <node> TypeQualifierList
-%type <node> ParameterTypeList
-%type <node> ParameterList
-%type <node> ParameterDeclaration
-%type <node> IdentifierList
-%type <node> TypeName
-%type <node> AbstractDeclarator
-%type <node> DirectAbstractDeclarator
-%type <node> TypedefName
-%type <node> Initializer
-%type <node> InitializerList
-%type <node> Designation
-%type <node> DesignatorList
-%type <node> Designator
-%type <node> StaticAssertDeclaration
-%type <node> Statement
-%type <node> LabeledStatement
-%type <node> CompoundStatement
-%type <node> BlockItemList
-%type <node> BlockItem
-%type <node> ExpressionStatement
-%type <node> SelectionStatement
-%type <node> IterationStatement
-%type <node> JumpStatement
-%type <node> ConstantExpression
-%type <node> ExpressionOpt
-%type <node> Expression
-%type <node> AssignmentExpression
-%type <node> AssignmentOperator
-%type <node> ConditionalExpression
-%type <node> ArithmeticalExpression
-%type <node> CastExpression
-%type <node> UnaryExpression
-%type <node> UnaryOperator
-%type <node> PostfixExpression
-%type <node> ArgumentExpressionList
-%type <node> PrimaryExpression
-%type <node> Constant
-%type <node> GenericSelection
-%type <node> GenericAssocList
-%type <node> GenericAssociation
+%type <node>      StructDeclarationList
+%type <node>      StructDeclaration
+%type <node>      SpecifierQualifierList
+%type <node>      StructDeclaratorList
+%type <node>      StructDeclarator
+%type <node>      EnumSpecifier
+%type <node>      EnumeratorList
+%type <node>      Enumerator
+%type <node>      AtomicTypeSpecifier
+%type <node>      TypeQualifier
+%type <node>      FunctionSpecifier
+%type <node>      AlignmentSpecifier
+%type <node>      Declarator
+%type <node>      DirectDeclarator
+%type <node>      Pointer
+%type <node>      TypeQualifierList
+%type <node>      ParameterTypeList
+%type <node>      ParameterList
+%type <node>      ParameterDeclaration
+%type <node>      IdentifierList
+%type <node>      TypeName
+%type <node>      AbstractDeclarator
+%type <node>      DirectAbstractDeclarator
+%type <node>      TypedefName
+%type <node>      Initializer
+%type <node>      InitializerList
+%type <node>      Designation
+%type <node>      DesignatorList
+%type <node>      Designator
+%type <node>      StaticAssertDeclaration
+%type <node>      Statement
+%type <node>      LabeledStatement
+%type <node>      CompoundStatement
+%type <node>      BlockItemList
+%type <node>      BlockItem
+%type <node>      ExpressionStatement
+%type <node>      SelectionStatement
+%type <node>      IterationStatement
+%type <node>      JumpStatement
+%type <node>      ConstantExpression
+%type <node>      ExpressionOpt
+%type <node>      Expression
+%type <node>      AssignmentExpression
+%type <node>      AssignmentOperator
+%type <node>      ConditionalExpression
+%type <node>      ArithmeticalExpression
+%type <node>      CastExpression
+%type <node>      UnaryExpression
+%type <node>      UnaryOperator
+%type <node>      PostfixExpression
+%type <node>      ArgumentExpressionList
+%type <node>      PrimaryExpression
+%type <node>      GenericSelection
+%type <node>      GenericAssocList
+%type <node>      GenericAssociation
 
 // *** PRECEDENCE ASSIGNMENT ***
 
@@ -450,11 +434,11 @@ StructOrUnionSpecifier
         }
         | StructOrUnion IDENTIFIER LBRACE StructDeclarationList RBRACE
         {
-            $$ = ast_create_node($1 ? StructSpecifier : UnionSpecifier, NULL, 2, get_const_node(Identifier, $2), $4);
+            $$ = ast_create_node($1 ? StructSpecifier : UnionSpecifier, NULL, 2, $2, $4);
         }
         | StructOrUnion IDENTIFIER
         {
-            $$ = ast_create_node($1 ? StructSpecifier : UnionSpecifier, NULL, 1, get_const_node(Identifier, $2));
+            $$ = ast_create_node($1 ? StructSpecifier : UnionSpecifier, NULL, 1, $2);
         }
         ;
 
@@ -544,15 +528,15 @@ EnumSpecifier
         }
         | ENUM IDENTIFIER LBRACE EnumeratorList       RBRACE
         {
-            $$ = ast_create_node(EnumSpecifier, NULL, 2, get_const_node(Identifier, $2), $4);
+            $$ = ast_create_node(EnumSpecifier, NULL, 2, $2, $4);
         }
         | ENUM IDENTIFIER LBRACE EnumeratorList COMMA RBRACE
         {
-            $$ = ast_create_node(EnumSpecifier, NULL, 2, get_const_node(Identifier, $2), $4);
+            $$ = ast_create_node(EnumSpecifier, NULL, 2, $2, $4);
         }
         | ENUM IDENTIFIER
         {
-            $$ = ast_create_node(EnumSpecifier, NULL, 1, get_const_node(Identifier, $2));
+            $$ = ast_create_node(EnumSpecifier, NULL, 1, $2);
         }
         ;
 
@@ -570,11 +554,11 @@ EnumeratorList
 Enumerator
         : IDENTIFIER  // EnumerationConstant, reduce/reduce with PrimaryExpression
         {
-            $$ = ast_create_node(Enumerator, NULL, 1, get_const_node(Identifier, $1));
+            $$ = ast_create_node(Enumerator, NULL, 1, $1);
         }
         | IDENTIFIER ASSIGN ConstantExpression
         {
-            $$ = ast_create_node(Enumerator, NULL, 2, get_const_node(Identifier, $1), $3);
+            $$ = ast_create_node(Enumerator, NULL, 2, $1, $3);
         }
         ;
 
@@ -622,7 +606,7 @@ Declarator
 DirectDeclarator
         : IDENTIFIER
         {
-            $$ = ast_create_node(DirectDeclarator, NULL, 1, get_const_node(Identifier, $1));
+            $$ = ast_create_node(DirectDeclarator, NULL, 1, $1);
         }
         | LPAREN Declarator RPAREN
         {
@@ -746,11 +730,11 @@ ParameterDeclaration
 IdentifierList
         :                      IDENTIFIER
         {
-            $$ = ast_create_node(IdentifierList, NULL, 1, get_const_node(Identifier, $1));
+            $$ = ast_create_node(IdentifierList, NULL, 1, $1);
         }
         | IdentifierList COMMA IDENTIFIER
         {
-            $$ = ast_expand_node($1, get_const_node(Identifier, $3));
+            $$ = ast_expand_node($1, $3);
         }
         ;
 
@@ -878,7 +862,7 @@ DirectAbstractDeclarator
         ;
 
 TypedefName
-        : TYPEDEF_NAME  { $$ = get_const_node(Identifier, $1); }
+        : TYPEDEF_NAME  { $$ = $1; }
     //  | IDENTIFIER  // reduce/reduce with PrimaryExpression, resolved using lexical analyzer
         ;
 
@@ -933,13 +917,13 @@ DesignatorList
 
 Designator
         : LBRACKET ConstantExpression RBRACKET  { $$ = $2; }
-        | DOT IDENTIFIER                        { $$ = get_const_node(Identifier, $2); }
+        | DOT IDENTIFIER                        { $$ = $2; }
         ;
 
 StaticAssertDeclaration
         : STATIC_ASSERT LPAREN ConstantExpression COMMA STRING_LITERAL RPAREN SEMICOLON
         {
-            $$ = ast_create_node(StaticAssertDeclaration, NULL, 2, $3, get_const_node(StringLiteral, $5));
+            $$ = ast_create_node(StaticAssertDeclaration, NULL, 2, $3, $5);
         }
         ;
 
@@ -957,7 +941,7 @@ Statement
 LabeledStatement
         : IDENTIFIER              COLON Statement
         {
-            $$ = ast_create_node(LabeledStatement, NULL, 2, get_const_node(Identifier, $1), $3);
+            $$ = ast_create_node(LabeledStatement, NULL, 2, $1, $3);
         }
         | CASE ConstantExpression COLON Statement
         {
@@ -1032,7 +1016,7 @@ IterationStatement
 JumpStatement
         : GOTO IDENTIFIER   SEMICOLON
         {
-            $$ = ast_create_node(JumpStatement, "GOTO", 1, get_const_node(Identifier, $2));
+            $$ = ast_create_node(JumpStatement, "GOTO", 1, $2);
         }
         | CONTINUE          SEMICOLON
         {
@@ -1243,11 +1227,11 @@ PostfixExpression
         }
         | PostfixExpression DOT   IDENTIFIER
         {
-            $$ = ast_create_node(PostfixExpression, "DOT", 2, $1, get_const_node(Identifier, $3));
+            $$ = ast_create_node(PostfixExpression, "DOT", 2, $1, $3);
         }
         | PostfixExpression ARROW IDENTIFIER
         {
-            $$ = ast_create_node(PostfixExpression, "ARROW", 2, $1, get_const_node(Identifier, $3));
+            $$ = ast_create_node(PostfixExpression, "ARROW", 2, $1, $3);
         }
         | PostfixExpression DBL_PLUS
         {
@@ -1279,18 +1263,12 @@ ArgumentExpressionList
         ;
 
 PrimaryExpression
-        : IDENTIFIER                { $$ = get_const_node(Identifier, $1); }
-        | Constant                  { $$ = $1; }
-        | STRING_LITERAL            { $$ = get_const_node(StringLiteral, $1); }
+        : IDENTIFIER                { $$ = $1; }
+        | CONSTANT                  { $$ = $1; }
+    //  | EnumerationConstant  // reduce/reduce with PrimaryExpression, identical to IDENTIFIER
+        | STRING_LITERAL            { $$ = $1; }
         | LPAREN Expression RPAREN  { $$ = $2; }
         | GenericSelection          { $$ = $1; }
-        ;
-
-Constant
-        : INTEGER_CONSTANT    { $$ = get_const_node(IntegerConstant, $1); }
-        | FLOATING_CONSTANT   { $$ = get_const_node(FloatingConstant, $1); }
-    //  | EnumerationConstant  // reduce/reduce with PrimaryExpression, identical to IDENTIFIER
-        | CHARACTER_CONSTANT  { $$ = get_const_node(CharacterConstant, $1); }
         ;
 
 GenericSelection
@@ -1362,10 +1340,4 @@ void collect_typedef_names(AST_NODE *node)
             put_typedef_name(cur_direct_decl->children[0]->content);
         }
     }
-}
-
-AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
-{
-    AST_NODE *res = ast_create_node(type, val, 0);
-    return res;
 }

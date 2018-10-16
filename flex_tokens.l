@@ -49,6 +49,13 @@ void change_source(char *name);
 /// \param n Number of symbols to be dropped
 void shift_yytext(int n);
 
+/// Convert constant value to the corresponding AST node.
+///
+/// \param type Type of a new node
+/// \param val Constant to put as content
+/// \return New AST node for a given constant
+AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
+
 /// Is given character - trigraph suffix?
 ///
 /// \param c Character to be checked
@@ -237,9 +244,10 @@ WS        [ \f\n\r\t\v]
 "_Thread_local"         { return THREAD_LOCAL; }
 
 {ID} {
-    yylval.id = (char *) my_malloc(sizeof(char) * (yyleng + 1),
+    char *lit = (char *) my_malloc(sizeof(char) * (yyleng + 1),
             "IDENTIFIER");
-    strcpy(yylval.id, yytext);
+    strcpy(lit, yytext);
+    yylval.node = get_const_node(Identifier, lit);
     if (is_typedef_name(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
     // TODO check Universal character name, ISO/IEC 9899:2017, page 44
@@ -248,10 +256,11 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
 {D}+{IS}? {
-    yylval.integer = (char *) my_malloc(sizeof(char) * (yyleng + 1),
+    char *lit = (char *) my_malloc(sizeof(char) * (yyleng + 1),
             "INTEGER_CONSTANT");
-    strcpy(yylval.integer, yytext);
-    return INTEGER_CONSTANT;
+    strcpy(lit, yytext);
+    yylval.node = get_const_node(IntegerConstant, lit);
+    return CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 45-46
 }
 
@@ -261,10 +270,11 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? {
-    yylval.floating = (char *) my_malloc(sizeof(char) * (yyleng + 1),
+    char *lit = (char *) my_malloc(sizeof(char) * (yyleng + 1),
             "FLOATING_CONSTANT");
-    strcpy(yylval.floating, yytext);
-    return FLOATING_CONSTANT;
+    strcpy(lit, yytext);
+    yylval.node = get_const_node(FloatingConstant, lit);
+    return CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 47-48
 }
 
@@ -278,21 +288,24 @@ WS        [ \f\n\r\t\v]
 }
 <CHR>' {
     BEGIN INITIAL;
-    char *content = readstr();
-    if (!yylval.string || strlen(content) != 1) {
+    char *lit = readstr();
+    if (!lit || strlen(lit) != 1) {
+        free(lit);
         return ERROR;  // TODO error message
     }
-    yylval.character = content;
-    return CHARACTER_CONSTANT;
+    yylval.node = get_const_node(CharacterConstant, lit);
+    return CONSTANT;
     // TODO value conversion, UTF-8, ISO/IEC 9899:2017, page 50-52
 }
 <STR>\" {
     BEGIN INITIAL;
-    yylval.string = readstr();
-    if (!yylval.string)
+    char *lit = readstr();
+    if (!lit)
     {
+        free(lit);
         return ERROR;  // TODO error message
     }
+    yylval.node = get_const_node(StringLiteral, lit);
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
@@ -427,6 +440,12 @@ void shift_yytext(int n)
     }
 }
 
+AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
+{
+    AST_NODE *res = ast_create_node(type, val, 0);
+    return res;
+}
+
 _Bool is_trigraph_suf(char c)
 {
     return c == '='  || c == '(' || c == '/' || c == ')'
@@ -437,7 +456,7 @@ char *readstr()
 {
     size_t i = 0, j = 0;
     char to_put;
-    char *res = (char *) my_malloc(sizeof(char) * yyleng,
+    char *res = (char *) my_malloc(sizeof(char) * (yyleng + 1),
             "STRING_LITERAL");
     while (i < yyleng - 1)
     {
