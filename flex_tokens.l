@@ -77,8 +77,7 @@ typedef struct
     FILE *file;
     YY_BUFFER_STATE buffer;
     int start_cond;
-}
-config;
+} config;
 
 /// Stack of source configurations.
 config config_stack[MAX_INCLUDE_DEPTH];
