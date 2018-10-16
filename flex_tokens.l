@@ -246,7 +246,7 @@ WS        [ \f\n\r\t\v]
 "|="                    { return OR_ASSIGN; }
 ","                     { return COMMA; }
 
-<COMMENT,STR,CHR><<EOF>> { return ERROR; /* TODO error message */ }
+<STR,CHR><<EOF>>        { return ERROR; /* TODO error message */ }
 {WS}                    { /* skip over whitespaces */ }
 .                       { return ERROR; /* TODO error message */ }
 
