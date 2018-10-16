@@ -33,11 +33,6 @@ void yywarn(const char *);
 /// \return 0 - new source is assigned, 1 - nothing more to read
 int yywrap();
 
-/// Change source file to read next.
-///
-/// \param name Name of new source file
-void change_source(char *name);
-
 /// Convert constant value to the corresponding AST node.
 ///
 /// \param type Type of a new node
@@ -279,29 +274,6 @@ int yywrap()
     BEGIN old_conf->start_cond;
 
     return 0;
-}
-
-void change_source(char *name)
-{
-    if (file_stack_ptr >= MAX_INCLUDE_DEPTH)
-    {
-        fprintf(stderr,
-            "Includes nested too deeply (more than %d)\n", MAX_INCLUDE_DEPTH);
-        exit(1);
-    }
-
-    FILE *new_file = fopen(name, "r");
-    if (!new_file)
-    {
-        fprintf(stderr, "Cannot open for reading: %s\n", name);
-        exit(3);
-    }
-
-    config_stack[file_stack_ptr++] = (config) {yyin, YY_CURRENT_BUFFER, YY_START};
-
-    yyin = new_file;
-    yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
-    BEGIN INITIAL;
 }
 
 AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
