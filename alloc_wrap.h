@@ -5,8 +5,8 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
-#ifndef C_PARSER_MALLOC_WRAP_H
-#define C_PARSER_MALLOC_WRAP_H
+#ifndef C_PARSER_MALLOC_WRAP_H_INCLUDED
+#define C_PARSER_MALLOC_WRAP_H_INCLUDED
 
 #include <stddef.h>
 
@@ -25,4 +25,4 @@ void *my_malloc(size_t size, char *description);
 /// \return New allocated memory
 void *my_realloc(void *memory, size_t size, char *description);
 
-#endif //C_PARSER_MALLOC_WRAP_H
+#endif //C_PARSER_MALLOC_WRAP_H_INCLUDED

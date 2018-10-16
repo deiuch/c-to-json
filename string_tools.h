@@ -4,8 +4,8 @@
  * @authors: Denis Chernikov, Vladislav Kuleykin
  */
 
-#ifndef C_PARSER_STRING_TOOLS_H
-#define C_PARSER_STRING_TOOLS_H
+#ifndef C_PARSER_STRING_TOOLS_H_INCLUDED
+#define C_PARSER_STRING_TOOLS_H_INCLUDED
 
 /// Are the given strings equal?
 ///
@@ -46,4 +46,4 @@ char *concat_array(char **array, int n, char *delimiter);
 /// \return `str' repeated `n' times
 char *repeat(int n, char *str);
 
-#endif //C_PARSER_STRING_TOOLS_H
+#endif //C_PARSER_STRING_TOOLS_H_INCLUDED
