@@ -79,11 +79,18 @@ typedef enum
 }
 AST_NODE_TYPE;
 
+typedef union
+{
+    int token;
+    void *value;
+}
+AST_CONTENT;
+
 /// Structure for storing AST node data.
 typedef struct AST_NODE
 {
     AST_NODE_TYPE type;
-    void *content;
+    AST_CONTENT content;
     int children_number;
     struct AST_NODE **children;
 }
@@ -100,7 +107,7 @@ AST_NODE *ast_root;
 /// \param n_children Number of children
 /// \param ... List of children
 /// \return New AST node
-AST_NODE *ast_create_node(AST_NODE_TYPE type, void *content, int n_children, ...);
+AST_NODE *ast_create_node(AST_NODE_TYPE type, AST_CONTENT content, int n_children, ...);
 
 /// Append given child to the given AST node.
 ///

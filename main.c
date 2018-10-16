@@ -21,8 +21,60 @@ extern FILE *yyin;
 /// \return String representation of the given object, NULL if not AST_NODE
 char *content_to_str(AST_NODE *node)
 {
-    return alloc_const_str((char *) node->content);
-}  // TODO constant types support
+    if (node->type == Identifier || node->type == StringLiteral || node->type == IntegerConstant
+        || node->type == FloatingConstant || node->type == CharacterConstant)
+    {
+        return alloc_const_str((char *) node->content.value);  // TODO constant types support
+    }
+    switch (node->content.token)
+    {
+        case AUTO: return "AUTO";
+        case BREAK: return "BREAK";
+        case CASE: return "CASE";
+        case CHAR: return "CHAR";
+        case CONST: return "CONST";
+        case CONTINUE: return "CONTINUE";
+        case DEFAULT: return "DEFAULT";
+        case DO: return "DO";
+        case DOUBLE: return "DOUBLE";
+        case ELSE: return "ELSE";
+        case ENUM: return "ENUM";
+        case EXTERN: return "EXTERN";
+        case FLOAT: return "FLOAT";
+        case FOR: return "FOR";
+        case GOTO: return "GOTO";
+        case IF: return "IF";
+        case INLINE: return "INLINE";
+        case INT: return "INT";
+        case LONG: return "LONG";
+        case REGISTER: return "REGISTER";
+        case RESTRICT: return "RESTRICT";
+        case RETURN: return "RETURN";
+        case SHORT: return "SHORT";
+        case SIGNED: return "SIGNED";
+        case SIZEOF: return "SIZEOF";
+        case STATIC: return "STATIC";
+        case STRUCT: return "STRUCT";
+        case SWITCH: return "SWITCH";
+        case TYPEDEF: return "TYPEDEF";
+        case UNION: return "UNION";
+        case UNSIGNED: return "UNSIGNED";
+        case VOID: return "VOID";
+        case VOLATILE: return "VOLATILE";
+        case WHILE: return "WHILE";
+        case ALIGNAS: return "ALIGNAS";
+        case ALIGNOF: return "ALIGNOF";
+        case ATOMIC: return "ATOMIC";
+        case BOOL: return "BOOL";
+        case COMPLEX: return "COMPLEX";
+        case GENERIC: return "GENERIC";
+        case IMAGINARY: return "IMAGINARY";
+        case NORETURN: return "NORETURN";
+        case STATIC_ASSERT: return "STATIC_ASSERT";
+        case THREAD_LOCAL: return "THREAD_LOCAL";
+        default: return NULL;
+    }
+}
 
 /// Program entry point.
 ///

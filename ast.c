@@ -15,7 +15,7 @@
 
 AST_NODE *ast_root = NULL;
 
-AST_NODE *ast_create_node(AST_NODE_TYPE type, void *content, int n_children, ...)
+AST_NODE *ast_create_node(AST_NODE_TYPE type, AST_CONTENT content, int n_children, ...)
 {
     AST_NODE *res = (AST_NODE *) my_malloc(sizeof(AST_NODE), "AST node");
     *res = (AST_NODE) {type, content, n_children, NULL};
@@ -159,7 +159,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
 
     // Get string representation of `node' content
     char *content_str;
-    if (root->content)
+    if (root->content.value)
     {
         char *tmp = (*cont_to_str)(root);
         if (!tmp)
@@ -167,7 +167,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
             goto null_content;
         }
         content_str = wrap_by_quotes(tmp);
-        free(tmp);
     }
     else
     {

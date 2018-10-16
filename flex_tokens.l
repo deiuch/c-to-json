@@ -442,7 +442,7 @@ void shift_yytext(int n)
 
 AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
 {
-    AST_NODE *res = ast_create_node(type, val, 0);
+    AST_NODE *res = ast_create_node(type, (AST_CONTENT) {.value = val}, 0);
     return res;
 }
 
