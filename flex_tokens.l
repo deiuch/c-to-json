@@ -289,7 +289,8 @@ WS        [ \f\n\r\t\v]
 <CHR>' {
     BEGIN INITIAL;
     char *lit = readstr();
-    if (!lit || strlen(lit) != 1) {
+    if (!lit || strlen(lit) != 1)
+    {
         free(lit);
         return ERROR;  // TODO error message
     }
@@ -311,7 +312,8 @@ WS        [ \f\n\r\t\v]
 }
 <STR>\"{WS}*\" {
     int i;
-    for (i = 2;; ++i) {
+    for (i = 2;; ++i)
+    {
         if (yytext[yyleng - i] == '"') break;
     }
     shift_yytext(i);  // Skip and retry
@@ -435,7 +437,8 @@ void change_source(char *name)
 void shift_yytext(int n)
 {
     int i;
-    for (i = yyleng - n - 1; i >= 0; --i) {
+    for (i = yyleng - n - 1; i >= 0; --i)
+    {
         unput(yytext[i]);
     }
 }
