@@ -317,6 +317,10 @@ WS        [ \f\n\r\t\v]
     }
     shift_yytext(i);  // Skip and retry
 }
+<STR,CHR>(\n|\r|\r\n) {
+    yymore();
+    return ERROR;  // TODO error message, correct handling
+}
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>.              { yymore(); }
 
