@@ -177,8 +177,11 @@ WS        [ \f\n\r\t\v]
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
+<STR,CHR>(\n|\r|\r\n) {
+    yymore();
+    return ERROR;
+}
 <STR,CHR>{ESC}          { yymore(); }
-<STR,CHR>(\n|\r|\r\n)   { yymore(); return ERROR; }
 <STR,CHR>.              { yymore(); }
 
 "["|"<:"                { return LBRACKET; }
