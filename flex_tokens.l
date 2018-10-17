@@ -178,6 +178,7 @@ WS        [ \f\n\r\t\v]
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
 <STR,CHR>{ESC}          { yymore(); }
+<STR,CHR>(\n|\r|\r\n)   { yymore(); return ERROR; }
 <STR,CHR>.              { yymore(); }
 
 "["|"<:"                { return LBRACKET; }
@@ -274,7 +275,11 @@ char *readstr()
         if (yytext[i] == '\\')
         {
             ++i;
-            if (i == yyleng) return NULL;
+            if (i == yyleng)
+            {
+                free(res);
+                return NULL;
+            }
             switch (yytext[i])
             {
                 case '?':  to_put = '?'; break;
@@ -313,6 +318,7 @@ char *readstr()
                     i += 7;
                     break;
                 default:
+                    free(res);
                     return NULL;
             }
         }
