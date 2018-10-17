@@ -241,20 +241,6 @@ void yywarn(const char *str)
 
 int yywrap()
 {
-    if (--file_stack_ptr < 0) return 1;
-
-    yy_delete_buffer(YY_CURRENT_BUFFER);
-    int res = fclose(yyin);
-    if (res == EOF){
-        fprintf(stderr, "Cannot close opened source file!\n");
-        exit(3);
-    }
-
-    config *old_conf = &config_stack[file_stack_ptr];
-    yyin = old_conf->file;
-    yy_switch_to_buffer(old_conf->buffer);
-    BEGIN old_conf->start_cond;
-
     return 0;
 }
 
