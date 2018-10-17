@@ -199,7 +199,7 @@ WS        [ \f\n\r\t\v]
 "+"                     { return PLUS; }
 "-"                     { return MINUS; }
 "~"                     { return TILDE; }
-"!"                     { return BANG; }
+"!"                     { return EXCLAMATION; }
 "/"                     { return SLASH; }
 "%"                     { return PERCENT; }
 "<<"                    { return LSHIFT; }

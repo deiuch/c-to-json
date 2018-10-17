@@ -148,7 +148,7 @@ void collect_typedef_names(AST_NODE *node);
 %token PLUS
 %token MINUS
 %token TILDE
-%token BANG
+%token EXCLAMATION
 %token SLASH
 %token PERCENT
 %token LSHIFT
@@ -1209,12 +1209,12 @@ UnaryExpression
         ;
 
 UnaryOperator
-        : AMPERSAND { $$ = ast_create_node(UnaryOperator, content_t(AMPERSAND), 0); }
-        | ASTERISK  { $$ = ast_create_node(UnaryOperator, content_t(ASTERISK), 0); }
-        | PLUS      { $$ = ast_create_node(UnaryOperator, content_t(PLUS), 0); }
-        | MINUS     { $$ = ast_create_node(UnaryOperator, content_t(MINUS), 0); }
-        | TILDE     { $$ = ast_create_node(UnaryOperator, content_t(TILDE), 0); }
-        | BANG      { $$ = ast_create_node(UnaryOperator, content_t(BANG), 0); }
+        : AMPERSAND    { $$ = ast_create_node(UnaryOperator, content_t(AMPERSAND), 0); }
+        | ASTERISK     { $$ = ast_create_node(UnaryOperator, content_t(ASTERISK), 0); }
+        | PLUS         { $$ = ast_create_node(UnaryOperator, content_t(PLUS), 0); }
+        | MINUS        { $$ = ast_create_node(UnaryOperator, content_t(MINUS), 0); }
+        | TILDE        { $$ = ast_create_node(UnaryOperator, content_t(TILDE), 0); }
+        | EXCLAMATION  { $$ = ast_create_node(UnaryOperator, content_t(EXCLAMATION), 0); }
         ;
 
 PostfixExpression
