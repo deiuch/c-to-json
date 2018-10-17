@@ -12,7 +12,7 @@ Download and unzip the content of a repository.\
 **On Windows:** start `PARSE.BAT` file.\
 **On Unix (not tested):** start `parse.sh` file.
 
-***Note:*** On **Windows**, all the required tools are already given within a repository. On **Unix**, we assume that you have already installed tools `flex` and `bison`. If you don't, you can do it simply using commands:
+***Note:*** On **Windows**, we assume that you have a `gcc` compiler accessible via command `gcc source.c -o source.exe`, also all the required tools can be downloaded by [this link](https://yadi.sk/d/aVlUjb13y2HDhA) (put `flex` and `bison` folders near the batch file). On **Unix**, we assume that you have `gcc` compiler, and also that you have already installed tools `flex` and `bison`. If you don't, you can install them simply using commands:
 ```shell
 sudo apt install flex
 sudo apt install bison
@@ -27,7 +27,7 @@ Download and unzip the content of a repository.\
 * Error recovery in syntax is not complete (more detailed analyzis is required to put nonterminal `error` without conflicts). Parsing stops at the first found syntax error.
 * If syntax (or lexical) error occured - nothing will be printed to the specified output file. Actually, this file will not be opened for writing at all.
 * In case of error, no concrete description is printed yet. Easier to see errors in "debug mode" (add flag `-t` to `bison` command, `-d` to `flex` command, and in `main` function set `yydebug = 1;`).
-* Syntax analyzis is done for the whole set of possible programs that are written according to the *ISO/IEC 9899:2018*. As a reference, 2017's draft was used, but since that version no critical changes were applied. Just some obvious mistakes in standard were fixed (like `-` used as decrement).
+* Syntax analyzis is done for the whole set of possible programs that are written according to the *ISO/IEC 9899:2018*. As a reference, [2017's draft](http://www.open-std.org/jtc1/sc22/wg14/www/abq/c17_updated_proposed_fdis.pdf) was used, but since that version no critical changes were applied. Just some obvious mistakes in standard were fixed (like `-` used as decrement).
 * Complete memory management has failed (not all the memory may be freed for unknown reasons).
 * There is no official code style convention for the C Programming Language. We wanted to follow a convention about maximum 80 characters per line and code style from the examples from the standard. Actually, some cases required to use much more than 80 characters in a single line (separation looked worse sometimes), that's why our code style convention is about 130 characters per line.
 ## Additional notes
