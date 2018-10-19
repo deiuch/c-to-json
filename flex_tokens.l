@@ -309,7 +309,7 @@ WS        [ \f\n\r\t\v]
     return STRING_LITERAL;
     // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
-<STR>\"{WS}*\" {
+<STR>\"{WS}*(L|U|u|u8)?\" {
     int i;
     for (i = 2;; ++i)
     {
