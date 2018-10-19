@@ -401,7 +401,8 @@ int yywrap()
 
     yy_delete_buffer(YY_CURRENT_BUFFER);
     int res = fclose(yyin);
-    if (res == EOF){
+    if (res == EOF)
+    {
         fprintf(stderr, "Cannot close opened source file!\n");
         exit(3);
     }
