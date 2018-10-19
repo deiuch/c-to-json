@@ -20,8 +20,8 @@ int prep_getc(FILE *stream)
 }
 
 size_t prep_fread(void * restrict ptr,
-                  size_t size, size_t nmemb,
-                  FILE * restrict stream)
+      size_t size, size_t nmemb,
+      FILE * restrict stream)
 {
     return fread(ptr, size, nmemb, stream);  // TODO
 }
