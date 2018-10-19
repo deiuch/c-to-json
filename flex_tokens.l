@@ -14,7 +14,12 @@
 #include "alloc_wrap.h"
 #include "typedef_name.h"
 #include "ast.h"
+#include "preprocessing.h"
 #include "y.tab.h"
+
+/// For preprocessing input
+#define getc prep_getc
+#define fread prep_fread
 
 /// Token for the error notification.
 #define ERROR 256
@@ -33,6 +38,11 @@ void yywarn(const char *);
 /// \return 0 - new source is assigned, 1 - nothing more to read
 int yywrap();
 
+/// Change source file to read next.
+///
+/// \param name Name of new source file
+void change_source(char *name);
+
 /// Convert constant value to the corresponding AST node.
 ///
 /// \param type Type of a new node
@@ -44,6 +54,25 @@ AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
 ///
 /// \return Expanded string
 char *readstr();
+
+// ISO/IEC 9899:2017, 5.2.4.1 Translation limits, page 20
+/// Maximum depth of the `#include' directive.
+#define MAX_INCLUDE_DEPTH 15
+
+/// Current source configuration.
+typedef struct
+{
+    FILE *file;
+    YY_BUFFER_STATE buffer;
+    int start_cond;
+}
+config;
+
+/// Stack of source configurations.
+config config_stack[MAX_INCLUDE_DEPTH];
+
+/// Size of the stack of source configurations.
+int file_stack_ptr = 0;
 %}
 
 O         [0-7]
@@ -244,7 +273,45 @@ void yywarn(const char *str)
 
 int yywrap()
 {
+    if (--file_stack_ptr < 0) return 1;
+
+    yy_delete_buffer(YY_CURRENT_BUFFER);
+    int res = fclose(yyin);
+    if (res == EOF)
+    {
+        fprintf(stderr, "Cannot close opened source file!\n");
+        exit(3);
+    }
+
+    config *old_conf = &config_stack[file_stack_ptr];
+    yyin = old_conf->file;
+    yy_switch_to_buffer(old_conf->buffer);
+    BEGIN old_conf->start_cond;
+
     return 0;
+}
+
+void change_source(char *name)
+{
+    if (file_stack_ptr >= MAX_INCLUDE_DEPTH)
+    {
+        fprintf(stderr,
+            "Includes nested too deeply (more than %d)\n", MAX_INCLUDE_DEPTH);
+        exit(1);
+    }
+
+    FILE *new_file = fopen(name, "r");
+    if (!new_file)
+    {
+        fprintf(stderr, "Cannot open for reading: %s\n", name);
+        exit(3);
+    }
+
+    config_stack[file_stack_ptr++] = (config) {yyin, YY_CURRENT_BUFFER, YY_START};
+
+    yyin = new_file;
+    yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+    BEGIN INITIAL;
 }
 
 AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
