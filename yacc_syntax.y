@@ -12,7 +12,7 @@
 %expect    0  // shift/reduce
 %expect-rr 0  // reduce/reduce
 //%lex-param {}
-//%parse-param {}
+%parse-param {void **root}
 //%pure-parser
 
 %{
@@ -42,9 +42,10 @@ _Bool error_found = false;
 
 /// Called when parse error was detected.
 ///
+/// root AST root node link
 /// \param str Error description to be printed
 /// \return Always 0
-int yyerror(const char *str);
+int yyerror(void *root, const char *str);
 
 /// Does this node contains TYPEDEF token?
 ///
@@ -286,14 +287,14 @@ TranslationUnit
         {
             if (!error_found)
             {
-                ast_root = ast_create_node(TranslationUnit, content_null, 1, $1);
+                *root = (void *) ast_create_node(TranslationUnit, content_null, 1, $1);
             }
         }
         | TranslationUnit ExternalDeclaration
         {
             if (!error_found)
             {
-                ast_root = ast_expand_node(ast_root, $2);
+                *root = (void *) ast_expand_node(*root, $2);
             }
         }
         ;
@@ -1308,7 +1309,7 @@ GenericAssociation
 
 %%
 
-int yyerror(const char *str)
+int yyerror(void *root, const char *str)
 {
     error_found = true;
     fprintf(stderr, "%s\n", str);
