@@ -464,7 +464,7 @@ char *readstr()
         {
             ++i;
             if (yytext[i-1] != '\\') i += 2;
-            if (i == yyleng) return NULL;
+            if (i == yyleng - 1) return NULL;
             switch (yytext[i])
             {
                 case '?':
