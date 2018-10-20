@@ -93,9 +93,6 @@ typedef struct AST_NODE
     struct AST_NODE **children;
 } AST_NODE;
 
-/// Root of built AST after parsing.
-AST_NODE *ast_root;
-
 /// Create node with a given set of children.
 /// Needs to be freed.
 ///

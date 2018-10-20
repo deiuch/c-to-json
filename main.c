@@ -102,25 +102,27 @@ int main(int argc, char *argv[])
         return 3;
     }
 
+    AST_NODE *root = NULL;
     if (!in_name) printf("Input your code here (Ctrl+Z for EOF):\n");
-    int yyres = yyparse();
+    int yyres = yyparse((void **) &root);
     free_typedef_name();
-
     res = argc > 2 ? fclose(yyin) : 0;
-    if (res == EOF)
-    {
-        fprintf(stderr, "Cannot close opened source file: %s\n", in_name);
-        return 3;
-    }
 
-    if (yyres || !ast_root)
+    if (yyres || !root)
     {
         fprintf(stderr, "Parsing failed! No output will be provided.\n");
         return 1;
     }
 
-    char *json = ast_to_json(ast_root, 0, "    ", &content_to_str);
-    ast_free(ast_root);
+    if (res == EOF)
+    {
+        fprintf(stderr, "Cannot close opened source file: %s\n", in_name);
+        ast_free(root);
+        return 3;
+    }
+
+    char *json = ast_to_json(root, 0, "    ", &content_to_str);
+    ast_free(root);
     if (!json)
     {
         fprintf(stderr, "JSON generation failure!\n");

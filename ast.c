@@ -13,8 +13,6 @@
 #include "ast.h"
 #include "string_tools.h"
 
-AST_NODE *ast_root = NULL;
-
 AST_NODE *ast_create_node(AST_NODE_TYPE type, AST_CONTENT content, int n_children, ...)
 {
     AST_NODE *res = (AST_NODE *) my_malloc(sizeof(AST_NODE), "AST node");
