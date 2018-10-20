@@ -25,7 +25,7 @@ extern void change_source(char *name);
  * 6.10 Preprocessing directives, pages 117-129 (PDF: 136-148);
  * A.3 Preprocessing directives, pages 344-345 (PDF: 363-364).
  *
- * Also use `add_std_typedef' function.
+ * Also use `add_std_typedef' and `change_source' procedures.
  */
 
 int prep_getc(FILE *stream)
