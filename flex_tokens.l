@@ -14,6 +14,7 @@
 #include "alloc_wrap.h"
 #include "typedef_name.h"
 #include "ast.h"
+#include "literal_conversion.h"
 #include "preprocessing.h"
 #include "string_tools.h"
 #include "y.tab.h"
@@ -24,14 +25,6 @@
 
 /// Token for the error notification.
 #define ERROR 256
-
-// Defined in `yacc_syntax.y'
-extern int yyerror(const char *);
-
-/// Print warning to user.
-///
-/// \param str Warning description to be printed
-void yywarn(const char *);
 
 /// Change input after EOF was reached.
 /// NOTE: it is used by Flex.
@@ -49,7 +42,7 @@ void change_source(char *name);
 /// \param type Type of a new node
 /// \param val Constant to put as content
 /// \return New AST node for a given constant
-AST_NODE *get_const_node(AST_NODE_TYPE type, char *val);
+AST_NODE *get_const_node(AST_NODE_TYPE type, void *val);
 
 /// Expand escapes in string literal from `yytext'. NOTE: Needs to be freed.
 ///
@@ -141,18 +134,26 @@ WS        [ \f\n\r\t\v]
 "_Thread_local"         { return THREAD_LOCAL; }
 
 {ID} {
+    if (!are_ucns_correct(yytext, yyleng))
+    {
+        return ERROR;  // TODO error message
+    }
     yylval.node = get_const_node(Identifier, alloc_const_str(yytext));
     if (is_typedef_name(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
-    // TODO check Universal character name, ISO/IEC 9899:2017, page 44
 }
 
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
 {D}+{IS}? {
-    yylval.node = get_const_node(IntegerConstant, alloc_const_str(yytext));
+    INT_CONST *lit = translate_integer_constant(yytext, yyleng);
+    if (!lit)
+    {
+        free(lit);
+        return ERROR;  // TODO error message
+    }
+    yylval.node = get_const_node(IntegerConstant, lit);
     return CONSTANT;
-    // TODO value conversion, ISO/IEC 9899:2017, page 45-46
 }
 
 {D}+{DE}{FS}?           |
@@ -161,34 +162,38 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? {
-    yylval.node = get_const_node(FloatingConstant, alloc_const_str(yytext));
+    FLT_CONST *lit = translate_floating_constant(yytext, yyleng);
+    if (!lit)
+    {
+        free(lit);
+        return ERROR;  // TODO error message
+    }
+    yylval.node = get_const_node(FloatingConstant, lit);
     return CONSTANT;
-    // TODO value conversion, ISO/IEC 9899:2017, page 47-48
 }
 
 [LUu]?' {
     BEGIN CHR;
-    /* TODO prefix considering, ISO/IEC 9899:2017, page 48-50 */
+    yymore();
 }
 (L|U|u|u8)?\" {
     BEGIN STR;
-    /* TODO prefix considering, ISO/IEC 9899:2017, page 50-52 */
+    yymore();
 }
 <CHR>' {
     BEGIN INITIAL;
-    char *lit = readstr();
-    if (!lit || strlen(lit) != 1)
+    CHR_CONST *lit = translate_character_constant(yytext, yyleng);
+    if (!lit)
     {
         free(lit);
         return ERROR;  // TODO error message
     }
     yylval.node = get_const_node(CharacterConstant, lit);
     return CONSTANT;
-    // TODO value conversion, UTF-8, ISO/IEC 9899:2017, page 50-52
 }
 <STR>\" {
     BEGIN INITIAL;
-    char *lit = readstr();
+    STR_LITERAL *lit = translate_string_literal(yytext, yyleng);
     if (!lit)
     {
         free(lit);
@@ -196,11 +201,10 @@ WS        [ \f\n\r\t\v]
     }
     yylval.node = get_const_node(StringLiteral, lit);
     return STRING_LITERAL;
-    // TODO UTF-8, ISO/IEC 9899:2017, page 50-52
 }
 <STR,CHR>(\n|\r|\r\n) {
     yymore();
-    return ERROR;
+    return ERROR;  // TODO error message
 }
 <STR,CHR>{ESC}          { yymore(); }
 <STR,CHR>.              { yymore(); }
@@ -258,11 +262,6 @@ WS        [ \f\n\r\t\v]
 
 %%
 
-void yywarn(const char *str)
-{
-    fprintf(stderr, "WARNING: %s\n", str);
-}
-
 int yywrap()
 {
     if (--file_stack_ptr < 0) return 1;
@@ -306,78 +305,8 @@ void change_source(char *name)
     BEGIN INITIAL;
 }
 
-AST_NODE *get_const_node(AST_NODE_TYPE type, char *val)
+AST_NODE *get_const_node(AST_NODE_TYPE type, void *val)
 {
     AST_NODE *res = ast_create_node(type, (AST_CONTENT) {.value = val}, 0);
-    return res;
-}
-
-char *readstr()
-{
-    size_t i = 0, j = 0;
-    char to_put;
-    char *res = (char *) my_malloc(sizeof(char) * (yyleng + 1),
-            "STRING_LITERAL");
-    while (i < yyleng - 1)
-    {
-        if (yytext[i] == '\\')
-        {
-            ++i;
-            if (i == yyleng)
-            {
-                free(res);
-                return NULL;
-            }
-            switch (yytext[i])
-            {
-                case '?':  to_put = '?'; break;
-                case '\'': to_put = '\''; break;
-                case '\"': to_put = '\"'; break;
-                case '\\': to_put = '\\'; break;
-                case 'a':  to_put = '\a'; break;
-                case 'b':  to_put = '\b'; break;
-                case 'f':  to_put = '\f'; break;
-                case 'n':  to_put = '\n'; break;
-                case 'r':  to_put = '\r'; break;
-                case 't':  to_put = '\t'; break;
-                case 'v':  to_put = '\v'; break;
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                    to_put = '\x1A'; // TODO: up to 3 octal
-                    break;
-                case 'x':
-                    ++i;
-                    to_put = '\x1A'; // TODO: closest hexes
-                    break;
-                case 'u':
-                    ++i;
-                    to_put = '\x1A'; // TODO: 4 hexes
-                    i += 3;
-                    break;
-                case 'U':
-                    ++i;
-                    to_put = '\x1A'; // TODO: 8 hexes
-                    i += 7;
-                    break;
-                default:
-                    free(res);
-                    return NULL;
-            }
-        }
-        else
-        {
-            to_put = yytext[i];
-        }
-        res[j] = to_put;
-        ++i;
-        ++j;
-    }
-    res[j] = '\0';
     return res;
 }
