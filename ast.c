@@ -122,8 +122,8 @@ char *ast_type_to_str(AST_NODE_TYPE type)
 void ast_free(AST_NODE *root)
 {
     if (root == NULL) return;
-    if (root->type == CharacterConstant || root->type == Identifier || root->type == StringLiteral
-        || root->type == IntegerConstant || root->type == FloatingConstant) {
+    if (root->type == Identifier || root->type == IntegerConstant || root->type == FloatingConstant
+        || root->type == CharacterConstant || root->type == StringLiteral) {
         free(root->content.value);
     }
     for (int i = 0; i < root->children_number; ++i)
