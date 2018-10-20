@@ -18,7 +18,7 @@ extern FILE *yyin;
 /// Conversion function for AST node content.
 ///
 /// \param obj Object of AST content
-/// \return String representation of the given object, NULL if not AST_NODE
+/// \return String representation of the given node's content
 char *content_to_str(AST_NODE *node)
 {
     if (node->type == Identifier || node->type == StringLiteral || node->type == IntegerConstant
