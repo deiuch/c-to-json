@@ -20,6 +20,7 @@
 #include "alloc_wrap.h"
 #include "typedef_name.h"
 #include "ast.h"
+#include "string_tools.h"
 #include "y.tab.h"
 
 /// Token for the error notification.
@@ -77,7 +78,8 @@ typedef struct
     FILE *file;
     YY_BUFFER_STATE buffer;
     int start_cond;
-} config;
+}
+config;
 
 /// Stack of source configurations.
 config config_stack[MAX_INCLUDE_DEPTH];
@@ -243,10 +245,7 @@ WS        [ \f\n\r\t\v]
 "_Thread_local"         { return THREAD_LOCAL; }
 
 {ID} {
-    char *lit = (char *) my_malloc(sizeof(char) * (yyleng + 1),
-            "IDENTIFIER");
-    strcpy(lit, yytext);
-    yylval.node = get_const_node(Identifier, lit);
+    yylval.node = get_const_node(Identifier, alloc_const_str(yytext));
     if (is_typedef_name(yytext)) return TYPEDEF_NAME;
     return IDENTIFIER;
     // TODO check Universal character name, ISO/IEC 9899:2017, page 44
@@ -255,10 +254,7 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{IS}?          |
 0{O}+{IS}?              |
 {D}+{IS}? {
-    char *lit = (char *) my_malloc(sizeof(char) * (yyleng + 1),
-            "INTEGER_CONSTANT");
-    strcpy(lit, yytext);
-    yylval.node = get_const_node(IntegerConstant, lit);
+    yylval.node = get_const_node(IntegerConstant, alloc_const_str(yytext));
     return CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 45-46
 }
@@ -269,10 +265,7 @@ WS        [ \f\n\r\t\v]
 0[Xx]{H}+{HE}{FS}?      |
 0[Xx]{H}*"."{H}+{HE}?{FS}? |
 0[Xx]{H}+"."{H}*{HE}?{FS}? {
-    char *lit = (char *) my_malloc(sizeof(char) * (yyleng + 1),
-            "FLOATING_CONSTANT");
-    strcpy(lit, yytext);
-    yylval.node = get_const_node(FloatingConstant, lit);
+    yylval.node = get_const_node(FloatingConstant, alloc_const_str(yytext));
     return CONSTANT;
     // TODO value conversion, ISO/IEC 9899:2017, page 47-48
 }
