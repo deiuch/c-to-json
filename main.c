@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "alloc_wrap.h"
 #include "ast.h"
 #include "string_tools.h"
 #include "typedef_name.h"
@@ -21,10 +22,25 @@ extern FILE *yyin;
 /// \return String representation of the given node's content
 char *content_to_str(AST_NODE *node)
 {
-    if (node->type == Identifier || node->type == StringLiteral || node->type == IntegerConstant
-        || node->type == FloatingConstant || node->type == CharacterConstant)
+    if (node->type == IntegerConstant)
     {
-        return alloc_const_str((char *) node->content.value);  // TODO constant types support
+        return (char *) node->content.value;  // TODO constant types support
+    }
+    if (node->type == FloatingConstant)
+    {
+        return (char *) node->content.value;  // TODO constant types support
+    }
+    if (node->type == CharacterConstant)
+    {
+        char *res = (char *) my_malloc(sizeof(char) * 2,
+            "character-constant representation");
+        res[0] = *(char *) node->content.value;
+        res[1] = '\0';
+        return res;
+    }
+    if (node->type == Identifier || node->type == StringLiteral)
+    {
+        return (char *) node->content.value;
     }
     switch (node->content.token)
     {
