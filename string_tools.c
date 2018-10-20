@@ -82,7 +82,7 @@ char *concat_array(char **array, int n, char *delimiter)
     }
     if (n == 1)
     {
-        return *array;
+        return alloc_const_str(*array);
     }
     int i, j, k;
     size_t d_len = strlen(delimiter);
