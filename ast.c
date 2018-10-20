@@ -122,7 +122,10 @@ char *ast_type_to_str(AST_NODE_TYPE type)
 void ast_free(AST_NODE *root)
 {
     if (root == NULL) return;
-//    free(root->content);  // FIXME
+    if (root->type == Identifier || root->type == IntegerConstant || root->type == FloatingConstant
+        || root->type == CharacterConstant || root->type == StringLiteral) {
+        free(root->content.value);
+    }
     for (int i = 0; i < root->children_number; ++i)
     {
         ast_free(root->children[i]);
@@ -198,11 +201,11 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
     if (root->children)
     {
         char *arr = concat_array(children, root->children_number, ",\n");
-//        for (i = 0; i < root->children_number; ++i) free(children[i]);  // FIXME
+        for (i = 0; i < root->children_number; ++i) free(children[i]);
         size_t size = strlen(arr) + strlen(tab) * (shift + 1) + sizeof(char) * (4 + 1);
         children_str = (char *) my_malloc(size, "children array string");
         res = sprintf(children_str, "[\n%s\n%s%s]", arr, act_tab, tab);
-//        free(arr);  // FIXME
+        free(arr);
         if (res < 0)
         {
             fprintf(stderr,
