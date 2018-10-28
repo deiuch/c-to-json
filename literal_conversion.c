@@ -55,7 +55,7 @@ STR_LITERAL *translate_string_literal(char *source, size_t len)
             i = 1;
         }
     }
-    if (source[i] != '"' && source[i] != '\'') return NULL;
+    if (source[i] != '"') return NULL;
     ++i;
     char *res = (char *) my_malloc(sizeof(char) * (len + 1),
         "string-literal content");
