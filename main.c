@@ -2,7 +2,7 @@
  * Entry point for parer for C Programming Language
  * (ISO/IEC 9899:2018).
  *
- * @authors: Denis Chernikov, Vladislav Kuleykin
+ * @author: Denis Chernikov
  */
 
 #include <stdio.h>
