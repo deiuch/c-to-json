@@ -76,13 +76,12 @@ int file_stack_ptr = 0;
 O         [0-7]
 D         [0-9]
 H         [0-9A-Fa-f]
-ND        ([A-Za-z_]|{UCN})
+ND        ([A-Za-z_]|\\(u{H}{4}|U{H}{8}))
 DE        ([Ee][+-]?{D}+)
 HE        ([Pp][+-]?{D}+)
 LS        (L|l|LL|ll)
 IS        ([Uu]{LS}?|{LS}[Uu]?)
 FS        [FfLl]
-UCN       \\(u{H}{4}|U{H}{8})
 
 %%
 
