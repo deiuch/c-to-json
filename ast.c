@@ -150,8 +150,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                 "FATAL ERROR! String formatting cannot be applied!\n");
-            free(json);
-            free(act_tab);
             exit(-1);
         }
         return json;
@@ -180,8 +178,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
-            free(act_tab);
-            free(content_str);
             exit(-1);
         }
     }
@@ -210,10 +206,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
-            free(act_tab);
-            free(content_str);
-            free(children_num_str);
-            free(children_str);
             exit(-1);
         }
         free(children);
@@ -226,10 +218,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
-            free(act_tab);
-            free(content_str);
-            free(children_num_str);
-            free(children_str);
             exit(-1);
         }
     }

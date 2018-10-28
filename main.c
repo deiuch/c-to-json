@@ -133,7 +133,6 @@ int main(int argc, char *argv[])
     if (res == EOF)
     {
         fprintf(stderr, "Cannot close opened source file: %s\n", in_name);
-        ast_free(root);
         return 3;
     }
 
@@ -149,7 +148,6 @@ int main(int argc, char *argv[])
     if (!out)
     {
         fprintf(stderr, "Cannot open for writing: %s\n", out_name);
-        free(json);
         return 3;
     }
 
