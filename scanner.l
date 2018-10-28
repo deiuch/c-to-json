@@ -6,6 +6,16 @@
 
 %pointer
 
+O         [0-7]
+D         [0-9]
+H         [0-9A-Fa-f]
+ND        ([A-Za-z_]|\\(u{H}{4}|U{H}{8}))
+DE        ([Ee][+-]?{D}+)
+HE        ([Pp][+-]?{D}+)
+LS        (L|l|LL|ll)
+IS        ([Uu]{LS}?|{LS}[Uu]?)
+FS        [FfLl]
+
 %{
 #include <string.h>
 #include "alloc_wrap.h"
@@ -72,16 +82,6 @@ config config_stack[MAX_INCLUDE_DEPTH];
 /// Size of the stack of source configurations.
 int file_stack_ptr = 0;
 %}
-
-O         [0-7]
-D         [0-9]
-H         [0-9A-Fa-f]
-ND        ([A-Za-z_]|\\(u{H}{4}|U{H}{8}))
-DE        ([Ee][+-]?{D}+)
-HE        ([Pp][+-]?{D}+)
-LS        (L|l|LL|ll)
-IS        ([Uu]{LS}?|{LS}[Uu]?)
-FS        [FfLl]
 
 %%
 
