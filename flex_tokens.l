@@ -106,7 +106,7 @@ LBRACE    "??<"|"{"
 VERTICAL  "??!"|"|"
 RBRACE    "??>"|"}"
 TILDE     "??-"|"~"
-PR_INS    [ \t]+[^\n\r]*$
+PR_INS    [ \t]+[^\n\r]*
 NLE       {BS}(\n|\r|\r\n)
 UCN       {BS}(u{H}{4}|U{H}{8})
 ID        {ND}({ND}|{D}|{UCN})*
