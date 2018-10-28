@@ -14,7 +14,7 @@ DE        ([Ee][+-]?{D}+)
 HE        ([Pp][+-]?{D}+)
 LS        (L|l|LL|ll)
 IS        ([Uu]{LS}?|{LS}[Uu]?)
-FS        [FfLl]
+FS        [FLfl]
 
 %{
 #include <string.h>
