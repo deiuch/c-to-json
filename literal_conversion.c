@@ -42,8 +42,21 @@ CHR_CONST *translate_character_constant(char *source, size_t len)
 
 STR_LITERAL *translate_string_literal(char *source, size_t len)
 {
-    // TODO prefix considering, ISO/IEC 9899:2017, page 50-52
-    size_t i = 1, j = 0;
+    size_t i = 0, j = 0;
+    if (source[0] == 'L' || source[0] == 'U' || source[0] == 'u')
+    {
+        // TODO prefix considering, ISO/IEC 9899:2017, page 50-52
+        if (source[0] == 'u' && source[1] == '8')
+        {
+            i = 2;
+        }
+        else
+        {
+            i = 1;
+        }
+    }
+    if (source[i] != '"' && source[i] != '\'') return NULL;
+    ++i;
     char *res = (char *) my_malloc(sizeof(char) * (len + 1),
         "string-literal content");
     char to_put;
