@@ -98,7 +98,7 @@ char *content_to_str(AST_NODE *node)
 /// \param argv Arguments passed to the program
 /// \return 0 - OK, 1 - processing error, 2 - args error, 3 - I/O error
 int main(int argc, char *argv[])
-{yydebug=1;//TODO remove
+{
     if (argc < 2)
     {
         printf("Usage: %s <out_file> OR %s <in_file> <out_file>\n",
