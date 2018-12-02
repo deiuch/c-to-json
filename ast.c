@@ -7,7 +7,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "alloc_wrap.h"
 #include "ast.h"
@@ -188,7 +187,7 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
 
     // Get string representation of `children_number' field
     char *children_num_str = (char *) my_malloc(7, "number representation");
-    itoa(root->children_number, children_num_str, 10);
+    sprintf(children_num_str, "%d", root->children_number);
 
     // Get string representation of `children' array field
     int i;
