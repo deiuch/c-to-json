@@ -150,8 +150,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                 "FATAL ERROR! String formatting cannot be applied!\n");
-            free(json);
-            free(act_tab);
             exit(-1);
         }
         return json;
@@ -180,19 +178,24 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
-            free(act_tab);
-            free(content_str);
             exit(-1);
         }
     }
 
     // Get string representation of `children_number' field
     char *children_num_str = (char *) my_malloc(7, "number representation");
-    sprintf(children_num_str, "%d", root->children_number);
+    res = sprintf(children_num_str, "%d", root->children_number);
+    if (res < 0)
+    {
+        fprintf(stderr,
+                "FATAL ERROR! String formatting cannot be applied!\n");
+        exit(-1);
+    }
 
     // Get string representation of `children' array field
     int i;
-    char **children = (char **) malloc(sizeof(char *) * root->children_number);
+    char **children = (char **) my_malloc(sizeof(char *) * root->children_number,
+            "children representation");
     for (i = 0; i < root->children_number; ++i)
     {
         children[i] = ast_to_json(root->children[i], shift + 2, tab, cont_to_str);
@@ -210,10 +213,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
-            free(act_tab);
-            free(content_str);
-            free(children_num_str);
-            free(children_str);
             exit(-1);
         }
         free(children);
@@ -226,10 +225,6 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
         {
             fprintf(stderr,
                     "FATAL ERROR! String formatting cannot be applied!\n");
-            free(act_tab);
-            free(content_str);
-            free(children_num_str);
-            free(children_str);
             exit(-1);
         }
     }
@@ -244,18 +239,18 @@ char *ast_to_json(AST_NODE *root, int shift, char *tab, char *(*cont_to_str)(AST
             + sizeof(char) * (62 + 1);
     json = (char *) my_malloc(json_size, "JSON representation");
     res = sprintf(json,
-                  "%s{\n"
-                  "%s%s\"type\": \"%s\",\n"
-                  "%s%s\"content\": %s,\n"
-                  "%s%s\"children_number\": %s,\n"
-                  "%s%s\"children\": %s\n"
-                  "%s}",
-                  act_tab,
-                  act_tab, tab, type_str,
-                  act_tab, tab, content_str,
-                  act_tab, tab, children_num_str,
-                  act_tab, tab, children_str,
-                  act_tab);
+            "%s{\n"
+            "%s%s\"type\": \"%s\",\n"
+            "%s%s\"content\": %s,\n"
+            "%s%s\"children_number\": %s,\n"
+            "%s%s\"children\": %s\n"
+            "%s}",
+            act_tab,
+            act_tab, tab, type_str,
+            act_tab, tab, content_str,
+            act_tab, tab, children_num_str,
+            act_tab, tab, children_str,
+            act_tab);
     free(act_tab);
     free(content_str);
     free(children_num_str);
