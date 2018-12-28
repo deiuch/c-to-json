@@ -1,7 +1,9 @@
 @echo off
+IF EXIST Bison\bin SET PATH=%PATH%;Bison\bin
+IF EXIST Bison\bin SET PATH=%PATH%;Flex\bin
 cd src
-..\Bison\bin\yacc.exe -y -d parser.y
-..\Flex\bin\lex.exe scanner.l
+yacc -y -d parser.y
+lex -l scanner.l
 gcc main.c lex.yy.c y.tab.c alloc_wrap.c ast.c literal_conversion.c preprocessing.c string_tools.c typedef_name.c -o ..\c_parser.exe
 del y.tab.c y.tab.h lex.yy.c
 cd ..
