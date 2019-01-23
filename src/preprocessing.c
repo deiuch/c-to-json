@@ -9,6 +9,8 @@
 #include "preprocessing.h"
 #include "typedef_name.h"
 
+#define UNDEF_CHAR -2
+
 /// Defined in `flex_tokens.l'.
 /// Change source file to read next.
 ///
@@ -27,6 +29,84 @@ extern void change_source(char *name);
  *
  * Also use `add_std_typedef' and `change_source' procedures.
  */
+
+int translation_phase_1(FILE *stream)
+{  // TODO: map physical source file multibyte characters to the source character set.
+    static int buffer[3] = {UNDEF_CHAR, UNDEF_CHAR, UNDEF_CHAR};
+
+    if (buffer[0] == UNDEF_CHAR)
+    {
+        buffer[0] = getc(stream);
+        buffer[1] = getc(stream);
+    }
+    else
+    {
+        buffer[0] = buffer[1];
+        buffer[1] = buffer[2];
+    }
+    buffer[2] = getc(stream);
+
+    if (buffer[0] == '?' && buffer[1] == '?')
+    {
+        switch (buffer[2])
+        {
+            case '=': buffer[0] = '#'; break;
+            case '(': buffer[0] = '['; break;
+            case '/': buffer[0] = '\\'; break;
+            case ')': buffer[0] = ']'; break;
+            case '\'': buffer[0] = '^'; break;
+            case '<': buffer[0] = '{'; break;
+            case '!': buffer[0] = '|'; break;
+            case '>': buffer[0] = '}'; break;
+            case '-': buffer[0] = '~'; break;
+            default: goto end;
+        }
+        buffer[1] = getc(stream);
+        buffer[2] = getc(stream);
+    }
+    end:
+    return buffer[0];
+}
+
+int translation_phase_2(FILE *stream)
+{
+    static int buffer = UNDEF_CHAR;
+    int cur;
+
+    if (buffer == EOF)
+    {
+        return EOF;
+    }
+
+    if (buffer != UNDEF_CHAR)
+    {
+        cur = buffer;
+        buffer = UNDEF_CHAR;
+    }
+    else
+    {
+        cur = translation_phase_1(stream);
+    }
+
+    check:
+    if (cur == '\\')
+    {
+        if ((cur = translation_phase_1(stream)) == '\n')
+        {
+            cur = translation_phase_1(stream);
+            goto check;
+        }
+        buffer = cur;
+        return '\\';
+    }
+
+    if (cur == EOF)  // Add new-line at the end of the file; TODO: check
+    {
+        buffer = EOF;
+        cur = '\n';
+    }
+    return cur;
+}
 
 int prep_getc(FILE *stream)
 {
